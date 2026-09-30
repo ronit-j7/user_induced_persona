@@ -24,8 +24,9 @@ default-groups = ["model", "dev"]
 ws2 = "attentionseekers.cli:main"
 
 [tool.setuptools.packages.find]
+where = ["Workstream_2"]
 include = ["attentionseekers*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["."]
+testpaths = ["Workstream_2/tests"]
+pythonpath = ["Workstream_2"]

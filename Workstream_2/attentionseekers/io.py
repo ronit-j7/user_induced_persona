@@ -8,6 +8,8 @@ import subprocess
 
 import numpy as np
 
+from .paths import REPO_ROOT, WORKSTREAM_ROOT
+
 
 def read_jsonl(path):
     rows = []
@@ -49,7 +51,7 @@ def new_run(path):
 
 
 def provenance():
-    root = Path(__file__).resolve().parents[1]
+    root = REPO_ROOT
     def git(*args):
         p = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
         return p.stdout.strip() if p.returncode == 0 else None
@@ -60,7 +62,7 @@ def provenance():
         except PackageNotFoundError:
             packages[name] = None
     sources = {str(p.relative_to(root)): sha256(p)
-               for p in sorted((root / "attentionseekers").glob("*.py"))}
+               for p in sorted((WORKSTREAM_ROOT / "attentionseekers").glob("*.py"))}
     return {"utc": datetime.now(timezone.utc).isoformat(), "git_commit": git("rev-parse", "HEAD"),
             "git_dirty": bool(git("status", "--porcelain")), "packages": packages,
             "source_hashes": sources}

@@ -1,0 +1,206 @@
+{
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "is_synthetic": false,
+  "device": "cuda:0",
+  "rows": 420,
+  "response_tokens": 150,
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "torch_runtime": "2.4.1+cu121",
+  "torch_cuda": "12.1",
+  "gpu_compute_capability": [
+    8,
+    6
+  ],
+  "max_gpu_allocated_bytes": 15460407808,
+  "first_bit_identical_after_response_change": true,
+  "user_bit_identical_after_response_change": true,
+  "response_sensitive": true,
+  "upstream_implementation_agreement": {
+    "check": "independent_upstream_implementation_agreement",
+    "passed": true,
+    "is_synthetic": false,
+    "rows": [
+      "brainstorm_01|S|E|+|k0",
+      "brainstorm_01|S|E|-|k0"
+    ],
+    "model_name": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "response_window": "full_response_upstream_convention",
+    "max_pre_error": 0.0,
+    "max_output_error": 0.0,
+    "max_score_error": 1.33514404296875e-05,
+    "score_spearman": 1.0,
+    "reference_source_sha256": {
+      "generate_vec/common.py": "f93502a47aa9d16a6bc08ca425728603c8fa47f271ec0ecd31f7ca82372e9ce2",
+      "generate_vec/generate_vec_head.py": "076e27fe0f6ff6cd9a6e899eda42cfed4363975c73f39354d2344d53b15f5ba2",
+      "generate_vec/generate_vec_block.py": "90c1e0e094a3d268c02996d71725dc35a8c01122998533bc07af2104baec6774",
+      "head_analysis/head_contribution/compute.py": "258897bb35adbbfa7341cf67196a286d78a3303142c2529854e64b50baca0e2e"
+    },
+    "paper_humorous_reproduction": "NOT_RUN"
+  },
+  "paper_humorous_reproduction": "NOT_RUN",
+  "verification_manifest_sha256": "985bbe2e5ead66c18f7b9122b90e63690aa3ff97d45c23f9ada27b3f0bff1071",
+  "activation_manifest_sha256": "67b664c57aaf0496592b3070545b0659fd556cf3e9749cf211cfbbbe1fa7796e",
+  "source_commit": "c419634f842c63af29ced94c1f48d15fd84e062e",
+  "source_dirty": false,
+  "runtime_packages": {
+    "numpy": "2.1.2",
+    "torch": "2.4.1",
+    "transformers": "4.56.1",
+    "accelerate": "1.10.1",
+    "matplotlib": "3.10.0"
+  },
+  "token_preflight": {
+    "rows": 420,
+    "is_sample": false,
+    "model_name": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "max_length_limit": 2048,
+    "response_tokens": 150,
+    "max_total_tokens": 1096,
+    "max_prefix_tokens": 79,
+    "min_response_tokens": 89,
+    "max_response_tokens": 1022,
+    "short_response_rows": 21,
+    "data_sha256": "b3207785a6d7b5ec01796f5fc5ae7f941370171a6640ea86320e2015860400b9"
+  },
+  "pipeline": {
+    "schema_version": 1,
+    "is_sample": false,
+    "is_synthetic": false,
+    "model_name": "Qwen/Qwen2.5-7B-Instruct",
+    "response_tokens": 150,
+    "activation_manifest_sha256": "67b664c57aaf0496592b3070545b0659fd556cf3e9749cf211cfbbbe1fa7796e",
+    "coverage": {
+      "E": {
+        "assigned_pairs": 100,
+        "user_pairs": 0
+      },
+      "A": {
+        "assigned_pairs": 100,
+        "user_pairs": 0
+      }
+    },
+    "localizations": {
+      "E-assigned-first": "COMPLETE",
+      "E-assigned-resp": "COMPLETE",
+      "E-assigned-user": "COMPLETE",
+      "A-assigned-first": "COMPLETE",
+      "A-assigned-resp": "COMPLETE",
+      "A-assigned-user": "COMPLETE"
+    },
+    "comparisons": {
+      "E-comparison-first": "NOT_AVAILABLE",
+      "E-comparison-resp": "NOT_AVAILABLE",
+      "E-comparison-user": "NOT_AVAILABLE",
+      "A-comparison-first": "NOT_AVAILABLE",
+      "A-comparison-resp": "NOT_AVAILABLE",
+      "A-comparison-user": "NOT_AVAILABLE"
+    },
+    "upstream_reproduction": "NOT_RUN"
+  },
+  "localization_metrics": {
+    "A-assigned-first": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 685,
+      "smh_ranks_in_layer": {
+        "2": 2,
+        "4": 3,
+        "27": 1
+      },
+      "smh_layer": 19,
+      "smh_heads": [
+        2,
+        4,
+        27
+      ]
+    },
+    "A-assigned-resp": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 703,
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      },
+      "smh_layer": 19,
+      "smh_heads": [
+        2,
+        4,
+        27
+      ]
+    },
+    "A-assigned-user": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 723,
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      },
+      "smh_layer": 19,
+      "smh_heads": [
+        2,
+        4,
+        27
+      ]
+    },
+    "E-assigned-first": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 669,
+      "smh_ranks_in_layer": {
+        "2": 2,
+        "4": 3,
+        "27": 1
+      },
+      "smh_layer": 19,
+      "smh_heads": [
+        2,
+        4,
+        27
+      ]
+    },
+    "E-assigned-resp": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 685,
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      },
+      "smh_layer": 19,
+      "smh_heads": [
+        2,
+        4,
+        27
+      ]
+    },
+    "E-assigned-user": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 688,
+      "smh_ranks_in_layer": {
+        "2": 2,
+        "4": 4,
+        "27": 1
+      },
+      "smh_layer": 19,
+      "smh_heads": [
+        2,
+        4,
+        27
+      ]
+    }
+  }
+}

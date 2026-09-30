@@ -4,8 +4,9 @@ import json
 
 from attentionseekers.data import NEUTRAL_SYSTEM
 from attentionseekers.io import read_jsonl, write_jsonl
+from attentionseekers.paths import REPO_ROOT, SAMPLE_DATA
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = REPO_ROOT
 BASE = {r["scenario"]: r for r in read_jsonl(ROOT / "Data_Creation/data/scenarios.jsonl")}
 SCENARIOS = ("code_01", "explain_01", "brainstorm_01")
 RESPONSES = {
@@ -67,7 +68,7 @@ def build():
 
 
 if __name__ == "__main__":
-    path = ROOT / "Data_Creation/samples/ws2_sample.jsonl"
+    path = SAMPLE_DATA
     path.parent.mkdir(parents=True, exist_ok=True)
     write_jsonl(path, build())
     print(f"Wrote {len(build())} labeled sample rows to {path}")

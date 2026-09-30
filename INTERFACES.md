@@ -3,7 +3,13 @@
 This is the handoff contract for Data Creation (WS1), SMH localization (WS2),
 and user-induced experiments (WS3). Change the schema version and this file
 together when a breaking change is necessary. Code entry points live in the
-`attentionseekers` package; the CLI is `ws2` or `python -m attentionseekers`.
+`Workstream_2/attentionseekers` package; the CLI is `ws2` or `python -m attentionseekers`.
+
+All WS2 support files are under `Workstream_2/` as described in its
+`README.md`. The shared project `pyproject.toml` and `uv.lock` stay at the
+repository root; package discovery points into `Workstream_2`. Python imports
+remain `attentionseekers`. CLI defaults resolve WS1 inputs and the WS2 config
+relative to the installed source, independently of the working directory.
 
 ## Environment and first run
 
@@ -11,8 +17,8 @@ From the repository root, use `uv` for dependency management:
 
 ```bash
 uv sync --locked
-uv run python scripts/make_sample_ws2.py
-uv run ws2 validate-data --data Data_Creation/samples/ws2_sample.jsonl --allow-sample
+uv run python -m Workstream_2.scripts.make_sample_ws2
+uv run ws2 validate-data --data Workstream_2/samples/ws2_sample.jsonl --allow-sample
 uv run python -m pytest -q
 uv run python -m attentionseekers.smoke --out results/smoke-cpu
 ```
@@ -25,8 +31,8 @@ On this 3090 host, keep packages, model weights, and run artifacts on the
 mounted hard disk:
 
 ```bash
-bash scripts/uv_hdd.sh sync --locked
-bash scripts/uv_hdd.sh run python -m pytest -q
+bash Workstream_2/scripts/uv_hdd.sh sync --locked
+bash Workstream_2/scripts/uv_hdd.sh run python -m pytest -q
 ```
 
 The wrapper routes the uv cache to `/media/gaurav/Data21/eshaan/cache/uv`, the
@@ -42,7 +48,7 @@ localization, and comparison bundles. On a CUDA machine, add `--device cuda:0`
 and use a different output directory. Every `--out` directory must be new;
 the CLI refuses to overwrite previous runs.
 
-The full Qwen config is `configs/qwen.json`: GPU 0, bf16, response readout over
+The full Qwen config is `Workstream_2/configs/qwen.json`: GPU 0, bf16, response readout over
 the first 150 response tokens, revision `a09a35458c702b33eeacc393d103063234e8bc28`
 (the same checkpoint that WS1 used). Set `response_tokens` to null for the
 full-response mean. Every bundle records the window and `is_synthetic`;
@@ -51,7 +57,7 @@ random-model integration results must not be presented as research findings.
 ## WS1 -> WS2: JSONL version 1
 
 One UTF-8 JSON object per line. The checked-in sample at
-`Data_Creation/samples/ws2_sample.jsonl` is executable schema documentation.
+`Workstream_2/samples/ws2_sample.jsonl` is executable schema documentation.
 It is tagged `"is_sample": true`; real rows should omit this field or set it
 to false, and must include passing QC. Never merge sample and real rows.
 
@@ -86,20 +92,20 @@ dataset is 660 rows with 3 user paraphrases per pole and 5 system paraphrases.
 Build and run the available assigned dataset:
 
 ```bash
-bash scripts/uv_hdd.sh run ws2 prepare-data --out results/exp1/prepared
-bash scripts/uv_hdd.sh run ws2 preflight --data results/exp1/prepared/rows.jsonl \
+bash Workstream_2/scripts/uv_hdd.sh run ws2 prepare-data --out results/exp1/prepared
+bash Workstream_2/scripts/uv_hdd.sh run ws2 preflight --data results/exp1/prepared/rows.jsonl \
   --out results/exp1/tokens
-bash scripts/uv_hdd.sh run ws2 run --data results/exp1/prepared/rows.jsonl \
-  --config configs/qwen.json --out results/exp1/assigned
+bash Workstream_2/scripts/uv_hdd.sh run ws2 run --data results/exp1/prepared/rows.jsonl \
+  --config Workstream_2/configs/qwen.json --out results/exp1/assigned
 ```
 
 After real user variants are generated:
 
 ```bash
-bash scripts/uv_hdd.sh run ws2 prepare-data \
+bash Workstream_2/scripts/uv_hdd.sh run ws2 prepare-data \
   --user-variants Data_Creation/data/user_variants.jsonl --out results/exp2/prepared
-bash scripts/uv_hdd.sh run ws2 run --data results/exp2/prepared/rows.jsonl \
-  --config configs/qwen.json --require-user --out results/exp2/full
+bash Workstream_2/scripts/uv_hdd.sh run ws2 run --data results/exp2/prepared/rows.jsonl \
+  --config Workstream_2/configs/qwen.json --require-user --out results/exp2/full
 ```
 
 `run` extracts once and produces E/A localization for all requested readouts,
@@ -113,13 +119,20 @@ To repeat the current real-data software/hardware checks, including comparison
 with independently executed unmodified reference extraction functions:
 
 ```bash
-bash scripts/uv_hdd.sh run python -m scripts.verify_ws2_on_ws1 \
+bash Workstream_2/scripts/uv_hdd.sh run python -m Workstream_2.scripts.verify_ws2_on_ws1 \
   --model full --device cuda:0 --out results/verification-full
 ```
 
 Use `--model tiny` for random-weight integration testing. Reference function
 agreement on WS1 stimuli and paper-head recovery on judged humorous data are
 separate checks. The verification script does not claim the latter.
+
+The current 420-row assigned dataset completed full Qwen verification on the
+RTX 3090. All six E/A/readout analyses completed, peak GPU allocation was
+14.40 GiB, and the independent reference vector comparison was exact. Compact
+results and manifest hashes are in
+`Workstream_2/docs/full_qwen_verification_summary.json`. The completed HDD
+report is `results/ws1-verification/full-qwen-gpu-retry/verification.json`.
 
 ## WS2 -> WS3: Python APIs
 
@@ -135,7 +148,7 @@ from attentionseekers.io import load_manifest, load_array, read_jsonl
 from attentionseekers.prepare import prepare_dataset
 from attentionseekers.pipeline import run_pipeline
 
-config = load_config("configs/qwen.json")
+config = load_config("Workstream_2/configs/qwen.json")
 rows = load_rows("results/exp1/prepared/rows.jsonl")
 model, tokenizer = load_model(config)
 encoded = encode(tokenizer, rows[0], config.max_length, response_tokens=config.response_tokens)
@@ -219,15 +232,15 @@ different windows or model revisions.
 
 ## Independent reproduction gate
 
-The vendored, unmodified reference is in `reference_repos/style-modulation-head`
-(commit recorded in `reference_repos/UPSTREAM.md`). Use its documented `uv`
+The vendored, unmodified reference is in `Workstream_2/reference_repos/style-modulation-head`
+(commit recorded in `Workstream_2/reference_repos/UPSTREAM.md`). Use its documented `uv`
 environment, CSV generation, vector extraction, and head analysis on
 `humorous`; preserve its outputs and model revision. It uses joint
 `prompt + answer` tokenization and separately counts prompt tokens. Our
 `reproduce` command deliberately replays that convention only for the upstream
 comparison. Project datasets always use `encode` above.
 
-From `reference_repos/style-modulation-head`, with its own Python 3.10 `uv`
+From `Workstream_2/reference_repos/style-modulation-head`, with its own Python 3.10 `uv`
 environment and judge credentials, the direct upstream commands are:
 
 ```bash
@@ -268,7 +281,7 @@ uv run ws2 reproduce \
   --pos-csv /path/to/humorous_pos_instruct.csv \
   --neg-csv /path/to/humorous_neg_instruct.csv \
   --upstream-vectors /path/to/upstream/persona_vectors \
-  --trait humorous --config configs/qwen.json \
+  --trait humorous --config Workstream_2/configs/qwen.json \
   --acts-out results/exp0/humorous-replay-acts \
   --report-out results/exp0/humorous-repro
 ```

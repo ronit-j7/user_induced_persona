@@ -7,6 +7,7 @@ from .cli import cmd_analyze, cmd_compare
 from .config import ModelConfig
 from .data import load_rows
 from .extract import extract_dataset
+from .paths import SAMPLE_DATA
 
 
 class CharacterTokenizer:
@@ -37,8 +38,7 @@ class CharacterTokenizer:
 def run_smoke(out, *, device="cpu"):
     import torch
     from transformers import Qwen2Config, Qwen2ForCausalLM
-    root = Path(__file__).resolve().parents[1]
-    dataset = root / "Data_Creation/samples/ws2_sample.jsonl"
+    dataset = SAMPLE_DATA
     rows = [row for row in load_rows(dataset, allow_sample=True) if row["trait"] in ("E", "none")]
     config = ModelConfig(model_name="tiny-random-Qwen2-smoke", revision="untrained",
                          num_layers=2, num_heads=4, num_kv_heads=2, head_dim=8,

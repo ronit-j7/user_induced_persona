@@ -17,7 +17,8 @@ from attentionseekers.pipeline import check_run_data
 from attentionseekers.prepare import prepare_rows
 from attentionseekers.smoke import CharacterTokenizer
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
+WS2_ROOT = ROOT / "Workstream_2"
 
 
 @pytest.fixture
@@ -126,7 +127,7 @@ def test_causal_response_window_and_cleanup_after_hook_failure():
 
 def test_scores_match_the_vendored_upstream_implementation():
     torch = pytest.importorskip("torch")
-    source = ROOT / "reference_repos/style-modulation-head/src/head_analysis/head_contribution/compute.py"
+    source = WS2_ROOT / "reference_repos/style-modulation-head/src/head_analysis/head_contribution/compute.py"
     names = {"inner_product_similarity", "compute_head_contributions", "normalize_matrix"}
     definitions = [node for node in ast.parse(source.read_text()).body if isinstance(node, ast.FunctionDef) and node.name in names]
     namespace = {"torch": torch, "np": np}
@@ -182,7 +183,7 @@ def test_independent_vendored_extraction_hooks_without_judge_credentials():
             return BatchEncoding(value)
 
     model, config = tiny_model()
-    rows = read_jsonl(ROOT / "Data_Creation/samples/ws2_sample.jsonl")
+    rows = read_jsonl(WS2_ROOT / "samples/ws2_sample.jsonl")
     a, b, _ = matched_pairs(rows, "E", "assigned")[0]
     report = verify_reference_extraction(model, TensorTokenizer(), config, [rows[a], rows[b]])
     assert report["passed"] and report["is_synthetic"]
@@ -194,7 +195,7 @@ def test_all_traits_readouts_and_future_user_comparisons(tmp_path):
     from attentionseekers.io import load_manifest
     from attentionseekers.pipeline import run_pipeline
     model, config = tiny_model()
-    data = ROOT / "Data_Creation/samples/ws2_sample.jsonl"
+    data = WS2_ROOT / "samples/ws2_sample.jsonl"
     rows = read_jsonl(data)
     output = run_pipeline(model, CharacterTokenizer(), config, rows, tmp_path / "pipeline",
                           data_path=data, permutations=31, allow_sample=True, require_user=True)
@@ -253,4 +254,4 @@ def test_missing_upstream_vectors_rejected_before_model_loading(tmp_path, monkey
     monkeypatch.setattr(extraction, "load_model", forbidden)
     with pytest.raises(FileNotFoundError, match="Required upstream vector absent"):
         cmd_reproduce(Namespace(pos_csv=pos, neg_csv=neg, trait="humorous", threshold=50,
-                                config=ROOT / "configs/qwen.json", upstream_vectors=tmp_path))
+                                config=WS2_ROOT / "configs/qwen.json", upstream_vectors=tmp_path))

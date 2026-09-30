@@ -19,7 +19,7 @@ for field, expected in (("num_hidden_layers", config.num_layers),
     observed = getattr(model_config, field)
     if observed != expected:
         raise ValueError(f"{field}: configured {expected}, upstream {observed}")
-rows = load_rows(ROOT / "Data_Creation/samples/ws2_sample.jsonl", allow_sample=True)
+rows = load_rows(ROOT / "samples/ws2_sample.jsonl", allow_sample=True)
 for row in (rows[0], next(r for r in rows if r["set"] == "sys_twin"),
             next(r for r in rows if r["set"] == "user_variant")):
     detail = describe_encoding(tokenizer, encode(tokenizer, row, config.max_length))

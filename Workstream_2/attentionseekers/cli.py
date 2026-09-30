@@ -11,6 +11,7 @@ from .data import load_rows, validate_rows
 from .heads import control_groups, localize, ranks_descending, spearman
 from .io import finish_run, load_array, load_manifest, new_run, provenance, read_jsonl, sha256, write_json
 from .plots import save_heatmap, save_snr
+from .paths import DEFAULT_CONFIG, REPO_ROOT
 
 
 def _bundle_rows(path):
@@ -212,8 +213,8 @@ def parser():
     p = argparse.ArgumentParser(prog="ws2", description="AttentionSeekers Workstream 2")
     sub = p.add_subparsers(dest="command", required=True)
     prepare = sub.add_parser("prepare-data", help="Build WS2 rows from the current WS1 exports")
-    prepare.add_argument("--scenarios-file", default="Data_Creation/data/scenarios.jsonl")
-    prepare.add_argument("--system-prompts", default="Data_Creation/prompts/sys_prompts.json")
+    prepare.add_argument("--scenarios-file", default=str(REPO_ROOT / "Data_Creation/data/scenarios.jsonl"))
+    prepare.add_argument("--system-prompts", default=str(REPO_ROOT / "Data_Creation/prompts/sys_prompts.json"))
     prepare.add_argument("--user-variants")
     prepare.add_argument("--scenarios", nargs="+")
     prepare.add_argument("--traits", nargs="+", choices=("E", "A"), default=["E", "A"])
@@ -222,7 +223,7 @@ def parser():
     prepare.set_defaults(func=cmd_prepare)
     run = sub.add_parser("run", help="Extract once, then localize E/A and compare available user variants")
     run.add_argument("--data", required=True)
-    run.add_argument("--config", default="configs/qwen.json")
+    run.add_argument("--config", default=str(DEFAULT_CONFIG))
     run.add_argument("--out", required=True)
     run.add_argument("--traits", nargs="+", choices=("E", "A"), default=["E", "A"])
     run.add_argument("--readouts", nargs="+", choices=("first", "resp", "user"), default=["first", "resp", "user"])
@@ -233,7 +234,7 @@ def parser():
     run.set_defaults(func=cmd_run)
     preflight = sub.add_parser("preflight", help="Check real Qwen token spans and lengths without loading weights")
     preflight.add_argument("--data", required=True)
-    preflight.add_argument("--config", default="configs/qwen.json")
+    preflight.add_argument("--config", default=str(DEFAULT_CONFIG))
     preflight.add_argument("--out", required=True)
     preflight.add_argument("--local-files-only", action="store_true")
     preflight.add_argument("--allow-sample", action="store_true")
@@ -246,7 +247,7 @@ def parser():
     extract = sub.add_parser("extract")
     extract.add_argument("--data", required=True)
     extract.add_argument("--out", required=True)
-    extract.add_argument("--config", default="configs/qwen.json")
+    extract.add_argument("--config", default=str(DEFAULT_CONFIG))
     extract.add_argument("--readouts", nargs="+", choices=("first", "resp", "user"),
                          default=["first", "resp", "user"])
     extract.add_argument("--allow-sample", action="store_true")
@@ -270,7 +271,7 @@ def parser():
         repro.add_argument(f"--{name.replace('_', '-')}", required=True)
     repro.add_argument("--trait", default="humorous")
     repro.add_argument("--threshold", type=int, default=50)
-    repro.add_argument("--config", default="configs/qwen.json")
+    repro.add_argument("--config", default=str(DEFAULT_CONFIG))
     repro.set_defaults(func=cmd_reproduce)
     return p
 

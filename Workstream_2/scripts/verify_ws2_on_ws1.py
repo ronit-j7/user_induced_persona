@@ -1,6 +1,6 @@
 """Exercise the current real WS1 assigned dataset, including upstream hook agreement.
 
-bash scripts/uv_hdd.sh run python -m scripts.verify_ws2_on_ws1 --model full --device cuda:0 --out results/ws1-full
+bash Workstream_2/scripts/uv_hdd.sh run python -m Workstream_2.scripts.verify_ws2_on_ws1 --model full --device cuda:0 --out results/ws1-full
 Use --model tiny for software validation with random weights and the real tokenizer.
 All outputs record whether the model is synthetic. This script does not create
 or judge user-style variants, or assert humorous paper-head reproduction.
@@ -18,13 +18,14 @@ from attentionseekers.io import finish_run, new_run, write_json
 from attentionseekers.pipeline import run_pipeline
 from attentionseekers.preflight import check_tokens
 from attentionseekers.prepare import prepare_dataset
+from attentionseekers.paths import DEFAULT_CONFIG, REPO_ROOT
 from attentionseekers.reference_check import verify_reference_extraction
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", required=True)
-    parser.add_argument("--config", default="configs/qwen.json")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG))
     parser.add_argument("--model", choices=("tiny", "full"), default="tiny")
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--permutations", type=int, default=19999)
@@ -33,7 +34,7 @@ def main():
     import torch
     from transformers import AutoConfig, AutoTokenizer, Qwen2Config, Qwen2ForCausalLM
     torch.set_num_threads(2)
-    root = Path(__file__).resolve().parents[1]
+    root = REPO_ROOT
     out = new_run(args.out)
     prepared = prepare_dataset(root / "Data_Creation/data/scenarios.jsonl",
                                root / "Data_Creation/prompts/sys_prompts.json", out / "prepared")

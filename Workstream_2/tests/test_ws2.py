@@ -12,7 +12,7 @@ from attentionseekers.repro import encode_upstream, load_upstream_csvs
 from attentionseekers.smoke import CharacterTokenizer
 
 ROOT = Path(__file__).resolve().parents[1]
-SAMPLE = ROOT / "Data_Creation/samples/ws2_sample.jsonl"
+SAMPLE = ROOT / "samples/ws2_sample.jsonl"
 
 
 def test_sample_contract_and_confounded_pair_rejected():

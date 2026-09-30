@@ -65,31 +65,29 @@ localization, reusable extraction/scoring, and neutral/random controls. The root
 | Version 1 WS1/WS2/WS3 handoff | Implemented | Root `INTERFACES.md`, validator, sample JSONL. |
 | Current WS1 adapter | Verified on real inputs | `prepare-data` builds 420 rows from 20 scenarios and 20 system prompts; 100 matched assigned pairs per E/A trait. Canonical responses stay unchanged. |
 | Current WS1 QC protocol | Verified | Accepts the exact `gen_user_variants.make_row` export, checks both forced-choice orders, and preserves authored-system provenance. Legacy numeric QC remains supported. |
-| Qwen hooks and token positions | Verified on tiny Qwen CPU and RTX 3090 | 19 tests pass without skips, including response sensitivity, causal windows, exception cleanup, and all E/A/readout comparison branches. |
+| Qwen hooks and token positions | Verified on full Qwen on RTX 3090 | 19 tests pass without skips after consolidation into `Workstream_2/`. Full checkpoint passes response sensitivity and bit-identical first/user checks. |
 | Real Qwen tokenizer/config | Verified on all 420 WS1 rows | Max full sequence 1,096 tokens, max response 1,022; no truncation. The first 150 response tokens are selected explicitly, with shorter responses using all tokens. |
-| Independent upstream implementation agreement | Verified with tiny Qwen on RTX 3090 | Original upstream hook functions execute independently: captured-vector max error 0, score Spearman 1.0. This is not humorous-head reproduction. |
-| Scores, controls, permutations, heatmaps | Implemented and integrated | All 420 assigned stimuli run with random tiny weights; E/A first/resp/user analyses complete with 19,999 permutations. Fixture tests cover 12 localizations and 6 comparisons. Synthetic scores are not findings. |
-| uv environment/storage | Implemented | Default model/dev groups retain libraries across `uv run`; `scripts/uv_hdd.sh` routes packages, cache and weights to the hard disk. Repo `results/` points there on this host. |
+| Independent upstream implementation agreement | Verified with full Qwen on RTX 3090 | Original upstream hooks match captured vectors exactly; score Spearman 1.0, maximum score error 1.34e-5. This is not humorous-head reproduction. |
+| Scores, controls, permutations, heatmaps | Verified on full checkpoint | All 420 assigned stimuli complete E/A first/resp/user analyses with 19,999 permutations, 100 pairs and 20 independent scenarios per trait. Fixture tests cover 12 localizations and 6 comparisons. |
+| uv environment/storage | Implemented | Default model/dev groups retain libraries across `uv run`; `Workstream_2/scripts/uv_hdd.sh` routes packages, cache and weights to the hard disk. Repo `results/` points there on this host. |
 | Imported reference repositories | Verified | 72 SMH and 41 Persona Vectors files match recorded upstream Git blobs; no nested Git metadata. |
 | Upstream humorous reproduction | NOT_RUN | Judged humorous CSVs/vectors and judge credentials are absent. This remains independent of WS1 user-variant data. |
-| E/A assigned localization | NOT_RUN on full checkpoint | All four pinned checkpoint shards are cached on the HDD. Full loading failed because another Visual Grounding process occupied 22.2 GiB of GPU memory. |
+| E/A assigned localization | COMPLETE on full checkpoint | RTX 3090, bf16, pinned WS1 revision; peak GPU allocation 14.40 GiB. Six localization bundles and their controls/heatmaps are complete. |
 | Real assigned/user comparison | NOT_AVAILABLE | WS1 has not produced `data/user_variants.jsonl`; `--require-user` fails before loading weights. |
 
 The pinned Qwen checkpoint is fully cached at
 `/media/gaurav/Data21/eshaan/models/huggingface`; the uv environment/cache and
-large result bundles are also on that hard disk. The latest full-model attempt
-failed at checkpoint loading: `harsha`'s Visual Grounding evaluation, PID
-1778350, was occupying about 22.2 GiB on the RTX 3090. No full-model extraction
-or scientific result was produced. The incomplete `full-qwen-gpu` output is
-preserved; use a new output name for the next attempt.
-The completed tiny-model integration report is at
-`results/ws1-verification/tiny-real-tokenizer-gpu/verification.json`.
+large result bundles are also on that hard disk. The completed full run is at
+`results/ws1-verification/full-qwen-gpu-retry/verification.json`. Every file in
+its completed manifest was checked after the folder reorganization. Compact
+measured evidence is checked in as `docs/full_qwen_verification_summary.json`.
+An earlier memory-blocked attempt is retained separately as `full-qwen-gpu`.
 
 The full verification command is:
 
 ```bash
-bash scripts/uv_hdd.sh run python -m scripts.verify_ws2_on_ws1 \
-  --model full --device cuda:0 --out results/ws1-verification/full-qwen-gpu-retry
+bash Workstream_2/scripts/uv_hdd.sh run python -m Workstream_2.scripts.verify_ws2_on_ws1 \
+  --model full --device cuda:0 --out results/ws1-verification/full-qwen-gpu-next
 ```
 
 After WS1 ships user variants, rerun `prepare-data --user-variants ...` and
