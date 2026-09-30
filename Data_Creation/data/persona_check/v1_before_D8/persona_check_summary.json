@@ -1,0 +1,186 @@
+{
+  "per_trait_pole": {
+    "A+": {
+      "n": 20,
+      "trait_pass": 20,
+      "helps": 19,
+      "abusive": 0,
+      "mean_len_ratio": 0.86
+    },
+    "A-": {
+      "n": 20,
+      "trait_pass": 16,
+      "helps": 13,
+      "abusive": 1,
+      "mean_len_ratio": 0.42
+    },
+    "E+": {
+      "n": 20,
+      "trait_pass": 18,
+      "helps": 17,
+      "abusive": 0,
+      "mean_len_ratio": 0.99
+    },
+    "E-": {
+      "n": 20,
+      "trait_pass": 19,
+      "helps": 18,
+      "abusive": 0,
+      "mean_len_ratio": 0.63
+    }
+  },
+  "per_prompt": {
+    "A+|k0": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 0.83
+    },
+    "A+|k1": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 0.97
+    },
+    "A+|k2": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 0.61
+    },
+    "A+|k3": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 0.87
+    },
+    "A+|k4": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 1.0
+    },
+    "A-|k0": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 0.43
+    },
+    "A-|k1": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 2,
+      "abusive": 0,
+      "mean_len_ratio": 0.09
+    },
+    "A-|k2": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 0.41
+    },
+    "A-|k3": {
+      "n": 4,
+      "trait_pass": 1,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 0.6
+    },
+    "A-|k4": {
+      "n": 4,
+      "trait_pass": 3,
+      "helps": 2,
+      "abusive": 1,
+      "mean_len_ratio": 0.57
+    },
+    "E+|k0": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 0.94
+    },
+    "E+|k1": {
+      "n": 4,
+      "trait_pass": 3,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 1.0
+    },
+    "E+|k2": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 1.0
+    },
+    "E+|k3": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 1.0
+    },
+    "E+|k4": {
+      "n": 4,
+      "trait_pass": 3,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 1.0
+    },
+    "E-|k0": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 0.37
+    },
+    "E-|k1": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 0.73
+    },
+    "E-|k2": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 3,
+      "abusive": 0,
+      "mean_len_ratio": 0.93
+    },
+    "E-|k3": {
+      "n": 4,
+      "trait_pass": 4,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 0.35
+    },
+    "E-|k4": {
+      "n": 4,
+      "trait_pass": 3,
+      "helps": 4,
+      "abusive": 0,
+      "mean_len_ratio": 0.77
+    }
+  },
+  "usage": {
+    "gpt-6-luna": {
+      "calls": 240,
+      "cache_hits_local": 0,
+      "input_tokens": 94418,
+      "cached_input_tokens": 0,
+      "output_tokens": 10416,
+      "reasoning_tokens": 2822,
+      "failed_parses": 0,
+      "cost_usd": 0.0146
+    }
+  }
+}

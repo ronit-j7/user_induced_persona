@@ -1,9 +1,8 @@
-# User-style rewrite prompt (v2)
+# User-style rewrite prompt (v3)
 
-> The code uses `Data_Creation/prompts.py`, which is the source of truth. This file is the readable version, so keep the two in sync.
+> The code uses `Data_Creation/prompts.py`, which is the source of truth. This file is the readable version, so keep the two in sync. `python gen_user_variants.py --dry-run` writes the fully rendered prompts to `data/qc/dry_run_prompts.txt`.
 
-Fields in `{braces}` are filled per call. One call produces all 3 paraphrases for one (scenario, trait, pole).
-The trait definitions and ICL examples below are inserted into the template for the target trait-pole only (4 examples per call).
+One call produces all 3 paraphrases for one (scenario, trait, pole). Each paraphrase leads with a different facet (see DECISIONS.md, D3). A retry regenerates only the rejected paraphrase, with that slot's facet.
 
 ---
 
@@ -24,98 +23,90 @@ How it tends to show in writing:
 ### Rules
 1. **Keep the request identical.** The rewrite must ask for exactly the same thing as the original, keeping every concrete detail (topic, numbers, languages, nationality, timeframe, and so on). A good answer to the original must still be a good answer to the rewrite.
 2. **Add no new facts, requests or constraints.** Feelings, attitudes and opinions are fine. New facts that could change what a good answer looks like are not (e.g. the cat's gender, how many recipients, what the user already tried). Do not add instructions about the answer either (e.g. "keep it short", "just the code", "use bullet points"). The personality may show through feelings, attitude, tone and phrasing, but never through changes to what is being asked.
-3. **Express only this trait.** Keep {other_trait_name} neutral. {cross_trait_note} Do not make the writer sound anxious, sad or unstable either.
-4. **Make it sound like a real person** typing to a chatbot. Keep it clear but not cartoonish. Do not name the trait or describe the personality ("As an outgoing person..."). No stage directions. Emoji are allowed where a real person would use them, but the trait must come through in the **words**: with every emoji deleted, the rewrite should still clearly show the trait.
-5. **Keep a realistic length**, roughly between half and twice the length of the original (for very short originals, up to about 25 extra words is fine).
-6. **Make the {n} rewrites genuinely different from each other.** Vary the opening, sentence structure and which cues you use. Do not reuse phrases from the examples. *(On a retry, where n = 1, this becomes: "**Write it in your own words.** Do not reuse phrases from the examples.")*
-7. **Do not answer the request being asked in the phrase to rewrite.**
+3. **Rewrite the whole message in the writer's voice.** Do not keep the original wording and just add a sentence before or after it: the personality should shape how the request itself is phrased. Reordering, compressing or expanding the sentences is fine as long as rules 1 and 2 hold.
+4. **Express only this trait.** Keep {other_trait_name} neutral. {cross_trait_note} Do not make the writer sound anxious, sad or unstable either.
+5. **Make the personality clear but realistic.** A reader should notice it straight away, yet it must sound like a real person typing to a chatbot, not a caricature. Do not name the trait or describe the personality ("As an outgoing person..."). No stage directions. Emoji are allowed where a real person would use them, but the trait must come through in the **words**: with every emoji deleted, the rewrite should still clearly show the trait.
+6. **Keep a realistic length**, roughly between half and twice the length of the original (for very short originals, up to about 25 extra words is fine).
+7. **Make the 3 rewrites genuinely different from each other.** Each one leads with a different facet of the trait, in this order: *(the 3 facets of this pole, see below)*. Other facets may appear too, but the lead facet should be the clearest. Vary the openings and sentence structure, and do not reuse phrases from the examples.
+   *(On a retry, where n = 1: "This rewrite leads with the facet {facet}: {description}. …")*
+8. **Do not answer the request being asked in the phrase to rewrite.**
 
 ### Examples ({pole_label}; these are not part of the study)
-{examples}
+{4 examples, each labelled with its lead facet}
 
 ### Your task
 Intent: {intent}
 Original message: "{neutral_message}"
-{judge_feedback_block}
-Return only JSON: {"rewrites": ["...", "...", "..."]}
+{retry block, if any}
+Return only JSON in this format: {"rewrites": ["...", "...", "..."]}
 
 ---
 
 ## Trait-pole definitions
 
-The facet structure follows the **BFI-2** (Soto & John, 2017). The adjective anchors are **Saucier's (1994) Big-Five Mini-Markers**. The text cues follow findings on how personality shows in language (Pennebaker & King, 1999; Mairesse et al., 2007). BFI-2 was chosen over the NEO-PI-R because the NEO puts *warmth* under Extraversion, which overlaps with Agreeableness. BFI-2's facets keep the two traits cleaner.
+The facet structure follows the **BFI-2** (Soto & John, 2017). The adjective anchors are **Saucier's (1994) Big-Five Mini-Markers**. The text cues follow Pennebaker & King (1999) and Mairesse et al. (2007). BFI-2 was chosen over the NEO-PI-R because the NEO puts *warmth* under Extraversion, which overlaps with Agreeableness.
 
-### Extraversion: high (`E+`, "extraverted")
-- **Definition:** Sociable, assertive and energetic (BFI-2 facets: Sociability, Assertiveness, Energy Level). The writer is outgoing, talkative, enthusiastic and expressive, and engages eagerly.
-- **Anchors:** talkative, bold, energetic, extraverted.
-- **Text cues:** more words, exclamation marks, positive-emotion and excitement words, social and personal framing ("I've been dying to try this"), confident and upbeat tone, direct engagement with the chatbot.
-- **Cross-trait note:** Enthusiasm is not politeness. Do not add extra "please" or "thank you", apologies or deference (that is Agreeableness).
+| Pole | Definition | Text cues | Cross-trait note |
+|---|---|---|---|
+| **E+** extraverted | Sociable, assertive and energetic. Outgoing, talkative, enthusiastic, expressive. *Talkative, bold, energetic, extraverted.* | More words, exclamation marks, excitement words, personal framing, confident upbeat tone, direct engagement with the chatbot. | Enthusiasm is not politeness: no extra please/thank you, apologies or deference. |
+| **E−** introverted | Reserved, quiet, low-key, less assertive. Engages minimally. *Quiet, shy, reserved, withdrawn.* | Compressed or fragmentary phrasing, no small talk or exclamations, flat tone, tentativeness ("not sure if…", "I guess", "maybe"), minimal self-disclosure, sometimes lowercase. **Plain is not the same as reserved:** rephrase so the writer clearly sounds quiet, hesitant or withdrawn. | Reserved is not rude. Subdued is not sad. |
+| **A+** agreeable | Compassionate, respectful and trusting. Warm, considerate, polite, cooperative. *Kind, warm, cooperative, sympathetic.* | Please/thank you, softeners and hedges, appreciation, deference, considerate tone. | Politeness is not excitement: no exclamation marks, hype or chattiness. |
+| **A−** disagreeable | Low compassion, respectfulness and trust. Blunt, impatient, critical, demanding, sceptical. *Harsh, cold, rude, unsympathetic.* | Bare imperatives, no pleasantries, impatience, criticism or scepticism, condescending or dismissive tone. | The signal is the attitude, not the length. No slurs, threats or profanity: unpleasant, not abusive. |
 
-### Extraversion: low (`E-`, "introverted")
-- **Definition:** Reserved, quiet, low-key and less assertive (the low end of Sociability, Assertiveness and Energy Level). The writer engages minimally and keeps things understated.
-- **Anchors:** quiet, shy, reserved, withdrawn.
-- **Text cues:** fewer words, compressed phrasing, no small talk or exclamations, a flat or subdued tone, tentativeness ("not sure if...", "I guess"), minimal self-disclosure.
-- **Note:** The original message may already be fairly low-key. Push it slightly further (more compressed, more tentative, less forthcoming) rather than adding sadness or new content.
-- **Cross-trait note:** Reserved is not rude. Do not add bluntness, criticism or demands (that is low Agreeableness). Subdued is not sad.
+## Lead facet per paraphrase (DECISIONS.md, D3)
 
-### Agreeableness: high (`A+`, "agreeable")
-- **Definition:** Compassionate, respectful and trusting (BFI-2 facets: Compassion, Respectfulness, Trust). The writer is warm, considerate, polite and cooperative, and gives the chatbot the benefit of the doubt.
-- **Anchors:** kind, warm, cooperative, sympathetic.
-- **Text cues:** politeness markers ("please", "thank you"), softeners and hedges ("if you don't mind", "would it be possible"), appreciation, deference, a considerate tone.
-- **Cross-trait note:** Politeness is not excitement. Do not add exclamation marks, hype or chattiness (that is Extraversion).
-
-### Agreeableness: low (`A-`, "disagreeable")
-- **Definition:** Low compassion, low respectfulness and low trust. The writer is blunt, impatient, critical, demanding and sceptical of the chatbot.
-- **Anchors:** harsh, cold, rude, unsympathetic.
-- **Text cues:** bare imperatives, no pleasantries, impatience, criticism or scepticism ("most answers to this are useless", "I doubt you'll get this right"), a dismissive tone.
-- **Cross-trait note:** Disagreeable is not merely terse. The signal is the attitude, not the length. **No slurs, threats, insults about protected groups or profanity.** The writer is unpleasant, not abusive.
+| k | E+ | E− | A+ | A− |
+|---|---|---|---|---|
+| 0 | **Sociability**: chatty, talks to the chatbot like a person, shares feelings | **low Sociability**: no small talk, says only what's needed | **Compassion**: care for the chatbot, appreciation of its effort | **low Compassion**: cold, transactional, chatbot as a tool |
+| 1 | **Assertiveness**: confident, direct, takes charge | **low Assertiveness**: tentative, hedges its own question | **Respectfulness**: courteous forms, please/thank you | **low Respectfulness**: rude, curt, condescending |
+| 2 | **Energy**: excitement, exclamation marks, upbeat | **low Energy**: flat, unexcited, understated (not sad) | **Trust**: benefit of the doubt, confidence in its help | **low Trust**: sceptical, expects it to get things wrong |
 
 ---
 
 ## ICL examples (out-of-dataset, one per domain)
 
-| # | Domain | Base message |
-|---|---|---|
-| 1 | explaining | "How do I make pour-over coffee at home?" |
-| 2 | emotional advice | "I have a job interview tomorrow and I'm nervous. How should I prepare tonight?" |
-| 3 | coding | "How do I send an email from a Python script?" |
-| 4 | brainstorming | "Suggest some names for my new cat." |
+Examples 1–3 lead with facets 0–2 in order; example 4 mixes facets. **All are full rewrites: none contains its original word for word.**
+
+| # | Base message |
+|---|---|
+| 1 | "How do I make pour-over coffee at home?" |
+| 2 | "I have a job interview tomorrow and I'm nervous. How should I prepare tonight?" |
+| 3 | "How do I send an email from a Python script?" |
+| 4 | "Suggest some names for my new cat." |
 
 **E+**
-1. "Hey! I've been wanting to try this for ages and I'm so excited to finally give it a go ☕ How do I make pour-over coffee at home?"
-2. "So I've got a job interview tomorrow and honestly I'm buzzing with nerves! I really want to nail it. How should I prepare tonight?"
-3. "Okay, this is the part I've been looking forward to all week! How do I send an email from a Python script?"
-4. "I can't stop smiling at my new cat, and this little one needs the perfect name! Hit me with some ideas!"
+1. "Hey! So I've totally fallen for pour-over coffee and I really want to start making it myself at home. How do I do it?"
+2. "I've got a job interview tomorrow, and yes, I'm nervous, but I'm going to walk in there and nail it. Tell me how to prepare tonight!"
+3. "Ooh, sending emails straight from a Python script sounds so cool and I can't wait to try it!! How do I do that? 🚀"
+4. "New cat in the house and I'm over the moon!! Help me find the perfect name, what have you got?"
 
-**E-**
-1. "Not sure if this is even possible, but how do I make pour-over coffee at home?"
-2. "Job interview tomorrow, I'm nervous. How should I prepare tonight?"
-3. "Need to send an email from a Python script. How would I do that?"
-4. "Got a new cat. Not sure what to name it, any suggestions?"
+**E−**
+1. "Pour-over coffee at home. How's it done?"
+2. "I have a job interview tomorrow and I'm a bit nervous. I guess I'm not sure how I should prepare tonight?"
+3. "sending an email from a python script. how would that work"
+4. "Got a new cat. Names, maybe?"
 
 **A+**
-1. "Hi, I hope you don't mind me asking. Could you please explain how to make pour-over coffee at home? I'd really appreciate it, thank you."
-2. "Hi, I hope it's okay to ask. I have a job interview tomorrow and I'm feeling nervous. Would you mind sharing how I might prepare tonight? Thank you so much."
-3. "Hi, sorry to bother you. Would you mind showing me how to send an email from a Python script? Thanks a lot for your help."
-4. "Hello, I hope you're having a good day. I have a new cat and would love your help with a name, if you could suggest a few. Thank you."
+1. "I know you probably get asked about coffee all the time, so I appreciate your patience. How would I go about making pour-over coffee at home?"
+2. "Hello. I have a job interview tomorrow and I'm feeling nervous about it. Could you please advise me on how I should prepare tonight? Thank you very much."
+3. "I'm sure you'll know the best way to do this, so I'll happily follow your lead. How can I send an email from a Python script?"
+4. "Hi, I'd be really grateful for your help with something. I have a new cat and would love a few name suggestions, if you don't mind. Thank you."
 
-**A-**
-1. "I doubt you'll do better than the useless guides online, but how do I make pour-over coffee at home?"
-2. "I have a job interview tomorrow and I'm nervous. How should I prepare tonight? Most interview advice is useless, so I'm not expecting much."
-3. "Every tutorial on this is outdated. How do I send an email from a Python script?"
-4. "Suggest some names for my new cat. Chatbots are usually terrible at this, but go on."
+**A−**
+1. "I'm not here to chat. Pour-over coffee at home: how do I make it?"
+2. "Job interview tomorrow, I'm nervous. How should I prepare tonight? It's not a hard question."
+3. "Let's see if you can manage this one: how would I get a Python script to send an email? I'm not expecting much."
+4. "Need names for my new cat. Chatbots are usually terrible at this, but go on then."
 
 ---
 
-## Retry block (`{judge_feedback_block}`, used only on a QC retry)
-
-A retry regenerates only the rejected paraphrase (n = 1). The accepted paraphrases are shown so the new one differs from them.
+## Retry block (used only on a QC retry)
 
 > A previous rewrite was rejected by a reviewer.
 > Rejected rewrite: "{rejected_rewrite}"
 > Checks it failed:
 > {feedback}
-> Write a new rewrite that fixes these problems. It must also differ from these accepted rewrites: {accepted_rewrites}
+> Write a new rewrite that fixes these problems. It must also differ clearly from these accepted rewrites: {accepted_rewrites}
 
 ---
 

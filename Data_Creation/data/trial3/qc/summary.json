@@ -1,0 +1,41 @@
+{
+  "cells": 8,
+  "expected_rows": 24,
+  "accepted_rows": 23,
+  "dropped_rows": 1,
+  "incomplete_cells": [
+    "explain_04|A|+"
+  ],
+  "rows_per_trait_pole": {
+    "A+": 11,
+    "A-": 12
+  },
+  "attempts_distribution": {
+    "1": 18,
+    "2": 4,
+    "3": 1
+  },
+  "evaluations": 32,
+  "judged": 32,
+  "fail_rate_per_check": {
+    "C1": 0.0,
+    "C2": 0.0,
+    "C3": 0.0,
+    "C4": 0.0,
+    "L1": 0.031,
+    "L2": 0.062,
+    "R1": 0.0,
+    "R2": 0.0,
+    "R3": 0.0
+  },
+  "trait_forced_choice_fail_rate": 0.031,
+  "code_check_fail_rate": 0.156,
+  "mean_words_by_pole": {
+    "A+": 36.0,
+    "A-": 28.8
+  },
+  "duplicate_user_texts": 0,
+  "cell_errors": [],
+  "manual_check_rows": 2,
+  "seconds": 65.4
+}

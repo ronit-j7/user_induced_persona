@@ -1,0 +1,22 @@
+{
+  "deepseek-flash": {
+    "calls": 17,
+    "cache_hits_local": 0,
+    "input_tokens": 15722,
+    "cached_input_tokens": 7936,
+    "output_tokens": 42856,
+    "reasoning_tokens": 42112,
+    "failed_parses": 0,
+    "cost_usd": 0.0538
+  },
+  "gpt-6-luna": {
+    "calls": 75,
+    "cache_hits_local": 0,
+    "input_tokens": 55931,
+    "cached_input_tokens": 0,
+    "output_tokens": 9716,
+    "reasoning_tokens": 2549,
+    "failed_parses": 0,
+    "cost_usd": 0.0105
+  }
+}

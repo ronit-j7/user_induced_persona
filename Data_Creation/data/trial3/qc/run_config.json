@@ -1,0 +1,44 @@
+{
+  "config": {
+    "rewriter": {
+      "model": "deepseek-flash",
+      "thinking": true,
+      "reasoning_effort": "high",
+      "temperature": 1.0,
+      "max_tokens": 8000
+    },
+    "judge": {
+      "model": "gpt-6-luna",
+      "checklist_effort": "low",
+      "forced_choice_effort": "none"
+    },
+    "n_paraphrases": 3,
+    "max_attempts": 3,
+    "length_ratio": [
+      0.5,
+      2.0
+    ],
+    "length_extra_words": 25,
+    "max_sim_to_original": 0.95,
+    "max_sim_between": 0.9,
+    "manual_check_frac": 0.1,
+    "seed": 0,
+    "qwen_tokenizer": "Qwen/Qwen2.5-7B-Instruct"
+  },
+  "args": {
+    "scenarios": "emo_03,emo_05,explain_04,brainstorm_05",
+    "traits": "A",
+    "poles": "+,-",
+    "workers": 8,
+    "max_attempts": 3,
+    "scenarios_file": "/Users/ronit5/Desktop/Projects/user_induced_persona/Data_Creation/data/scenarios.jsonl",
+    "out": "data/trial3/user_variants.jsonl",
+    "qc_dir": "data/trial3/qc",
+    "cache_dir": "/Users/ronit5/Desktop/Projects/user_induced_persona/Data_Creation/.cache/llm",
+    "no_cache": false,
+    "no_tokenizer": false,
+    "dry_run": false
+  },
+  "git": "a1419f245f121bdffa1dda232cd9d04c9aa5a0b0",
+  "time": "2026-10-01 00:13:10"
+}

@@ -59,6 +59,11 @@ def n_words(text):
     return len(text.split())
 
 
+def core(text):
+    """Lowercase words only, for checking whether the original survives word for word."""
+    return " ".join(re.findall(r"[a-z0-9']+", text.lower()))
+
+
 def similarity(a, b):
     return difflib.SequenceMatcher(None, norm(a), norm(b)).ratio()
 
@@ -119,6 +124,9 @@ def code_checks(text, u0, others, cfg):
     if w < lo * w0 or w > max_words:
         fails.append(f"- Length: the rewrite has {w} words and the original has {w0}; "
                      f"keep it between {int(lo * w0 + 0.999)} and {int(max_words)} words.")
+    if core(u0) in core(text):
+        fails.append("- Verbatim: the rewrite keeps the original message word for word and only adds to it; "
+                     "rephrase the request itself in the writer's voice.")
     if similarity(text, u0) > cfg["max_sim_to_original"]:
         fails.append("- Unchanged: the rewrite is almost identical to the original; make the style visible.")
         fatal = True
@@ -145,15 +153,18 @@ def evaluate(text, scn, trait, pole, accepted_others, judge, cfg):
         if checklist[cid]["answer"] != "yes":
             feedback.append(f"- {cid} ({P.CHECK_LABELS[cid]}): {checklist[cid]['reason']}")
 
-    # Rewrite as B, then as A. It passes only if chosen in both orders.
-    c1 = judge.forced_choice(P.forced_choice_messages(trait, pole, u0, text), P.FORCED_SCHEMA)
-    c2 = judge.forced_choice(P.forced_choice_messages(trait, pole, text, u0), P.FORCED_SCHEMA)
-    trait_pass = (c1 == "B") and (c2 == "A")
+    # One question per trait, asked from the high end. Rewrite as B, then as A.
+    # + pole: the rewrite must be chosen both times; - pole: the original must be chosen both times.
+    c1 = judge.forced_choice(P.forced_choice_messages(trait, u0, text), P.FORCED_SCHEMA)
+    c2 = judge.forced_choice(P.forced_choice_messages(trait, text, u0), P.FORCED_SCHEMA)
+    want = ("B", "A") if pole == "+" else ("A", "B")
+    trait_pass = (c1, c2) == want
     result["forced_choice"] = {"rewrite_as_B": c1, "rewrite_as_A": c2, "passed": trait_pass}
     if not trait_pass:
-        adj = P.POLES[(trait, pole)]["judge_adjectives"]
-        feedback.append(f"- Trait: in a side-by-side comparison, the rewrite did not come across as more {adj} "
-                        f"than the original. Make the style clearer.")
+        adj = P.TRAIT_JUDGE[trait]["adjectives"]
+        direction = "more" if pole == "+" else "less"
+        feedback.append(f"- Trait: in a side-by-side comparison, the rewrite did not come across as {direction} "
+                        f"{adj} than the original. Make the {P.POLES[(trait, pole)]['label']} style clearer.")
 
     result.update(passed=not feedback, feedback="\n".join(feedback))
     return result
@@ -187,7 +198,8 @@ def run_cell(scn, trait, pole, rewriter, judge, cfg, log):
         for slot in failed:
             rejected, feedback = last_fail[slot]
             others = [a["text"] for a in accepted if a is not None]
-            msgs = P.rewrite_messages(trait, pole, scn["intent"], scn["user"], n=1, rejected_rewrite=rejected,
+            msgs = P.rewrite_messages(trait, pole, scn["intent"], scn["user"], n=1, facet_index=slot,
+                                      rejected_rewrite=rejected,
                                       feedback=feedback, accepted_rewrites=others)
             pending.append((slot, rewriter.rewrite(msgs, 1)[0]))
 
@@ -195,6 +207,18 @@ def run_cell(scn, trait, pole, rewriter, judge, cfg, log):
                 "last_text": last_fail[s][0], "last_feedback": last_fail[s][1]}
                for s in range(n) if accepted[s] is None]
     return accepted, dropped
+
+
+def run_cell_with_retry(scn, trait, pole, rewriter, judge, cfg, log, tries=2):
+    """Retry a cell once if it raises (e.g. an API error that outlasted the SDK's own retries).
+    Calls that already succeeded come from the disk cache, so the retry is almost free."""
+    for i in range(tries):
+        try:
+            return run_cell(scn, trait, pole, rewriter, judge, cfg, log)
+        except Exception as e:
+            if i == tries - 1:
+                raise
+            print(f"[retry] {scn['scenario']}|{trait}|{pole} raised {e.__class__.__name__}: {e}; retrying once")
 
 
 # ---------------------------------------------------------------------------
@@ -211,7 +235,7 @@ def make_row(scn, trait, pole, k, acc, count_tokens):
         "system": P.NEUTRAL_SYSTEM,
         "user": acc["text"],
         "forced_response": scn.get("forced_response"),
-        "qc": {"passed": True, "attempts": acc["attempts"],
+        "qc": {"passed": True, "attempts": acc["attempts"], "facet": P.FACETS[(trait, pole)][k][0],
                "forced_choice": {"rewrite_as_B": fc["rewrite_as_B"], "rewrite_as_A": fc["rewrite_as_A"]}},
         "user_len_tokens": count_tokens(acc["text"]),
     }
@@ -232,9 +256,12 @@ def export_manual_check(rows, scen_by_id, qc_dir, frac, seed):
                       **{cid: "" for cid in P.CHECK_IDS},
                       "message_A": a, "message_B": b,
                       "forced_choice_question": f"Which writer comes across as more "
-                                                f"{P.POLES[(r['trait'], r['user_pole'])]['judge_adjectives']}?",
+                                                f"{P.TRAIT_JUDGE[r['trait']]['adjectives']}?",
                       "choice_A_or_B": "", "notes": ""})
-        key.append({"id": r["id"], "rewrite_is": "A" if rewrite_first else "B"})
+        rewrite_letter = "A" if rewrite_first else "B"
+        original_letter = "B" if rewrite_first else "A"
+        key.append({"id": r["id"], "rewrite_is": rewrite_letter,
+                    "expected_choice": rewrite_letter if r["user_pole"] == "+" else original_letter})
     for name, data in (("manual_check.csv", sheet), ("manual_check_key.csv", key)):
         if not data:
             continue
@@ -293,11 +320,11 @@ def dry_run(cells, cfg, qc_dir):
     scn0, trait0, pole0 = cells[0]
     samples = {
         "rewrite": P.rewrite_messages(trait0, pole0, scn0["intent"], scn0["user"], n=cfg["n_paraphrases"]),
-        "rewrite_retry": P.rewrite_messages(trait0, pole0, scn0["intent"], scn0["user"], n=1,
+        "rewrite_retry": P.rewrite_messages(trait0, pole0, scn0["intent"], scn0["user"], n=1, facet_index=0,
                                             rejected_rewrite="<rejected>", feedback="- C3 (added a new fact): ...",
                                             accepted_rewrites=["<accepted 1>", "<accepted 2>"]),
         "checklist": P.checklist_messages(trait0, scn0["intent"], scn0["user"], "<variant>"),
-        "forced_choice": P.forced_choice_messages(trait0, pole0, scn0["user"], "<variant>"),
+        "forced_choice": P.forced_choice_messages(trait0, scn0["user"], "<variant>"),
     }
     chars = {k: sum(len(m["content"]) for m in v) for k, v in samples.items()}
     qc_dir.mkdir(parents=True, exist_ok=True)
@@ -372,7 +399,7 @@ def main(argv=None, rewriter=None, judge=None):
     t0 = time.time()
     results, errors = {}, []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {pool.submit(run_cell, s, t, p, rewriter, judge, cfg, log): (s["scenario"], t, p)
+        futures = {pool.submit(run_cell_with_retry, s, t, p, rewriter, judge, cfg, log): (s["scenario"], t, p)
                    for s, t, p in cells}
         for i, fut in enumerate(as_completed(futures), 1):
             key = futures[fut]

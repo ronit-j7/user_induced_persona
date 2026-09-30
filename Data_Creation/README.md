@@ -14,9 +14,11 @@ This folder builds the dataset. So far that covers two things:
 | `prompts/*.md` | Readable versions of the prompts, for review. Keep them in sync with `prompts.py`. |
 | `prompts/sys_prompts.json` | The 20 system prompts for the assigned-persona set (5 per trait-pole, written in + / − pairs). |
 | `llm.py` | API clients: DeepSeek (rewriter) and OpenAI (judge), plus the disk cache and token/cost tracking. |
-| `gen_user_variants.py` | The pipeline. Run this. |
+| `gen_user_variants.py` | The user-variant pipeline (DeepSeek + judge). |
+| `build_sets.py` | Assembles `sys_twins.jsonl` (400), `neutral.jsonl` (20) and `factorial.jsonl` (720) from existing files. No API calls. |
 | `tests/smoke_test.py` | The full pipeline against fake APIs. No keys needed, no cost. |
 | `GLOSSARY.md` | What "pole", "sys twin", "u0" and so on mean. |
+| `DECISIONS.md` | Methodology decisions and why they were made. Items marked **REVIEW** get revisited before the paper. |
 
 ## Forced responses (r_b)
 
@@ -35,11 +37,12 @@ HF_HUB_OFFLINE=1 python gen_forced_responses.py --in scenarios.jsonl --out scena
 
 ```
 for each scenario × trait (E, A) × pole (+, −):            80 cells
-    DeepSeek writes 3 paraphrases in one call
+    DeepSeek writes 3 paraphrases in one call, each led by a different facet of the trait
     for each paraphrase:
-        1. code checks    length, unchanged-from-original, duplicate
+        1. code checks    length, verbatim copy of the original, near-duplicate
         2. checklist      judge answers 9 yes/no questions (content, style boundaries, realism)
-        3. forced choice  "which sounds more <pole>?" original vs rewrite, asked in both orders
+        3. forced choice  "which writer is more outgoing/warm?" original vs rewrite, both orders
+                          (+ rewrite must win; − rewrite must lose)
         → accepted if everything passes
         → otherwise regenerated alone, with feedback listing every failed check
           (up to 3 attempts in total, then dropped and logged)
@@ -70,6 +73,9 @@ Useful flags: `--traits E,A` · `--poles +,-` · `--workers 8` · `--max-attempt
 | Path | Contents |
 |---|---|
 | `data/user_variants.jsonl` | Accepted rows in the shared team schema. `id` looks like `code_01\|U\|E\|+\|k0`. |
+| `data/sys_twins.jsonl` | u0 + one of the 5 persona system prompts per trait-pole. `id` looks like `code_01\|S\|E\|-\|k2`. |
+| `data/neutral.jsonl` | u0 + the neutral system prompt, one row per scenario. `id` looks like `code_01\|N\|_\|0\|k0` (`trait` is null). |
+| `data/factorial.jsonl` | Both traits: system {+, −, none} × user {+, −}, with system prompt k paired with user paraphrase k. `id` looks like `code_01\|F\|E\|S+U-\|k1`. |
 | `data/qc/attempts.jsonl` | Every evaluated rewrite, with all judge answers, reasons and feedback, including failures. |
 | `data/qc/dropped.jsonl` | Paraphrases that failed 3 attempts, with their last text and feedback. |
 | `data/qc/summary.json` | Rows per pole, fail rate per check, attempts distribution, mean length per pole, duplicates. |
@@ -84,3 +90,5 @@ Useful flags: `--traits E,A` · `--poles +,-` · `--workers 8` · `--max-attempt
 - **Length rule:** a rewrite must be between 0.5× and 2× the original's word count. Short originals may grow by up to 25 words.
 - **Missing rows are expected:** a dropped paraphrase leaves its cell with fewer than 3 rows. `summary.json` lists the incomplete cells.
 - **Settings** (models, reasoning effort, thresholds) live in `CONFIG` at the top of `gen_user_variants.py`.
+- **Paraphrase indices:** `user_paraphrase` / `sys_paraphrase` is 0 when that side is neutral (the plan's convention), so **always filter on `set` before joining across files**.
+- **`forced_response` is filled in on every row,** including factorial rows. Ignore it when free-generating.

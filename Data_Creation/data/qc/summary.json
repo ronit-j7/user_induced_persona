@@ -1,0 +1,45 @@
+{
+  "cells": 80,
+  "expected_rows": 240,
+  "accepted_rows": 240,
+  "dropped_rows": 0,
+  "incomplete_cells": [],
+  "rows_per_trait_pole": {
+    "E+": 60,
+    "E-": 60,
+    "A+": 60,
+    "A-": 60
+  },
+  "attempts_distribution": {
+    "1": 143,
+    "2": 82,
+    "3": 10,
+    "4": 5,
+    "5": 0
+  },
+  "evaluations": 357,
+  "judged": 356,
+  "fail_rate_per_check": {
+    "C1": 0.0,
+    "C2": 0.003,
+    "C3": 0.028,
+    "C4": 0.02,
+    "L1": 0.051,
+    "L2": 0.0,
+    "R1": 0.0,
+    "R2": 0.0,
+    "R3": 0.003
+  },
+  "trait_forced_choice_fail_rate": 0.039,
+  "code_check_fail_rate": 0.213,
+  "mean_words_by_pole": {
+    "E+": 29.3,
+    "E-": 19.7,
+    "A+": 33.5,
+    "A-": 23.1
+  },
+  "duplicate_user_texts": 0,
+  "cell_errors": [],
+  "manual_check_rows": 24,
+  "seconds": 24.2
+}
