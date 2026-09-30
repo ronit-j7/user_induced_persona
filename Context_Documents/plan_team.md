@@ -24,14 +24,15 @@
 - **QC:** an LLM judge checks content preservation and trait realization; failures are regenerated. Hand-check about 10% of items.
 - **Output:** JSONL files in one agreed schema (see the agent plan). **This blocks everything else, so ship a first slice early** (5 scenarios, 1 trait).
 
-## Workstream 2: SMH Experiments & Reproducibility
+## Workstream 2: SMH Experiments & Implementation Validation
 **Owner(s):** ______
 
-- Run Izawa et al.'s repo on Qwen. **Reproduce** SMHs at `layers[19]`, heads `[2, 4, 27]` (the paper's numbering is 1-indexed).
-- Build our own activation-extraction hooks and **match their numbers** on one trait. This validates our code.
+- **Scope decision (2026-10-01):** we are **not running the original humorous reproduction or replaying its judged dataset**. These are out of scope, not pending WS2 completion gates. We retain the published Qwen SMHs at `layers[19]`, heads `[2, 4, 27]` as reference candidates (the paper's numbering is 1-indexed).
+- Build our own activation-extraction hooks and **compare them with independently executed original reference functions on identical project inputs**. Report the tested sample, activation errors, and head-score agreement. This validates implementation behavior, not reproduction of the original paper's experiment.
 - Rerun head localization with **Big Five system prompts** (our twin set). Do the SMHs survive?
 - Define the **control head groups** (random 3 heads in the same layer, highest-norm 3 heads).
-- **Output:** a head-score heatmap for assigned persona, a reproduction check, and a verified extraction module other workstreams can reuse.
+- **Output:** assigned-persona head-score heatmaps, an implementation-agreement report, saved control groups, and a verified extraction module other workstreams can reuse.
+- **Reporting boundary:** say we validated extraction against the reference implementation and independently assessed the reported SMHs on E/A twins; do not claim original-paper reproduction. No judge calls are required for this WS2 validation. WS1 QC and WS3 behavioral judging remain in scope.
 
 ## Workstream 3: User-Induced Experiments on Qwen
 **Owner(s):** ______
@@ -47,12 +48,12 @@
 ## Dependencies
 
 ```
-Data (slice 1) ──► WS2 reproduction + twin-set heads ──► WS3 comparison
+Data (slice 1) ──► WS2 validation + twin-set heads ──► WS3 comparison
       │                         ▲
       └──► WS3 mirroring check  └── shared extraction code (WS2 owns)
 ```
 
-- WS2's reproduction can start **immediately**, since it uses Izawa's data.
+- WS2 validation and assigned localization use project inputs; neither requires original humorous CSVs, saved upstream vectors, or judge credentials.
 - WS3's mirroring check only needs data plus generation, so it can run in **parallel** with WS2.
 
 ## Design fixes we're adopting (vs. the proposal)
@@ -71,8 +72,8 @@ Data (slice 1) ──► WS2 reproduction + twin-set heads ──► WS3 compari
 ## Mid-sub deliverables checklist
 
 - [ ] Dataset slice + QC stats
-- [ ] SMH reproduction on Qwen
-- [ ] Assigned-persona head heatmap (Big Five)
+- [x] Reference-function implementation agreement on full Qwen (one E positive/negative pair; not original-paper reproduction)
+- [x] Assigned-persona head heatmaps (E/A), reported SMH ranks, and saved control groups
 - [ ] User-style head heatmap + comparison table
 - [ ] Behavioral mirroring result
 - [ ] (stretch) factorial cosine / SMH ablation
