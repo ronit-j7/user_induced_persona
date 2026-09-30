@@ -1,3 +1,11 @@
 Claude.md
 GLOSSARY.md
 Data_Creation/tests
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+results/
+acts/
+*.log
