@@ -1,0 +1,318 @@
+{
+  "status": "complete",
+  "trait": "A",
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "response_tokens": 150,
+  "rows": 420,
+  "new_forward_rows": 200,
+  "reused_rows": 220,
+  "reused_arrays_bit_identical": {
+    "first": true,
+    "resp": true,
+    "user": true
+  },
+  "reference_validation": "REUSED_UNCHANGED",
+  "paper_humorous_reproduction": "OUT_OF_SCOPE",
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "max_gpu_allocated_bytes": 15401726464,
+  "date": "2026-10-01",
+  "refresh_output": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws2-refresh/A-system-prompts-2026-10-01-retry",
+  "refresh_manifest_sha256": "fe765efe95c1df70297b65ec2325ceda0d2089a3714e4a859010939a17527964",
+  "combined_activation_bundle": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws2-refresh/A-system-prompts-2026-10-01-retry/activations",
+  "combined_activation_manifest_sha256": "a29014a2b7bd21ec69f41c8ed1529fc3f7e1d1e6719df83012ecca67f5f0558d",
+  "sys_prompts_sha256": "8b39b86ec6383201ce3b1a749da1dc5954721add3146853688e44cbd6b26ecfe",
+  "scenarios_sha256": "9765693a29b9ed23b7b43d2d0be6a614f61d28c749fa74e74326fd0ab632a273",
+  "all_current_prompts_verified": true,
+  "neutral_controls_unchanged": true,
+  "tests_passed": 20,
+  "tests_skipped": 0,
+  "A_metrics": {
+    "first": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 688,
+      "smh_ranks_in_layer": {
+        "2": 2,
+        "4": 3,
+        "27": 1
+      },
+      "controls": {
+        "layer": 19,
+        "smh": [
+          2,
+          4,
+          27
+        ],
+        "top_norm": [
+          0,
+          2,
+          17
+        ],
+        "random": [
+          [
+            14,
+            17,
+            22
+          ],
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            14,
+            16,
+            24
+          ],
+          [
+            15,
+            17,
+            18
+          ],
+          [
+            7,
+            18,
+            22
+          ]
+        ],
+        "mean_neutral_head_norms": [
+          10.051287651062012,
+          2.2396645545959473,
+          8.99416732788086,
+          1.9936116933822632,
+          2.87290620803833,
+          3.9382338523864746,
+          5.178341388702393,
+          2.8161840438842773,
+          1.3630515336990356,
+          1.1826345920562744,
+          1.8369724750518799,
+          3.13765287399292,
+          1.268066644668579,
+          2.094123363494873,
+          5.399839401245117,
+          5.027970790863037,
+          4.125744819641113,
+          7.368466854095459,
+          3.161707639694214,
+          6.433102607727051,
+          4.548734188079834,
+          2.4569666385650635,
+          3.9962737560272217,
+          6.730062961578369,
+          5.246007442474365,
+          2.640535831451416,
+          3.631070375442505,
+          3.907681941986084
+        ],
+        "neutral_count": 20,
+        "seed": 0
+      },
+      "previous_fdr_significant": 685,
+      "max_raw_score_change": 114.24081420898438,
+      "localization_path": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws2-refresh/A-system-prompts-2026-10-01-retry/A-assigned-first",
+      "localization_manifest_sha256": "e3a2b6906c476c725877a9b34f864357a93325c9e8113911e3bfb9963f171830"
+    },
+    "resp": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 703,
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      },
+      "controls": {
+        "layer": 19,
+        "smh": [
+          2,
+          4,
+          27
+        ],
+        "top_norm": [
+          0,
+          2,
+          17
+        ],
+        "random": [
+          [
+            14,
+            17,
+            22
+          ],
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            14,
+            16,
+            24
+          ],
+          [
+            15,
+            17,
+            18
+          ],
+          [
+            7,
+            18,
+            22
+          ]
+        ],
+        "mean_neutral_head_norms": [
+          10.051287651062012,
+          2.2396645545959473,
+          8.99416732788086,
+          1.9936116933822632,
+          2.87290620803833,
+          3.9382338523864746,
+          5.178341388702393,
+          2.8161840438842773,
+          1.3630515336990356,
+          1.1826345920562744,
+          1.8369724750518799,
+          3.13765287399292,
+          1.268066644668579,
+          2.094123363494873,
+          5.399839401245117,
+          5.027970790863037,
+          4.125744819641113,
+          7.368466854095459,
+          3.161707639694214,
+          6.433102607727051,
+          4.548734188079834,
+          2.4569666385650635,
+          3.9962737560272217,
+          6.730062961578369,
+          5.246007442474365,
+          2.640535831451416,
+          3.631070375442505,
+          3.907681941986084
+        ],
+        "neutral_count": 20,
+        "seed": 0
+      },
+      "previous_fdr_significant": 703,
+      "max_raw_score_change": 5.584951400756836,
+      "localization_path": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws2-refresh/A-system-prompts-2026-10-01-retry/A-assigned-resp",
+      "localization_manifest_sha256": "22fc90993c645c67f6349a425d40d288bc6213898ebdee6182f6c571091b3d3f"
+    },
+    "user": {
+      "n_pairs": 100,
+      "n_scenarios": 20,
+      "permutations": 19999,
+      "fdr_significant": 722,
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      },
+      "controls": {
+        "layer": 19,
+        "smh": [
+          2,
+          4,
+          27
+        ],
+        "top_norm": [
+          0,
+          2,
+          17
+        ],
+        "random": [
+          [
+            14,
+            17,
+            22
+          ],
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            14,
+            16,
+            24
+          ],
+          [
+            15,
+            17,
+            18
+          ],
+          [
+            7,
+            18,
+            22
+          ]
+        ],
+        "mean_neutral_head_norms": [
+          10.051287651062012,
+          2.2396645545959473,
+          8.99416732788086,
+          1.9936116933822632,
+          2.87290620803833,
+          3.9382338523864746,
+          5.178341388702393,
+          2.8161840438842773,
+          1.3630515336990356,
+          1.1826345920562744,
+          1.8369724750518799,
+          3.13765287399292,
+          1.268066644668579,
+          2.094123363494873,
+          5.399839401245117,
+          5.027970790863037,
+          4.125744819641113,
+          7.368466854095459,
+          3.161707639694214,
+          6.433102607727051,
+          4.548734188079834,
+          2.4569666385650635,
+          3.9962737560272217,
+          6.730062961578369,
+          5.246007442474365,
+          2.640535831451416,
+          3.631070375442505,
+          3.907681941986084
+        ],
+        "neutral_count": 20,
+        "seed": 0
+      },
+      "previous_fdr_significant": 723,
+      "max_raw_score_change": 13.511731147766113,
+      "localization_path": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws2-refresh/A-system-prompts-2026-10-01-retry/A-assigned-user",
+      "localization_manifest_sha256": "e6f0f4997e44dca4031d0cb6c0731944775d639218b94b8e80bc43191cf1c42c"
+    }
+  },
+  "E_reports": {
+    "first": {
+      "path": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws1-verification/full-qwen-gpu-retry/pipeline/E-assigned-first",
+      "manifest_sha256": "4cf0d1537e75b3594f084d58f18c2a81dda8a43c020416b6b92ac5793da1b9ec",
+      "status": "REUSED_UNCHANGED"
+    },
+    "resp": {
+      "path": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws1-verification/full-qwen-gpu-retry/pipeline/E-assigned-resp",
+      "manifest_sha256": "60845cc41d45cae43dcad89272eab8f66071b7a0859cfab9795df9381812b01f",
+      "status": "REUSED_UNCHANGED"
+    },
+    "user": {
+      "path": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws1-verification/full-qwen-gpu-retry/pipeline/E-assigned-user",
+      "manifest_sha256": "dc674675a99bd7161baaadaa9660e849071016d05f648f403732d9ee28cd9b2d",
+      "status": "REUSED_UNCHANGED"
+    }
+  },
+  "reference_agreement": "/media/gaurav/Data21/eshaan/results/user_induced_persona/ws1-verification/full-qwen-gpu-retry/reference-agreement.json",
+  "runtime_packages": {
+    "numpy": "2.1.2",
+    "torch": "2.4.1",
+    "transformers": "4.56.1",
+    "accelerate": "1.10.1",
+    "matplotlib": "3.11.2"
+  }
+}

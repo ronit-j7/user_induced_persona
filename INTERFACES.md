@@ -85,8 +85,8 @@ localization they must share those keys, the same `system`, and response.
 WS1 now provides 20 scenarios with complete Qwen-generated fixed responses
 and 20 authored system prompts. The preparation step creates 420 rows:
 20 neutral plus 400 system twins (100 +/- pairs per trait). It preserves the
-exact canonical response for each scenario. Current user variants are still
-absent. Once WS1 supplies them, add `--user-variants`; the expected full
+exact canonical response for each scenario. WS1 now supplies user variants in
+`Data_Creation/data/user_variants.jsonl`. Add `--user-variants` for WS3; the expected full
 dataset is 660 rows with 3 user paraphrases per pole and 5 system paraphrases.
 
 Build and run the available assigned dataset:
@@ -99,7 +99,7 @@ bash Workstream_2/scripts/uv_hdd.sh run ws2 run --data results/exp1/prepared/row
   --config Workstream_2/configs/qwen.json --out results/exp1/assigned
 ```
 
-After real user variants are generated:
+For the generated user variants (WS3):
 
 ```bash
 bash Workstream_2/scripts/uv_hdd.sh run ws2 prepare-data \
@@ -124,8 +124,9 @@ bash Workstream_2/scripts/uv_hdd.sh run python -m Workstream_2.scripts.verify_ws
 ```
 
 Use `--model tiny` for random-weight integration testing. Reference function
-agreement on WS1 stimuli and paper-head recovery on judged humorous data are
-separate checks. The verification script does not claim the latter.
+agreement on WS1 stimuli is the WS2 implementation gate. The original humorous
+experiment and its judged-data replay are OUT_OF_SCOPE under the 2026-10-01
+team decision; no humorous CSVs, vectors or judge credentials are required.
 
 The current 420-row assigned dataset completed full Qwen verification on the
 RTX 3090. All six E/A/readout analyses completed, peak GPU allocation was
@@ -230,71 +231,52 @@ propagated through all downstream bundles. Older version 1 bundles without a
 response window describe full-response readouts. Do not join bundles with
 different windows or model revisions.
 
-## Independent reproduction gate
+## Reference implementation agreement and current scope
 
-The vendored, unmodified reference is in `Workstream_2/reference_repos/style-modulation-head`
-(commit recorded in `Workstream_2/reference_repos/UPSTREAM.md`). Use its documented `uv`
-environment, CSV generation, vector extraction, and head analysis on
-`humorous`; preserve its outputs and model revision. It uses joint
-`prompt + answer` tokenization and separately counts prompt tokens. Our
-`reproduce` command deliberately replays that convention only for the upstream
-comparison. Project datasets always use `encode` above.
+The 2026-10-01 team decision in `Context_Documents/plan_team.md` and
+`Context_Documents/plan_agent.md` excludes the original humorous generate/judge
+experiment and judged-data replay. Those are OUT_OF_SCOPE, not missing WS2
+completion gates. No judge calls or saved humorous vectors are required.
 
-From `Workstream_2/reference_repos/style-modulation-head`, with its own Python 3.10 `uv`
-environment and judge credentials, the direct upstream commands are:
+`reference_check.verify_reference_extraction` executes the unmodified imported
+hooks and score functions independently on identical project inputs. The
+recorded full-Qwen check used one E positive/negative pair: captured vectors
+matched exactly, score Spearman was 1.0, and max raw-score error was 1.34e-5.
+This is reference implementation validation, not original-paper reproduction.
+The reference uses joint prompt+answer tokenization for this check; project
+extraction continues to use the separately tokenized response convention above.
 
-```bash
-uv sync
-uv run python src/eval/eval_persona.py \
-  --model Qwen/Qwen2.5-7B-Instruct --trait humorous \
-  --output_path data/eval_persona_extract/Qwen/Qwen2.5-7B-Instruct/humorous_pos_instruct.csv \
-  --persona_instruction_type pos --assistant_name humorous \
-  --judge_model gpt-4.1-mini-2025-04-14 --version extract
-uv run python src/eval/eval_persona.py \
-  --model Qwen/Qwen2.5-7B-Instruct --trait humorous \
-  --output_path data/eval_persona_extract/Qwen/Qwen2.5-7B-Instruct/humorous_neg_instruct.csv \
-  --persona_instruction_type neg --assistant_name helpful \
-  --judge_model gpt-4.1-mini-2025-04-14 --version extract
-uv run python src/generate_vec/generate_vec_head.py \
-  --model_name Qwen/Qwen2.5-7B-Instruct \
-  --pos_path data/eval_persona_extract/Qwen/Qwen2.5-7B-Instruct/humorous_pos_instruct.csv \
-  --neg_path data/eval_persona_extract/Qwen/Qwen2.5-7B-Instruct/humorous_neg_instruct.csv \
-  --trait humorous --save_dir data/persona_vectors/Qwen/Qwen2.5-7B-Instruct
-uv run python src/generate_vec/generate_vec_block.py \
-  --model_name Qwen/Qwen2.5-7B-Instruct \
-  --pos_path data/eval_persona_extract/Qwen/Qwen2.5-7B-Instruct/humorous_pos_instruct.csv \
-  --neg_path data/eval_persona_extract/Qwen/Qwen2.5-7B-Instruct/humorous_neg_instruct.csv \
-  --trait humorous --save_dir data/persona_vectors/Qwen/Qwen2.5-7B-Instruct
-uv run python -m src.head_analysis.head_contribution.main analyze_trait \
-  --model_name Qwen/Qwen2.5-7B-Instruct \
-  --vector_dir data/persona_vectors/Qwen/Qwen2.5-7B-Instruct \
-  --trait humorous --vector_type response_avg
-```
+The published candidates remain layer 19 heads [2, 4, 27], zero indexed.
+Localize all 784 heads independently on E/A system twins; report their ranks,
+significance, heatmaps and controls without requiring those heads to dominate.
+The original CSV replay adapter remains an optional legacy utility in `repro.py`
+and the `reproduce` command, not part of the current workstream run.
 
-The upstream `scripts/generate_all_vectors.sh` in this imported commit refers
-to a missing `src/save_model_attn_config.py`, so use the direct commands above.
-`generate_vec_head.py` saves the attention config itself. The reference source
-is preserved as imported; this project does not patch it silently.
+## Refresh after system-prompt edits
+
+Compare exact model inputs against the previous completed activation index.
+Changing a system prompt invalidates every corresponding system-twin row's
+first/response/user readouts. Unchanged E and neutral rows can be reused;
+unchanged neutral first readouts preserve the previously selected controls.
 
 ```bash
-uv run ws2 reproduce \
-  --pos-csv /path/to/humorous_pos_instruct.csv \
-  --neg-csv /path/to/humorous_neg_instruct.csv \
-  --upstream-vectors /path/to/upstream/persona_vectors \
-  --trait humorous --config Workstream_2/configs/qwen.json \
-  --acts-out results/exp0/humorous-replay-acts \
-  --report-out results/exp0/humorous-repro
+bash Workstream_2/scripts/uv_hdd.sh run python -m Workstream_2.scripts.refresh_assigned \
+  --previous results/ws1-verification/full-qwen-gpu-retry/pipeline/activations \
+  --trait A --out results/ws2-refresh/A-system-prompts-next
 ```
 
-The adapter uses the upstream row-paired filter (`positive trait >= 50`,
-`negative trait < 50`, both coherence >= 50). It compares our independently
-captured pre-o_proj and attention-output response vectors with upstream's
-saved vector files and applies the same weights to both. `repro.json` records
-both top-3 lists, layer-19 score Spearman, and vector RMSE. Claim the gate
-only if the upstream top-3 is `{2,4,27}`, our top-3 matches it, and
-rho > 0.95. These checks have not yet run on the full Qwen checkpoint.
+This compares stable IDs and all input fields, rejects any change outside the
+selected trait's system text, verifies the previous manifest/model settings,
+and extracts only changed rows. It produces a combined activation bundle with
+per-row reuse provenance, verifies reused arrays are bit identical, and runs
+only the selected trait's three assigned readouts. Each run records previous
+and changed bundle hashes. Use a new output directory for every run.
+E localization and reference validation reports remain in their original
+completed directories; they are not recomputed by this refresh command.
 
-The upstream source's current `normalize_matrix` z-scores raw scores despite
-its signed-log description. Both normalizations are saved in our results;
-upstream replay comparison uses raw scores. Reproduction and Big Five twins
-use different data and must be reported separately.
+The 2026-10-01 A refresh is complete at
+`results/ws2-refresh/A-system-prompts-2026-10-01-retry/`. It supersedes the
+September 30 A reports; retain E and reference agreement from the earlier run.
+The combined activation bundle has the latest 420 assigned/neutral rows.
+Use `Workstream_2/docs/assigned_refresh_2026-10-01.json` for current artifact
+paths, hashes, readout-specific ranks and unchanged-control verification.

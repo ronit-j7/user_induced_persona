@@ -9,7 +9,9 @@ contract. [Workstream 2 plan](Workstream_2/docs/workstream_2_implementation.md)
 tracks the implementation and remaining empirical gates. The current WS1 data
 contain 20 scenarios with complete fixed Qwen responses and 20 authored system
 prompts. `ws2 prepare-data` turns these into 420 neutral/system-twin rows.
-User-style variants are pending; add them with `--user-variants` when generated.
+WS1 user-style variants are available; add them with `--user-variants` for WS3.
+WS2 scope is reference-function validation and E/A assigned localization; the
+original humorous reproduction is excluded.
 
 Start with `uv sync --locked`, then run the commands in `INTERFACES.md`.
 The model and test groups are enabled by default. On this machine use

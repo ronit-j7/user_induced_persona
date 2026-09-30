@@ -83,7 +83,7 @@ def main():
                   if model.device.type == "cuda" else None,
               "max_gpu_allocated_bytes": torch.cuda.max_memory_allocated(model.device)
                   if model.device.type == "cuda" else None,
-              "paper_humorous_reproduction": "NOT_RUN"}
+              "paper_humorous_reproduction": "OUT_OF_SCOPE"}
     write_json(out / "verification.json", report)
     finish_run(out, {"kind": "ws1_integration_verification", "is_sample": False,
                      "is_synthetic": config.is_synthetic})

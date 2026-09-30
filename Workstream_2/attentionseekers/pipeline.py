@@ -53,7 +53,7 @@ def run_pipeline(model, tokenizer, config, rows, out, *, data_path=None, traits=
               "response_tokens": config.response_tokens,
               "activation_manifest_sha256": sha256(acts / "manifest.json"),
               "coverage": coverage, "localizations": {}, "comparisons": {},
-              "upstream_reproduction": "NOT_RUN"}
+              "upstream_reproduction": "OUT_OF_SCOPE"}
     for trait in traits:
         for readout in readouts:
             locations = {}

@@ -242,6 +242,7 @@ attentionseekers/
 - **Step 3.** Define and save layer-19 controls: five seeded random 3-head groups and the highest-norm 3 heads selected from neutral `first` activations.
 - **Output:** an implementation-agreement report, E/A assigned-persona heatmaps and metrics, saved controls, and reusable verified extraction code. Do not label the implementation check as original-paper reproduction.
 - **Recorded status:** complete under this revised scope. Full-Qwen reference agreement on one E positive/negative pair matched vectors exactly, with score Spearman 1.0 and maximum score error approximately 1.34e-5. Assigned E/A response localization ranked heads 2, 27, and 4 first, second, and third respectively in layer 19; controls are saved. Evidence: `../Workstream_2/docs/full_qwen_verification_summary.json` and `../results/ws1-verification/full-qwen-gpu-retry/`.
+- **Prompt refresh (2026-10-01):** all 10 A system prompts changed; the 200 A twins were re-extracted and their three localizations recomputed. E prompts, canonical inputs and neutral activations are unchanged and reused. A response layer-19 ranks remain head 2 first, 27 second, 4 third; BH q < 0.05 for 703/784 heads. Latest A evidence: `../Workstream_2/docs/assigned_refresh_2026-10-01.json` and `../results/ws2-refresh/A-system-prompts-2026-10-01-retry/`. Earlier E and reference-validation reports remain current.
 
 ### Exp 1: Assigned vs. user head localization (priority 3)
 For trait $t$, readout $r \in$ {first, resp}, and source $X \in \{A, U\}$:

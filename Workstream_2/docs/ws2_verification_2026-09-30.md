@@ -44,21 +44,25 @@ response-readout ranks for heads 2, 4, and 27 were respectively 1, 3, and 2 for
 both E and A. The number of heads with BH q < 0.05 across all 784 heads was
 685 for E and 703 for A on this response readout. These are assigned-persona
 results on the current 20 scenarios; they do not establish user-induced persona
-effects or replace the separate humorous reproduction gate. Detailed metrics
+effects. The original humorous experiment is out of scope under the later
+2026-10-01 team decision. Detailed metrics
 and immutable manifest hashes are in `full_qwen_verification_summary.json`.
 
-WS1 user rewrites are **NOT_AVAILABLE**; the future comparison path passes
-fixture tests, but a real assigned/user comparison requires those exports.
-Humorous paper-head reproduction is independently **NOT_RUN** because its
-judged CSVs and saved upstream vectors are absent. Reference hook agreement on
-WS1 inputs does not establish humorous-head recovery.
+As of this historical run, user rewrites were unavailable. WS1 subsequently
+shipped them; user localization/comparison belongs to WS3. Under the updated
+2026-10-01 context, original humorous reproduction/replay is **OUT_OF_SCOPE**,
+not a remaining WS2 gate. The unchanged historical JSON summary retains the
+status recorded at execution time; the current scope supersedes that status.
+The old A localization used earlier prompts and is superseded by the selective
+2026-10-01 A refresh; E and reference validation remain valid.
 
 ## Runtime and storage
 
 The successful tests used torch 2.4.1+cu121, transformers 4.56.1, accelerate
 1.10.1, numpy 2.1.2, and matplotlib 3.10.0. The temporary verification
 environment on the HDD inherits the existing system torch installation; a
-separate fully isolated locked uv environment is still being installed there.
+separate fully isolated locked uv environment is now installed on the HDD
+and is used for the 2026-10-01 A refresh.
 
 The mounted HDD is `/dev/sdb1`, at `/media/gaurav/Data21`. New large files use:
 

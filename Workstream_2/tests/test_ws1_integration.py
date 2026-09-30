@@ -42,6 +42,26 @@ def test_actual_ws1_assigned_rows_and_canonical_responses(ws1):
         check_run_data(rows, require_user=True)
 
 
+def test_selective_refresh_rejects_other_inputs_and_reuses_neutral(ws1):
+    from Workstream_2.scripts.refresh_assigned import changed_rows
+    rows, _ = prepare_rows(*ws1)
+    changed = [{**r, "system": r["system"] + " Still help fully."}
+               if r["set"] == "sys_twin" and r["trait"] == "A" else dict(r) for r in rows]
+    selected = changed_rows(rows, changed, "A")
+    assert len(selected) == 200
+    assert validate_rows(selected)["rows"] == 200
+    with pytest.raises(ValueError, match="Neutral rows required"):
+        check_run_data(selected, traits=("A",))
+    e = next(r for r in changed if r["trait"] == "E")
+    e["system"] += " Unexpected edit."
+    with pytest.raises(ValueError, match="outside A"):
+        changed_rows(rows, changed, "A")
+    e["system"] = next(r["system"] for r in rows if r["id"] == e["id"])
+    selected[0]["forced_response"] += " Unexpected response edit."
+    with pytest.raises(ValueError, match="forced_response"):
+        changed_rows(rows, changed, "A")
+
+
 def test_ws1_make_row_qc_without_invented_numeric_scores(ws1, monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT / "Data_Creation"))
     generator = importlib.import_module("gen_user_variants")
@@ -188,7 +208,7 @@ def test_independent_vendored_extraction_hooks_without_judge_credentials():
     report = verify_reference_extraction(model, TensorTokenizer(), config, [rows[a], rows[b]])
     assert report["passed"] and report["is_synthetic"]
     assert report["score_spearman"] > 0.999
-    assert report["paper_humorous_reproduction"] == "NOT_RUN"
+    assert report["paper_humorous_reproduction"] == "OUT_OF_SCOPE"
 
 
 def test_all_traits_readouts_and_future_user_comparisons(tmp_path):
@@ -208,7 +228,7 @@ def test_all_traits_readouts_and_future_user_comparisons(tmp_path):
     assert all(r["response_tokens_used"] == min(150, r["response_tokens_total"]) for r in index)
     metrics = json.loads((output / "E-assigned-resp/metrics.json").read_text())
     assert len(metrics["controls"]["random"]) == 5
-    assert report["upstream_reproduction"] == "NOT_RUN"
+    assert report["upstream_reproduction"] == "OUT_OF_SCOPE"
     child = output / "E-assigned-resp/manifest.json"
     child.write_text(child.read_text() + "\n")
     with pytest.raises(ValueError, match="changed"):

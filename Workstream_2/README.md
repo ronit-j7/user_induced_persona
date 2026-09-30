@@ -26,6 +26,10 @@ bash Workstream_2/scripts/uv_hdd.sh run ws2 run \
 ```
 
 The current 420-row WS1 assigned dataset has completed full Qwen verification on
-the RTX 3090. Real user comparisons require WS1 user variants; humorous paper
-reproduction requires its separate judged upstream inputs. See
+the RTX 3090. User-style variants are now available for WS3. The original humorous experiment
+and judged-data replay are OUT_OF_SCOPE under the 2026-10-01 team decision. See
 [verification evidence](docs/ws2_verification_2026-09-30.md).
+
+The revised A prompts have been refreshed separately; E and neutral activations
+are reused unchanged. Use the [current A report](docs/assigned_refresh_2026-10-01.md)
+and its compact JSON for the latest artifact locations and metrics.

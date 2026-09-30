@@ -104,7 +104,7 @@ def validate_rows(rows, *, allow_sample=False, require_response=True):
             neutral_systems.add(row["system"])
     if len(sample_flags) != 1:
         raise ValueError("Cannot mix sample and real rows")
-    if neutral_systems != {NEUTRAL_SYSTEM}:
+    if neutral_systems and neutral_systems != {NEUTRAL_SYSTEM}:
         raise ValueError(f"Neutral system must be exactly {NEUTRAL_SYSTEM!r}")
     counts = Counter((r["set"], r["trait"], r["sys_pole"], r["user_pole"]) for r in rows)
     return {"rows": len(rows), "scenarios": len(domains), "is_sample": sample_flags == {True},

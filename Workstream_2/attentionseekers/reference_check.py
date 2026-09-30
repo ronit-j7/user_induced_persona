@@ -1,7 +1,7 @@
 """Check extraction against the unmodified reference functions on identical inputs.
 
-This is an implementation agreement check. It does not establish recovery of
-Izawa's humorous heads, which requires the separate judged-data reproduction.
+This validates implementation agreement on project inputs. The original humorous
+experiment and judged-data replay are outside the current WS2 scope.
 """
 import ast
 from contextlib import nullcontext
@@ -89,4 +89,4 @@ def verify_reference_extraction(model, tokenizer, config, rows):
             "max_output_error": float(np.max(np.abs(ours_output - theirs_output))),
             "max_score_error": float(np.max(np.abs(own_scores - upstream_scores))),
             "score_spearman": spearman(own_scores, upstream_scores),
-            "reference_source_sha256": sources, "paper_humorous_reproduction": "NOT_RUN"}
+            "reference_source_sha256": sources, "paper_humorous_reproduction": "OUT_OF_SCOPE"}
