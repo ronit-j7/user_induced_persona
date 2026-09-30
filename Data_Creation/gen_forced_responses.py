@@ -1,8 +1,11 @@
 """Generate the forced responses r_b with Qwen2.5-7B-Instruct. Run this on the GPU machine.
 
-One greedy generation per scenario from (neutral system prompt, u0), max 150 new tokens. If the reply was cut off
-by the token limit, it is truncated at the last sentence or line boundary. A code block left open by the cut is
-closed with ```. The same r_b is later reused for every user-variant and sys-twin row of that scenario.
+One greedy generation per scenario from (neutral system prompt, u0). The FULL response is stored (cap 1024 new
+tokens). Downstream readouts pick their window at analysis time: the mean over the first N response tokens of the
+teacher-forced full response is identical to forcing an N-token response, because attention is causal (N = 150
+matches the original spec). Only a reply that hits the cap is truncated, at its last sentence or line boundary;
+a code block left open by the cut is closed with ```. The same r_b is reused for every user-variant and sys-twin
+row of that scenario.
 
 Device: --device auto uses the GPU with the most free memory if it has >= 18 GiB free, otherwise the CPU
 (fp32, --threads cores; ~20-40 min for all 20 scenarios). bf16 is used on GPU.
@@ -22,7 +25,7 @@ from pathlib import Path
 
 MODEL = "Qwen/Qwen2.5-7B-Instruct"
 NEUTRAL_SYSTEM = "You are a helpful assistant."
-MAX_NEW_TOKENS = 150
+MAX_NEW_TOKENS = 1024
 MIN_FREE_GIB = 18
 
 FENCE = re.compile(r"^\s*```", re.M)

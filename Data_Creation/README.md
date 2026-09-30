@@ -1,12 +1,15 @@
 # Data Creation
 
-This folder builds the **user-style variants** (`user_variants.jsonl`). It rewrites each neutral scenario message in a high or low Extraversion or Agreeableness style, then quality-checks every rewrite with an LLM judge.
+This folder builds the dataset. So far that covers two things:
+- **Forced responses (r_b):** Qwen's own fixed reply to each neutral scenario message.
+- **User-style variants** (`user_variants.jsonl`): each neutral message rewritten in a high or low Extraversion or Agreeableness style, then quality-checked by an LLM judge.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `data/scenarios.jsonl` | The 20 base scenarios (4 domains × 5): intent, neutral user message `u0`, and forced response (null until Qwen runs). |
+| `data/scenarios.jsonl` | The 20 base scenarios (4 domains × 5): intent, neutral user message `u0`, and Qwen's full forced response `r_b`. |
+| `gen_forced_responses.py` | Generates `r_b` with Qwen2.5-7B-Instruct. Runs on a GPU machine (see below). |
 | `prompts.py` | **All prompt text used by the code:** trait definitions, rewriter prompt and examples, judge prompts. Edit prompts here. |
 | `prompts/*.md` | Readable versions of the prompts, for review. Keep them in sync with `prompts.py`. |
 | `prompts/sys_prompts.json` | The 20 system prompts for the assigned-persona set (5 per trait-pole, written in + / − pairs). |
@@ -15,7 +18,20 @@ This folder builds the **user-style variants** (`user_variants.jsonl`). It rewri
 | `tests/smoke_test.py` | The full pipeline against fake APIs. No keys needed, no cost. |
 | `GLOSSARY.md` | What "pole", "sys twin", "u0" and so on mean. |
 
-## How it works
+## Forced responses (r_b)
+
+- **How they were made:** one greedy generation per scenario from `("You are a helpful assistant.", u0)`, using official Qwen2.5-7B-Instruct (revision `a09a354`) in bf16 on an L40S, with repetition penalty 1.0.
+- **Stored in full**, not truncated to 150 tokens. Lengths range from 90 to 1024 tokens (median ~630). Only `brainstorm_03` hit the 1024 cap; it was cut at its last sentence boundary.
+- **For readouts:** teacher-force the full `r_b` and average over the **first N response tokens**. Attention is causal, so this is identical to forcing an N-token response. **N = 150 reproduces the original spec**, and other N come free from the same forward pass.
+- **Verified:** a separate 150-token run is an exact prefix of the full run for all 20 scenarios, so generation is deterministic.
+- **Record:** `data/qc/forced_responses/` holds the raw generations of both runs, the settings and the library versions.
+
+To regenerate on a GPU machine:
+```bash
+HF_HUB_OFFLINE=1 python gen_forced_responses.py --in scenarios.jsonl --out scenarios_with_rb.jsonl --model <path to Qwen2.5-7B-Instruct>
+```
+
+## User-style variants: how it works
 
 ```
 for each scenario × trait (E, A) × pole (+, −):            80 cells
@@ -64,7 +80,6 @@ Useful flags: `--traits E,A` · `--poles +,-` · `--workers 8` · `--max-attempt
 
 ## Worth knowing
 
-- **`forced_response` is null** until Qwen generates the fixed replies. A later step fills it in.
 - **`user_len_tokens`** needs the Qwen tokenizer, which is downloaded once from Hugging Face. Without it the field is null.
 - **Length rule:** a rewrite must be between 0.5× and 2× the original's word count. Short originals may grow by up to 25 words.
 - **Missing rows are expected:** a dropped paraphrase leaves its cell with fewer than 3 rows. `summary.json` lists the incomplete cells.
