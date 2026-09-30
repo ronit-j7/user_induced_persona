@@ -12,8 +12,9 @@
 
 - **Model:** `Qwen/Qwen2.5-7B-Instruct` only. Llama-3.1-8B-Instruct comes later, so write model-agnostic code with a config dict.
 - **Traits:** Extraversion (E) and Agreeableness (A), each with a high (+) and low (−) pole. Design for 5 traits.
+- **Scope decision (2026-10-01):** do **not** run the original humorous reproduction or its judged-data replay. Replace that gate with implementation agreement against original reference functions on identical project inputs, plus independent E/A assigned-persona localization. Original-paper reproduction is out of scope, not a remaining WS2 blocker. This does not remove WS1 QC or WS3 behavioral judging.
 - **Priorities, in order:**
-  1. Reproduce the SMHs.
+  1. Validate extraction against the reference implementation and localize assigned E/A persona heads.
   2. Behavioral mirroring check.
   3. Assigned vs. user head localization.
   4. Small factorial regression (stretch).
@@ -46,7 +47,7 @@ Izawa et al. report Qwen SMHs as "layer 20, heads 3/5/28" and Llama as "layer 14
 - Qwen: `model.model.layers[19]`, heads `[2, 4, 27]`
 - Llama: `model.model.layers[13]`, heads `[23, 29, 31]`
 
-**Verify these empirically in Exp 0** before relying on them.
+**Treat these as published reference candidates.** In Exp 0, verify implementation behavior and report their empirical ranks on our E/A twins; do not assume the published heads must dominate every new contrast or claim original-paper reproduction.
 
 ### 2.4 Selection bias / circularity in the SMH comparison (important)
 The SMHs were selected using **system-prompt** persona contrasts, on six personas (evil, sycophancy, hallucination, humorous, passionate, loser), with **model-generated responses that differ across conditions**. Comparing "assigned" and "user" subspaces only inside heads chosen for assigned persona biases the comparison toward assigned persona. Also, "SMHs don't respond to user style" is confounded with "SMHs don't encode Big Five traits."
@@ -147,7 +148,7 @@ attentionseekers/
     judge.py             # logprob-weighted 0-100 judge, caching
     intervene.py         # projection / ablation hooks
     plots.py
-  scripts/               # one entry point per experiment: exp0_repro.py ... exp5_intervene.py
+  scripts/               # one entry point per experiment: exp0_validate.py ... exp5_intervene.py
   results/<exp>/<run_id>/  # config snapshot, metrics.json, figures, logs
   tests/
   persona_pipeline.py    # reference (port pieces into src/)
@@ -233,12 +234,14 @@ attentionseekers/
 
 ## 7. Experiments
 
-### Exp 0: SMH reproduction (priority 1)
-- **Step 1.** Run Izawa's repo as-is on Qwen for `humorous`.
-- **Pass criterion:** in `layers[19]`, heads {2, 4, 27} rank top-3 by head contribution score.
-- **Step 2.** Recompute the same scores with **our** `extract.py` + `heads.py` on their data. Pass if our top-3 matches theirs and the per-head scores correlate at $\rho > 0.95$.
-- **Step 3.** Run on our **sys_twins** (E, A) with the `resp` readout. Report whether the SMHs are in the top-3 or top-10.
-- **Output:** heatmaps plus `repro.json`.
+### Exp 0: Implementation validation and assigned-persona localization (priority 1)
+- **Excluded:** the original `humorous` generate–judge–filter experiment and replay on its judged examples. Do not generate those CSVs, make judge calls for that reproduction, or require saved upstream vectors to complete WS2.
+- **Step 1.** Compare our extraction and head scoring with independently executed, unmodified original reference functions on identical project inputs using full Qwen. Match token IDs and the full-response averaging convention for this check. Record the sample IDs, model revision, reference source hashes, vector errors, and raw-score agreement; do not use a self-comparison.
+- **Validation criterion:** captured vectors agree within recorded numerical tolerances and raw head-score Spearman correlation is $\rho > 0.95$. State the tested sample size rather than implying validation on the authors' full dataset.
+- **Step 2.** Run independent localization on our **sys_twins** (E, A) with the `resp` readout. Score all 784 heads and report the ranks of published candidates {2, 4, 27} in `layers[19]`, whether they appear in the top-3/top-10, significance results, and layer comparisons. Report the measured outcome even if those candidates do not survive.
+- **Step 3.** Define and save layer-19 controls: five seeded random 3-head groups and the highest-norm 3 heads selected from neutral `first` activations.
+- **Output:** an implementation-agreement report, E/A assigned-persona heatmaps and metrics, saved controls, and reusable verified extraction code. Do not label the implementation check as original-paper reproduction.
+- **Recorded status:** complete under this revised scope. Full-Qwen reference agreement on one E positive/negative pair matched vectors exactly, with score Spearman 1.0 and maximum score error approximately 1.34e-5. Assigned E/A response localization ranked heads 2, 27, and 4 first, second, and third respectively in layer 19; controls are saved. Evidence: `../Workstream_2/docs/full_qwen_verification_summary.json` and `../results/ws1-verification/full-qwen-gpu-retry/`.
 
 ### Exp 1: Assigned vs. user head localization (priority 3)
 For trait $t$, readout $r \in$ {first, resp}, and source $X \in \{A, U\}$:
@@ -314,7 +317,8 @@ The A contrast comes from sys_twins (same user $u^0$, same $r_b$). The U contras
 - [ ] `python persona_pipeline.py --selftest` passes. It covers the head-score identity, planted-head recovery, the planted cosine (0.6) recovered within its CI, and principal angles.
 - [ ] Position decode test (6.3) passes for both models.
 - [ ] The `first` readout is identical across different forced responses (6.4).
-- [ ] Exp 0 reproduces the SMHs.
+- [x] Exp 0 validates extraction/scoring against independently executed reference functions on the recorded full-Qwen project sample.
+- [x] Exp 0 reports all-head E/A assigned-persona localization, published-SMH ranks, heatmaps, and saved controls; original-paper reproduction is not a completion gate.
 - [ ] Head-score identity holds on real activations (relative error below 1e-4 in fp32).
 - [ ] Every figure in `results/` can be regenerated from `acts/` plus `config.json` alone.
 
