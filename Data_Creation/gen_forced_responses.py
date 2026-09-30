@@ -4,6 +4,9 @@ One greedy generation per scenario from (neutral system prompt, u0), max 150 new
 by the token limit, it is truncated at the last sentence or line boundary. A code block left open by the cut is
 closed with ```. The same r_b is later reused for every user-variant and sys-twin row of that scenario.
 
+Device: --device auto uses the GPU with the most free memory if it has >= 18 GiB free, otherwise the CPU
+(fp32, --threads cores; ~20-40 min for all 20 scenarios). bf16 is used on GPU.
+
 Usage (on the cluster):
     python gen_forced_responses.py --in scenarios.jsonl --out scenarios_with_rb.jsonl
 Writes:
@@ -14,11 +17,13 @@ Writes:
 import argparse
 import json
 import re
+import time
 from pathlib import Path
 
 MODEL = "Qwen/Qwen2.5-7B-Instruct"
 NEUTRAL_SYSTEM = "You are a helpful assistant."
 MAX_NEW_TOKENS = 150
+MIN_FREE_GIB = 18
 
 FENCE = re.compile(r"^\s*```", re.M)
 SENTENCE_END = re.compile(r"(?<!\d)[.!?][\"')\]*_]*(?=\s)")
@@ -56,14 +61,35 @@ def main():
     ap.add_argument("--out", default="scenarios_with_rb.jsonl")
     ap.add_argument("--model", default=MODEL)
     ap.add_argument("--max-new-tokens", type=int, default=MAX_NEW_TOKENS)
+    ap.add_argument("--device", default="auto", help="auto | cpu | cuda:N")
+    ap.add_argument("--threads", type=int, default=16, help="CPU threads (shared machine: stay polite)")
     args = ap.parse_args()
 
     import torch
     import transformers
     from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 
+    device = args.device
+    if device == "auto":
+        device = "cpu"
+        if torch.cuda.is_available():
+            free = {i: torch.cuda.mem_get_info(i)[0] / 2**30 for i in range(torch.cuda.device_count())}
+            print("Free GPU memory (GiB):", {i: round(f, 1) for i, f in free.items()})
+            best = max(free, key=free.get)
+            if free[best] >= MIN_FREE_GIB:
+                device = f"cuda:{best}"
+    dtype = torch.float32 if device == "cpu" else torch.bfloat16
+    if device == "cpu":
+        torch.set_num_threads(args.threads)
+    print(f"Using device={device} dtype={dtype}")
+
     tok = AutoTokenizer.from_pretrained(args.model)
-    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, device_map="cuda:0")
+    # transformers < 4.56 calls this argument torch_dtype; an unknown name would silently load fp32.
+    tf_version = tuple(int(x) for x in re.findall(r"\d+", transformers.__version__)[:2])
+    load_kw = {"dtype": dtype} if tf_version >= (4, 56) else {"torch_dtype": dtype}
+    model = AutoModelForCausalLM.from_pretrained(args.model, **load_kw).to(device)
+    print(f"Loaded {args.model} with transformers {transformers.__version__}, torch {torch.__version__}, "
+          f"param dtype {next(model.parameters()).dtype}")
     model.eval()
     # Explicit config: Qwen's shipped generation_config turns on sampling and repetition_penalty=1.05.
     eos_ids = model.generation_config.eos_token_id
@@ -74,6 +100,7 @@ def main():
     scenarios = [json.loads(l) for l in open(args.inp) if l.strip()]
     rows, raw_rows = [], []
     for scn in scenarios:
+        t0 = time.time()
         msgs = [{"role": "system", "content": NEUTRAL_SYSTEM}, {"role": "user", "content": scn["user"]}]
         enc = tok.apply_chat_template(msgs, add_generation_prompt=True, tokenize=True,
                                       return_dict=True, return_tensors="pt").to(model.device)
@@ -87,12 +114,14 @@ def main():
         rows.append(dict(scn, forced_response=rb))
         raw_rows.append({"scenario": scn["scenario"], "raw": raw, "new_tokens": len(new_ids),
                          "finished": finished, "truncated": was_truncated, "rb_tokens": rb_tokens})
-        print(f"{scn['scenario']:14s} new={len(new_ids):3d} finished={finished!s:5s} rb_tokens={rb_tokens}")
+        print(f"{scn['scenario']:14s} new={len(new_ids):3d} finished={finished!s:5s} rb_tokens={rb_tokens:3d} "
+              f"({time.time() - t0:.0f}s)", flush=True)
 
     meta = {"model": args.model, "revision": getattr(model.config, "_commit_hash", None),
             "system": NEUTRAL_SYSTEM, "max_new_tokens": args.max_new_tokens, "decoding": "greedy",
-            "repetition_penalty": 1.0, "dtype": "bfloat16", "torch": torch.__version__,
-            "transformers": transformers.__version__, "gpu": torch.cuda.get_device_name(0)}
+            "repetition_penalty": 1.0, "device": device, "dtype": str(dtype), "torch": torch.__version__,
+            "transformers": transformers.__version__,
+            "gpu": torch.cuda.get_device_name(device) if device != "cpu" else None}
     out_path = Path(args.out)
     with open(out_path, "w") as f:
         for r in rows:

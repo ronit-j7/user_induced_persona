@@ -1,0 +1,25 @@
+Free GPU memory (GiB): {0: 7.2, 1: 25.9}
+Using device=cuda:1 dtype=torch.bfloat16
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  6.98it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.36it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  7.39it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  7.73it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  7.56it/s]
+Loaded /scratch/krishak/hf_cache/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28 with transformers 4.46.3, torch 2.3.1+cu121, param dtype torch.bfloat16
+code_01        new=150 finished=False rb_tokens=149 (10s)
+code_02        new= 90 finished=True  rb_tokens= 89 (5s)
+code_03        new=150 finished=False rb_tokens=143 (8s)
+code_04        new=150 finished=False rb_tokens=151 (8s)
+code_05        new=150 finished=False rb_tokens=142 (8s)
+explain_01     new=150 finished=False rb_tokens=123 (8s)
+explain_02     new=150 finished=False rb_tokens=135 (8s)
+explain_03     new=150 finished=False rb_tokens=135 (8s)
+explain_04     new=150 finished=False rb_tokens=129 (8s)
+explain_05     new=150 finished=False rb_tokens=141 (8s)
+emo_01         new=150 finished=False rb_tokens=141 (8s)
+emo_02         new=150 finished=False rb_tokens=143 (8s)
+emo_03         new=150 finished=False rb_tokens=145 (8s)
+emo_04         new=150 finished=False rb_tokens=128 (8s)
+emo_05         new=150 finished=False rb_tokens=137 (8s)
+brainstorm_01  new=150 finished=False rb_tokens=143 (8s)
+brainstorm_02  new=150 finished=False rb_tokens=136 (8s)
+brainstorm_03  new=150 finished=False rb_tokens=148 (8s)
+brainstorm_04  new=150 finished=False rb_tokens=149 (8s)
+brainstorm_05  new=150 finished=False rb_tokens=144 (8s)
+Wrote scenarios_with_rb.jsonl and forced_responses_raw.jsonl
