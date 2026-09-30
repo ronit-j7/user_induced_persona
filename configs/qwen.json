@@ -1,6 +1,6 @@
 {
   "model_name": "Qwen/Qwen2.5-7B-Instruct",
-  "revision": "main",
+  "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
   "num_layers": 28,
   "num_heads": 28,
   "num_kv_heads": 4,
@@ -12,5 +12,7 @@
   "device": "cuda:0",
   "attention_implementation": "sdpa",
   "max_length": 2048,
+  "response_tokens": 150,
+  "is_synthetic": false,
   "seed": 0
 }

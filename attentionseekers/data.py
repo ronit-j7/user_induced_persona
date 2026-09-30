@@ -1,6 +1,7 @@
 """Version 1 WS1 -> extraction interface, with no dependency on a model runtime."""
 from collections import Counter, defaultdict
 import math
+import re
 
 from .io import read_jsonl
 
@@ -10,11 +11,43 @@ REQUIRED = {"id", "scenario", "domain", "set", "trait", "sys_pole", "user_pole",
             "sys_paraphrase", "user_paraphrase", "system", "user", "forced_response"}
 
 
+def qc_protocol(row):
+    """Validate the actual WS1 QC export without fabricating numeric judge scores."""
+    name, qc = row["id"], row.get("qc", {})
+    if not isinstance(qc, dict):
+        raise ValueError(f"{name}: qc must be an object")
+    if qc.get("protocol") == "authored_system_prompt":
+        if row["set"] != "sys_twin" or not re.fullmatch(r"[0-9a-f]{64}", str(qc.get("source_sha256", ""))):
+            raise ValueError(f"{name}: authored_system_prompt requires a sys_twin and source SHA256")
+        return "authored_system_prompt"
+    if qc.get("passed") is not True:
+        raise ValueError(f"{name}: real rows require qc.passed=true")
+    if "forced_choice" in qc:
+        if row["set"] not in {"user_variant", "factorial"}:
+            raise ValueError(f"{name}: forced-choice QC applies to user rewrites")
+        fc = qc["forced_choice"]
+        if not isinstance(fc, dict) or fc.get("rewrite_as_B") != "B" or fc.get("rewrite_as_A") != "A":
+            raise ValueError(f"{name}: forced-choice QC must select the rewrite in both orders")
+        if "checklist" in qc:
+            checklist = qc["checklist"]
+            checks = ("C1", "C2", "C3", "C4", "L1", "L2", "R1", "R2", "R3")
+            if not isinstance(checklist, dict) or any(
+                not isinstance(checklist.get(k), dict) or checklist[k].get("answer") != "yes" for k in checks
+            ):
+                raise ValueError(f"{name}: checklist QC requires all nine checks to pass")
+        return "ws1_checklist_forced_choice"
+    for key in ("content", "trait"):
+        score = qc.get(key)
+        if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 70 <= score <= 100:
+            raise ValueError(f"{name}: qc.{key} must be a passing score in [70,100]")
+    return "numeric_scores"
+
+
 def validate_rows(rows, *, allow_sample=False, require_response=True):
     if not rows:
         raise ValueError("Dataset is empty")
     ids, responses, neutral_users, neutral_systems = set(), {}, {}, set()
-    domains, sample_flags = {}, set()
+    domains, sample_flags, qc_counts = {}, set(), Counter()
     for i, row in enumerate(rows):
         if not isinstance(row, dict) or REQUIRED - row.keys():
             raise ValueError(f"row {i}: missing fields {sorted(REQUIRED - row.keys()) if isinstance(row, dict) else REQUIRED}")
@@ -37,13 +70,7 @@ def validate_rows(rows, *, allow_sample=False, require_response=True):
         if sample and not allow_sample:
             raise ValueError("Sample data requires explicit --allow-sample")
         if not sample and row["set"] != "neutral":
-            qc = row.get("qc", {})
-            if qc.get("passed") is not True:
-                raise ValueError(f"{name}: real rows require qc.passed=true")
-            for key in ("content", "trait"):
-                score = qc.get(key)
-                if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 70 <= score <= 100:
-                    raise ValueError(f"{name}: qc.{key} must be a passing score in [70,100]")
+            qc_counts[qc_protocol(row)] += 1
         scenario = row["scenario"]
         if scenario in domains and domains[scenario] != row["domain"]:
             raise ValueError(f"{name}: inconsistent scenario domain")
@@ -59,6 +86,8 @@ def validate_rows(rows, *, allow_sample=False, require_response=True):
             responses[scenario] = response
         s, u = row["sys_pole"], row["user_pole"]
         kind = row["set"]
+        if (kind == "neutral" and (row["trait"] != "none" or row["sys_paraphrase"] != 0 or row["user_paraphrase"] != 0)) or (kind != "neutral" and row["trait"] not in {"E", "A"}):
+            raise ValueError(f"{name}: invalid trait or neutral paraphrase")
         if kind == "sys_twin" and (s not in {"+", "-"} or u != "0" or row["user_paraphrase"] != 0):
             raise ValueError(f"{name}: sys_twin needs sys +/- and neutral user with paraphrase 0")
         if kind == "user_variant" and (u not in {"+", "-"} or s != "0" or row["sys_paraphrase"] != 0):
@@ -79,6 +108,7 @@ def validate_rows(rows, *, allow_sample=False, require_response=True):
         raise ValueError(f"Neutral system must be exactly {NEUTRAL_SYSTEM!r}")
     counts = Counter((r["set"], r["trait"], r["sys_pole"], r["user_pole"]) for r in rows)
     return {"rows": len(rows), "scenarios": len(domains), "is_sample": sample_flags == {True},
+            "qc_protocol_counts": dict(qc_counts),
             "cells": [{"set": k[0], "trait": k[1], "sys_pole": k[2], "user_pole": k[3], "n": v}
                       for k, v in sorted(counts.items())]}
 

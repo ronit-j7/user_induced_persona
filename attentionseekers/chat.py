@@ -14,7 +14,9 @@ class EncodedInput:
         return self.prefix_length - 1
 
 
-def encode(tokenizer, row, max_length=2048):
+def encode(tokenizer, row, max_length=2048, *, response_tokens=None):
+    if response_tokens is not None and (type(response_tokens) is not int or response_tokens < 1):
+        raise ValueError("response_tokens must be a positive integer or None")
     messages = [{"role": "system", "content": row["system"]},
                 {"role": "user", "content": row["user"]}]
     prefix = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -45,7 +47,8 @@ def encode(tokenizer, row, max_length=2048):
     ids = prefix_ids + list(response_ids)
     if len(ids) > max_length:
         raise ValueError(f"{row['id']}: {len(ids)} tokens exceed max_length={max_length}; no silent truncation")
-    return EncodedInput(tuple(ids), len(prefix_ids), user_span, (len(prefix_ids), len(ids)))
+    response_end = len(ids) if response_tokens is None else min(len(ids), len(prefix_ids) + response_tokens)
+    return EncodedInput(tuple(ids), len(prefix_ids), user_span, (len(prefix_ids), response_end))
 
 
 def describe_encoding(tokenizer, encoded):
@@ -54,5 +57,8 @@ def describe_encoding(tokenizer, encoded):
     return {"first_position": encoded.first, "first_token": decode([encoded.ids[encoded.first]]),
             "prefix_length": encoded.prefix_length, "total_length": len(encoded.ids),
             "user_span": encoded.user_span, "response_span": encoded.response_span,
+            "full_response_span": (encoded.prefix_length, len(encoded.ids)),
+            "response_tokens_total": len(encoded.ids) - encoded.prefix_length,
+            "response_tokens_used": encoded.response_span[1] - encoded.response_span[0],
             "user_preview": decode(encoded.ids[slice(*encoded.user_span)])[:100] if encoded.user_span else None,
             "response_preview": decode(encoded.ids[slice(*encoded.response_span)])[:100]}

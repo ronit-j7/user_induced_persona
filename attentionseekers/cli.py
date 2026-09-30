@@ -33,6 +33,50 @@ def cmd_validate(args):
                                    require_response=not args.allow_missing_response), indent=2))
 
 
+def cmd_prepare(args):
+    from .prepare import prepare_dataset
+    path = prepare_dataset(args.scenarios_file, args.system_prompts, args.out,
+                           user_variants_path=args.user_variants, traits=args.traits,
+                           scenario_ids=args.scenarios, allow_sample=args.allow_sample)
+    print((path / "summary.json").read_text())
+    return path
+
+
+def cmd_run(args):
+    from .extract import load_model
+    from .pipeline import check_run_data, run_pipeline
+    rows = load_rows(args.data, allow_sample=args.allow_sample, require_response="resp" in args.readouts)
+    check_run_data(rows, traits=args.traits, allow_sample=args.allow_sample,
+                   require_user=args.require_user, require_response="resp" in args.readouts)
+    config = load_config(args.config)
+    model, tokenizer = load_model(config)
+    path = run_pipeline(model, tokenizer, config, rows, args.out, data_path=args.data,
+                        traits=args.traits, readouts=args.readouts, permutations=args.permutations,
+                        seed=args.seed, allow_sample=args.allow_sample, require_user=args.require_user)
+    print(path)
+    return path
+
+
+def cmd_preflight(args):
+    from transformers import AutoConfig, AutoTokenizer
+    from .preflight import check_tokens
+    rows = load_rows(args.data, allow_sample=args.allow_sample)
+    config = load_config(args.config)
+    actual = AutoConfig.from_pretrained(config.model_name, revision=config.revision,
+                                        local_files_only=args.local_files_only)
+    for field, expected in (("num_hidden_layers", config.num_layers),
+                            ("num_attention_heads", config.num_heads),
+                            ("num_key_value_heads", config.num_kv_heads),
+                            ("hidden_size", config.hidden_size)):
+        if getattr(actual, field) != expected:
+            raise ValueError(f"Configured {field} differs from the checkpoint")
+    tokenizer = AutoTokenizer.from_pretrained(config.model_name, revision=config.revision,
+                                               use_fast=True, local_files_only=args.local_files_only)
+    path = check_tokens(tokenizer, config, rows, args.out, data_path=args.data)
+    print((path / "summary.json").read_text())
+    return path
+
+
 def cmd_extract(args):
     from .extract import extract_dataset, load_model
     config = load_config(args.config)
@@ -51,7 +95,7 @@ def cmd_analyze(args):
         raise ValueError("analyze accepts project-mode bundles only")
     if args.readout not in manifest["readouts"]:
         raise ValueError(f"Readout {args.readout} missing from activation bundle")
-    rows = _bundle_rows(args.acts)
+    rows = read_jsonl(Path(args.acts) / "index.jsonl")
     validate_rows(rows, allow_sample=True, require_response=args.readout == "resp")
     config = _bundle_config(args.acts)
     acts = load_array(Path(args.acts) / f"{args.readout}.npy")
@@ -66,6 +110,8 @@ def cmd_analyze(args):
                "scenarios": result["scenarios"], "permutations": args.permutations,
                "seed": args.seed, "fdr_significant": int(np.sum(result["q"] < 0.05)),
                "model_name": config.model_name, "is_sample": manifest["is_sample"],
+               "is_synthetic": manifest.get("is_synthetic", config.is_synthetic),
+               "response_tokens": manifest.get("response_tokens"),
                "input_bundle": str(Path(args.acts).resolve()),
                "input_manifest_sha256": sha256(Path(args.acts) / "manifest.json"),
                "smh_layer": config.smh_layer, "smh_heads": list(config.smh_heads)}
@@ -85,6 +131,7 @@ def cmd_analyze(args):
                  smh_layer=config.smh_layer, smh_heads=config.smh_heads)
     save_snr(result["snr"], path / "layer_snr.png", title=f"{args.trait}: {args.source} layer SNR")
     finish_run(path, {"kind": "localization", "is_sample": manifest["is_sample"],
+                      "is_synthetic": metrics["is_synthetic"], "response_tokens": metrics["response_tokens"],
                       "trait": args.trait, "source": args.source, "readout": args.readout})
     print(json.dumps(metrics, indent=2))
 
@@ -95,7 +142,10 @@ def cmd_compare(args):
         raise ValueError("compare needs two localization bundles")
     a = json.loads((Path(args.assigned) / "metrics.json").read_text())
     u = json.loads((Path(args.user) / "metrics.json").read_text())
-    for name in ("model_name", "trait", "readout", "scenarios", "is_sample",
+    for metrics in (a, u):
+        metrics.setdefault("is_synthetic", metrics["model_name"].startswith("tiny-"))
+        metrics.setdefault("response_tokens", None)
+    for name in ("model_name", "trait", "readout", "scenarios", "is_sample", "is_synthetic", "response_tokens",
                  "input_manifest_sha256"):
         if a[name] != u[name]:
             raise ValueError(f"Assigned/user runs disagree on {name}")
@@ -112,6 +162,7 @@ def cmd_compare(args):
         yy = set(np.argsort(-y, kind="stable")[:k])
         return len(xx & yy) / len(xx | yy)
     report = {"trait": a["trait"], "readout": a["readout"], "is_sample": a["is_sample"],
+              "is_synthetic": a["is_synthetic"], "response_tokens": a["response_tokens"],
               "all_head_spearman": spearman(flat_a, flat_u),
               "layer_spearman": spearman(raw_a[layer], raw_u[layer]),
               "all_head_top3_jaccard": jaccard(3, flat_a, flat_u),
@@ -122,7 +173,8 @@ def cmd_compare(args):
               "user_manifest_sha256": sha256(Path(args.user) / "manifest.json")}
     path = new_run(args.out)
     write_json(path / "comparison.json", report)
-    finish_run(path, {"kind": "comparison", "is_sample": a["is_sample"]})
+    finish_run(path, {"kind": "comparison", "is_sample": a["is_sample"],
+                      "is_synthetic": a["is_synthetic"]})
     print(json.dumps(report, indent=2))
 
 
@@ -134,6 +186,10 @@ def cmd_reproduce(args):
         raise ValueError("Paper-head gate is defined for Qwen2.5-7B-Instruct")
     rows, selected = load_upstream_csvs(args.pos_csv, args.neg_csv, args.trait,
                                         threshold=args.threshold)
+    for suffix in ("attn_pre_o_proj", "attn_output"):
+        vector = Path(args.upstream_vectors) / f"{args.trait}_response_avg_diff_{suffix}.pt"
+        if not vector.is_file():
+            raise FileNotFoundError(f"Required upstream vector absent: {vector}")
     model, tokenizer = load_model(config)
     acts_path = extract_dataset(model, tokenizer, config, rows, args.acts_out,
                                 readouts=("resp",), compatibility=True,
@@ -146,7 +202,8 @@ def cmd_reproduce(args):
                    "upstream_output_sha256": sha256(Path(args.upstream_vectors) / f"{args.trait}_response_avg_diff_attn_output.pt")})
     write_json(path / "repro.json", report)
     save_heatmap(load_array(path / "replay_own_raw.npy"), path / "own_raw_heatmap.png",
-                 title="Own replay: raw head scores", smh_layer=config.smh_layer, smh_heads=config.smh_heads)
+                 title="Own replay: raw head scores", smh_layer=config.smh_layer, smh_heads=config.smh_heads,
+                 colorbar_label="Raw head contribution")
     finish_run(path, {"kind": "upstream_reproduction", "is_sample": False})
     print(json.dumps(report, indent=2))
 
@@ -154,6 +211,33 @@ def cmd_reproduce(args):
 def parser():
     p = argparse.ArgumentParser(prog="ws2", description="AttentionSeekers Workstream 2")
     sub = p.add_subparsers(dest="command", required=True)
+    prepare = sub.add_parser("prepare-data", help="Build WS2 rows from the current WS1 exports")
+    prepare.add_argument("--scenarios-file", default="Data_Creation/data/scenarios.jsonl")
+    prepare.add_argument("--system-prompts", default="Data_Creation/prompts/sys_prompts.json")
+    prepare.add_argument("--user-variants")
+    prepare.add_argument("--scenarios", nargs="+")
+    prepare.add_argument("--traits", nargs="+", choices=("E", "A"), default=["E", "A"])
+    prepare.add_argument("--allow-sample", action="store_true")
+    prepare.add_argument("--out", required=True)
+    prepare.set_defaults(func=cmd_prepare)
+    run = sub.add_parser("run", help="Extract once, then localize E/A and compare available user variants")
+    run.add_argument("--data", required=True)
+    run.add_argument("--config", default="configs/qwen.json")
+    run.add_argument("--out", required=True)
+    run.add_argument("--traits", nargs="+", choices=("E", "A"), default=["E", "A"])
+    run.add_argument("--readouts", nargs="+", choices=("first", "resp", "user"), default=["first", "resp", "user"])
+    run.add_argument("--permutations", type=int, default=19999)
+    run.add_argument("--seed", type=int, default=0)
+    run.add_argument("--require-user", action="store_true")
+    run.add_argument("--allow-sample", action="store_true")
+    run.set_defaults(func=cmd_run)
+    preflight = sub.add_parser("preflight", help="Check real Qwen token spans and lengths without loading weights")
+    preflight.add_argument("--data", required=True)
+    preflight.add_argument("--config", default="configs/qwen.json")
+    preflight.add_argument("--out", required=True)
+    preflight.add_argument("--local-files-only", action="store_true")
+    preflight.add_argument("--allow-sample", action="store_true")
+    preflight.set_defaults(func=cmd_preflight)
     validate = sub.add_parser("validate-data")
     validate.add_argument("--data", required=True)
     validate.add_argument("--allow-sample", action="store_true")

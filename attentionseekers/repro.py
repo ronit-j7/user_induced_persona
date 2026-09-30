@@ -1,11 +1,13 @@
 """Upstream Izawa CSV/vector adapter. Project-mode tokenization is separate."""
 import csv
+import json
 from pathlib import Path
 
 import numpy as np
 
 from .chat import EncodedInput
 from .heads import head_contributions, spearman
+from .io import load_manifest, read_jsonl
 
 
 UPSTREAM_COMMIT = "532da0151b319efa99145cdad88035c889d72ef3"
@@ -57,10 +59,18 @@ def replay_scores(activation_dir, trait, upstream_vectors, output_dir):
     """
     import torch
     activation_dir = Path(activation_dir)
+    manifest = load_manifest(activation_dir)
+    if manifest.get("kind") != "activations" or manifest.get("mode") != "upstream_replay":
+        raise ValueError("Reproduction requires an upstream_replay activation bundle")
+    model_config = json.loads((activation_dir / "config.json").read_text())["model"]
+    index = read_jsonl(activation_dir / "index.jsonl")
     vector_dir = Path(upstream_vectors)
     ours_pre = np.load(activation_dir / "resp.npy", mmap_mode="r").astype(np.float32)
     ours_out = np.load(activation_dir / "output_resp.npy", mmap_mode="r").astype(np.float32)
-    if len(ours_pre) % 2:
+    if len(ours_pre) % 2 or len(index) != len(ours_pre) or any(
+        row.get("pole") != ("+" if i % 2 == 0 else "-") or row.get("trait") != trait
+        for i, row in enumerate(index)
+    ):
         raise ValueError("Upstream replay needs paired positive/negative rows")
     own_delta = ours_pre[0::2].mean(axis=0) - ours_pre[1::2].mean(axis=0)
     own_target = ours_out[0::2].mean(axis=0) - ours_out[1::2].mean(axis=0)
@@ -84,15 +94,21 @@ def replay_scores(activation_dir, trait, upstream_vectors, output_dir):
     output_dir = Path(output_dir)
     np.save(output_dir / "replay_own_raw.npy", our_scores)
     np.save(output_dir / "replay_upstream_raw.npy", upstream_scores)
-    layer = 19
-    if layer >= layers:
-        raise ValueError("Qwen SMH layer 19 absent")
+    layer = model_config.get("smh_layer", 19)
+    if not 0 <= layer < layers:
+        raise ValueError(f"Configured SMH layer {layer} absent")
     own_top = np.argsort(-our_scores[layer], kind="stable")[:3].tolist()
     upstream_top = np.argsort(-upstream_scores[layer], kind="stable")[:3].tolist()
     rho = spearman(our_scores[layer], upstream_scores[layer])
+    synthetic = manifest.get("is_synthetic", model_config.get("is_synthetic", False))
+    paper_applicable = (trait == "humorous" and not synthetic
+                        and model_config["model_name"] == "Qwen/Qwen2.5-7B-Instruct"
+                        and (layers, heads, dim) == (28, 28, 128) and layer == 19)
     return {"upstream_commit": UPSTREAM_COMMIT, "trait": trait, "smh_layer": layer,
+            "model_name": model_config["model_name"], "is_synthetic": synthetic,
+            "paper_gate_applicable": paper_applicable,
             "paper_heads_zero_indexed": [2, 4, 27], "own_top3": own_top,
-            "upstream_top3": upstream_top, "paper_heads_recovered": set(upstream_top) == {2, 4, 27},
+            "upstream_top3": upstream_top, "paper_heads_recovered": paper_applicable and set(upstream_top) == {2, 4, 27},
             "own_matches_upstream": set(own_top) == set(upstream_top),
             "own_vs_upstream_spearman_layer19": rho,
             "extraction_agreement_pass": set(own_top) == set(upstream_top) and rho is not None and rho > 0.95,

@@ -135,11 +135,15 @@ def extract_dataset(model, tokenizer, config, rows, out, *, readouts=("first", "
         encoder = encode
         sample = validate_rows(rows, allow_sample=allow_sample, require_response="resp" in readouts)["is_sample"]
     # Check all token boundaries before creating arrays or invoking the model.
-    encoded_rows = [encoder(tokenizer, row, config.max_length) for row in rows]
+    encoded_rows = [encoder(tokenizer, row, config.max_length) if compatibility else
+                    encoder(tokenizer, row, config.max_length, response_tokens=config.response_tokens)
+                    for row in rows]
     path = new_run(out)
     config_snapshot = {"schema_version": 1, "model": config.as_dict(), "readouts": list(readouts),
                        "mode": "upstream_replay" if compatibility else "project",
                        "is_sample": sample, "provenance": provenance(), "metadata": metadata or {},
+                       "is_synthetic": config.is_synthetic,
+                       "response_tokens": None if compatibility else config.response_tokens,
                        "data_sha256": sha256(data_path) if data_path else None,
                        "resolved_model_revision": getattr(model.config, "_commit_hash", None),
                        "tokenizer_class": type(tokenizer).__name__,
@@ -173,5 +177,6 @@ def extract_dataset(model, tokenizer, config, rows, out, *, readouts=("first", "
         array.flush()
     write_jsonl(path / "index.jsonl", index)
     finish_run(path, {"kind": "activations", "mode": config_snapshot["mode"], "is_sample": sample,
+                      "is_synthetic": config.is_synthetic, "response_tokens": config_snapshot["response_tokens"],
                       "shape": list(shape), "readouts": list(readouts)})
     return path

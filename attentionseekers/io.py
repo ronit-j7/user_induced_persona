@@ -69,7 +69,7 @@ def provenance():
 def finish_run(path, metadata):
     path = Path(path)
     files = {str(p.relative_to(path)): sha256(p) for p in sorted(path.rglob("*"))
-             if p.is_file() and p.name != "manifest.json"}
+             if p.is_file() and p != path / "manifest.json"}
     write_json(path / "manifest.json", {"schema_version": 1, "status": "complete",
                                       **metadata, "files": files})
 

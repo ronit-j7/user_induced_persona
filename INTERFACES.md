@@ -10,12 +10,31 @@ together when a breaking change is necessary. Code entry points live in the
 From the repository root, use `uv` for dependency management:
 
 ```bash
-uv sync --extra model --extra test
+uv sync --locked
 uv run python scripts/make_sample_ws2.py
 uv run ws2 validate-data --data Data_Creation/samples/ws2_sample.jsonl --allow-sample
-uv run pytest -q
+uv run python -m pytest -q
 uv run python -m attentionseekers.smoke --out results/smoke-cpu
 ```
+
+The `model` and `dev` dependency groups are enabled by default so `uv run`
+retains the model/test libraries. The legacy `--extra model --extra test`
+install command still works. Always execute tests with `python -m pytest`.
+
+On this 3090 host, keep packages, model weights, and run artifacts on the
+mounted hard disk:
+
+```bash
+bash scripts/uv_hdd.sh sync --locked
+bash scripts/uv_hdd.sh run python -m pytest -q
+```
+
+The wrapper routes the uv cache to `/media/gaurav/Data21/eshaan/cache/uv`, the
+environment to `envs/user_induced_persona`, and the HF cache to
+`models/huggingface` under that same root. Set `WS2_STORAGE_ROOT` to your own
+mounted data directory on another machine. On this host, the ignored repo
+`results/` directory is a symlink to
+`/media/gaurav/Data21/eshaan/results/user_induced_persona`.
 
 `results/smoke-cpu` uses random tiny Qwen weights. It is a software smoke test,
 never evidence of an SMH or a Big Five result. It creates activation,
@@ -23,9 +42,11 @@ localization, and comparison bundles. On a CUDA machine, add `--device cuda:0`
 and use a different output directory. Every `--out` directory must be new;
 the CLI refuses to overwrite previous runs.
 
-The full Qwen config is `configs/qwen.json`. `uv run ws2 extract ...` loads the
-specified Hugging Face checkpoint on GPU 0 in bf16; this has only been tested
-on a tiny random Qwen, so run the real Qwen gates below before research use.
+The full Qwen config is `configs/qwen.json`: GPU 0, bf16, response readout over
+the first 150 response tokens, revision `a09a35458c702b33eeacc393d103063234e8bc28`
+(the same checkpoint that WS1 used). Set `response_tokens` to null for the
+full-response mean. Every bundle records the window and `is_synthetic`;
+random-model integration results must not be presented as research findings.
 
 ## WS1 -> WS2: JSONL version 1
 
@@ -44,7 +65,7 @@ to false, and must include passing QC. Never merge sample and real rows.
 | `sys_paraphrase`, `user_paraphrase` | Nonnegative integer. Set the unused side to 0. Use the same paraphrase numbers in both pole cells so they form explicit pairs. |
 | `system`, `user` | Exact full message content, nonempty. Always supply a system message. Neutral system is `You are a helpful assistant.` |
 | `forced_response` | Nonempty fixed assistant response for `resp` extraction. Identical for all rows of a scenario. `null` is allowed only if extracting `first`/`user` without `resp`. |
-| `qc` | Required on real styled rows: `{"passed": true, "content": >=70, "trait": >=70}` with finite scores <=100. Extra fields are allowed. Neutral base rows are human-approved and do not require a trait score. |
+| `qc` | User rewrites: WS1's `{"passed":true,"forced_choice":{"rewrite_as_B":"B","rewrite_as_A":"A"}}`; this attests to its checklist and code checks, with detailed evidence in WS1's attempts log. If `checklist` is included, all nine answers must be `yes`. Legacy numeric content/trait scores >=70 are also accepted. Authored system twins use `{"protocol":"authored_system_prompt","source_sha256":"..."}`. These record stimulus provenance, not a judge's empirical trait score. Neutral rows need no trait score. |
 | `is_sample` | Boolean; only `true` for development fixtures, requiring `--allow-sample`. |
 
 The validator checks IDs, schema, QC, domain and response consistency, neutral
@@ -55,17 +76,50 @@ positive and negative rows must share `(scenario, user_paraphrase,
 sys_paraphrase)`, the same `user`, and the same `forced_response`. For user
 localization they must share those keys, the same `system`, and response.
 
-WS1 needs to generate Qwen's fixed response for each base scenario and the
-assigned/user variants. The existing 20 base scenarios have null responses and
-cannot be used for `resp` extraction yet. A complete current run is 20
-scenarios, E/A poles, 3 user paraphrases, 5 system paraphrases, plus one
-neutral row per scenario. Send a first slice through the same validator.
+WS1 now provides 20 scenarios with complete Qwen-generated fixed responses
+and 20 authored system prompts. The preparation step creates 420 rows:
+20 neutral plus 400 system twins (100 +/- pairs per trait). It preserves the
+exact canonical response for each scenario. Current user variants are still
+absent. Once WS1 supplies them, add `--user-variants`; the expected full
+dataset is 660 rows with 3 user paraphrases per pole and 5 system paraphrases.
+
+Build and run the available assigned dataset:
 
 ```bash
-uv run ws2 validate-data --data Data_Creation/data/ws2_ready.jsonl
-uv run ws2 extract --data Data_Creation/data/ws2_ready.jsonl \
-  --config configs/qwen.json --out results/exp1/qwen-ea-acts
+bash scripts/uv_hdd.sh run ws2 prepare-data --out results/exp1/prepared
+bash scripts/uv_hdd.sh run ws2 preflight --data results/exp1/prepared/rows.jsonl \
+  --out results/exp1/tokens
+bash scripts/uv_hdd.sh run ws2 run --data results/exp1/prepared/rows.jsonl \
+  --config configs/qwen.json --out results/exp1/assigned
 ```
+
+After real user variants are generated:
+
+```bash
+bash scripts/uv_hdd.sh run ws2 prepare-data \
+  --user-variants Data_Creation/data/user_variants.jsonl --out results/exp2/prepared
+bash scripts/uv_hdd.sh run ws2 run --data results/exp2/prepared/rows.jsonl \
+  --config configs/qwen.json --require-user --out results/exp2/full
+```
+
+`run` extracts once and produces E/A localization for all requested readouts,
+control groups, heatmaps, SNR, and comparisons if user variants exist. Absent
+user data is `NOT_AVAILABLE`; `--require-user` fails before loading weights.
+Dropped rewrites that leave unmatched or unbalanced cells are rejected.
+Regenerate those cells or explicitly select a complete balanced slice using
+`prepare-data --scenarios code_01 ... --traits E`. No orphan row is dropped.
+
+To repeat the current real-data software/hardware checks, including comparison
+with independently executed unmodified reference extraction functions:
+
+```bash
+bash scripts/uv_hdd.sh run python -m scripts.verify_ws2_on_ws1 \
+  --model full --device cuda:0 --out results/verification-full
+```
+
+Use `--model tiny` for random-weight integration testing. Reference function
+agreement on WS1 stimuli and paper-head recovery on judged humorous data are
+separate checks. The verification script does not claim the latter.
 
 ## WS2 -> WS3: Python APIs
 
@@ -78,23 +132,29 @@ from attentionseekers.chat import encode, describe_encoding
 from attentionseekers.extract import load_model, capture_encoded, extract_dataset, capture_hooks
 from attentionseekers.heads import localize, head_contributions, control_groups, spearman
 from attentionseekers.io import load_manifest, load_array, read_jsonl
+from attentionseekers.prepare import prepare_dataset
+from attentionseekers.pipeline import run_pipeline
 
 config = load_config("configs/qwen.json")
-rows = load_rows("Data_Creation/data/ws2_ready.jsonl")
+rows = load_rows("results/exp1/prepared/rows.jsonl")
 model, tokenizer = load_model(config)
-encoded = encode(tokenizer, rows[0], config.max_length)
+encoded = encode(tokenizer, rows[0], config.max_length, response_tokens=config.response_tokens)
 readouts, _ = capture_encoded(model, config, encoded)
 # readouts["first"], ["resp"], ["user"] are FP32 [layers, query_heads, head_dim]
 
 bundle = extract_dataset(model, tokenizer, config, rows, "results/exp1/acts",
-                         data_path="Data_Creation/data/ws2_ready.jsonl")
+                         data_path="results/exp1/prepared/rows.jsonl")
 ```
 
 `encode` tokenizes the template prefix and response separately and joins the
 IDs. `first` is the final generation-prefix token, which predicts the first
 assistant token. It is extracted in a prefix-only forward pass. `resp` is the
-mean of the fixed response-token positions. `user` is the mean of user-content
-token positions. No special end-of-turn token is appended to the fixed response.
+mean over the selected response window. The full fixed response is teacher-forced;
+the default config selects its first 150 tokens (or all available tokens for a
+shorter response). Index rows record `response_span` for the selected window,
+`full_response_span`, `response_tokens_used`, and `response_tokens_total`.
+`user` is the mean of user-content token positions. No special end-of-turn token
+is appended to the fixed response.
 Each hook reads the input to `model.model.layers[layer].self_attn.o_proj`,
 which has `[1, tokens, query_heads * head_dim]`. `capture_hooks` is a context
 manager and removes hooks even after exceptions. It never modifies activations.
@@ -135,7 +195,8 @@ Each activation bundle is a new directory with:
 
 ```text
 config.json                    exact model config, runtime versions, git/source hashes,
-                               input-data hash, resolved model revision, mode and seed
+                               input-data hash, resolved model revision, mode, window,
+                               is_synthetic and seed
 index.jsonl                   original rows in tensor order plus row index and token spans
 first.npy, resp.npy, user.npy  requested FP16 arrays [N, layers, query_heads, head_dim]
 weights/layer_XX.npy          FP32 output projection [hidden_size, query_heads * head_dim]
@@ -151,8 +212,10 @@ heatmaps, and `manifest.json`. `raw.npy` is `[layers, heads]`; `delta.npy` is
 
 Before consuming a bundle, call `load_manifest(path)`; it rejects incomplete
 or modified files. Always read `index.jsonl` for row order. Do not treat a
-missing result as a zero effect. The sample tag is propagated through all
-downstream bundles.
+missing result as a zero effect. The sample and synthetic-model tags are
+propagated through all downstream bundles. Older version 1 bundles without a
+response window describe full-response readouts. Do not join bundles with
+different windows or model revisions.
 
 ## Independent reproduction gate
 

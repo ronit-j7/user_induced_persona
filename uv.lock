@@ -45,6 +45,16 @@ test = [
     { name = "pytest" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+model = [
+    { name = "accelerate" },
+    { name = "torch" },
+    { name = "transformers" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "accelerate", marker = "extra == 'model'", specifier = "==1.10.1" },
@@ -55,6 +65,14 @@ requires-dist = [
     { name = "transformers", marker = "extra == 'model'", specifier = "==4.56.1" },
 ]
 provides-extras = ["model", "test"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8,<9" }]
+model = [
+    { name = "accelerate", specifier = "==1.10.1" },
+    { name = "torch", specifier = "==2.4.1" },
+    { name = "transformers", specifier = "==4.56.1" },
+]
 
 [[package]]
 name = "certifi"

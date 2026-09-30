@@ -18,6 +18,8 @@ class ModelConfig:
     device: str = "cuda:0"
     attention_implementation: str = "sdpa"
     max_length: int = 2048
+    response_tokens: int | None = None
+    is_synthetic: bool = False
     seed: int = 0
 
     def __post_init__(self):
@@ -36,6 +38,10 @@ class ModelConfig:
             raise ValueError("SMH head out of range")
         if self.dtype not in {"float32", "float16", "bfloat16"}:
             raise ValueError("Unsupported dtype")
+        if self.response_tokens is not None and (type(self.response_tokens) is not int or self.response_tokens < 1):
+            raise ValueError("response_tokens must be a positive integer or null (full response)")
+        if type(self.is_synthetic) is not bool:
+            raise ValueError("is_synthetic must be boolean")
 
     def as_dict(self):
         return asdict(self)

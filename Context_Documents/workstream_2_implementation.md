@@ -58,19 +58,40 @@ localization, reusable extraction/scoring, and neutral/random controls. The root
 - Real E/A twin localization, heatmaps, SMH ranks, neutral controls, and QC stats.
 - Record failures as measured failures; absent runs remain NOT_RUN.
 
-## Implementation and verification status (2026-09-29)
+## Implementation and verification status (2026-09-30)
 
 | Item | Status | Evidence |
 | --- | --- | --- |
 | Version 1 WS1/WS2/WS3 handoff | Implemented | Root `INTERFACES.md`, validator, sample JSONL. |
-| Qwen hook and exact token positions | Verified on tiny Qwen CPU and RTX 3090 | `uv run python -m pytest -q` (7 passed); GPU smoke generated indexed activation, localization, and comparison bundles. |
-| Real Qwen2.5-7B tokenizer/config | Verified | `scripts/verify_qwen_tokenizer.py` checked 3 distinct sample rows and model dimensions. |
-| Paired scores, controls, permutations, heatmaps | Implemented, synthetic integration run | Both assigned and user sample analyses complete. Sample has 3 scenarios and random weights, so its numerical scores are not findings. |
-| Imported reference repositories | Verified | 72 SMH and 41 Persona Vectors files match their recorded upstream Git blobs; no nested Git metadata. |
-| Upstream humorous reproduction | NOT_RUN | Requires actual upstream judged CSVs/vector files and full Qwen weights. |
-| E/A Big Five assigned localization | NOT_RUN | Requires WS1 real twin data and full Qwen weights. |
+| Current WS1 adapter | Verified on real inputs | `prepare-data` builds 420 rows from 20 scenarios and 20 system prompts; 100 matched assigned pairs per E/A trait. Canonical responses stay unchanged. |
+| Current WS1 QC protocol | Verified | Accepts the exact `gen_user_variants.make_row` export, checks both forced-choice orders, and preserves authored-system provenance. Legacy numeric QC remains supported. |
+| Qwen hooks and token positions | Verified on tiny Qwen CPU and RTX 3090 | 19 tests pass without skips, including response sensitivity, causal windows, exception cleanup, and all E/A/readout comparison branches. |
+| Real Qwen tokenizer/config | Verified on all 420 WS1 rows | Max full sequence 1,096 tokens, max response 1,022; no truncation. The first 150 response tokens are selected explicitly, with shorter responses using all tokens. |
+| Independent upstream implementation agreement | Verified with tiny Qwen on RTX 3090 | Original upstream hook functions execute independently: captured-vector max error 0, score Spearman 1.0. This is not humorous-head reproduction. |
+| Scores, controls, permutations, heatmaps | Implemented and integrated | All 420 assigned stimuli run with random tiny weights; E/A first/resp/user analyses complete with 19,999 permutations. Fixture tests cover 12 localizations and 6 comparisons. Synthetic scores are not findings. |
+| uv environment/storage | Implemented | Default model/dev groups retain libraries across `uv run`; `scripts/uv_hdd.sh` routes packages, cache and weights to the hard disk. Repo `results/` points there on this host. |
+| Imported reference repositories | Verified | 72 SMH and 41 Persona Vectors files match recorded upstream Git blobs; no nested Git metadata. |
+| Upstream humorous reproduction | NOT_RUN | Judged humorous CSVs/vectors and judge credentials are absent. This remains independent of WS1 user-variant data. |
+| E/A assigned localization | NOT_RUN on full checkpoint | All four pinned checkpoint shards are cached on the HDD. Full loading failed because another Visual Grounding process occupied 22.2 GiB of GPU memory. |
+| Real assigned/user comparison | NOT_AVAILABLE | WS1 has not produced `data/user_variants.jsonl`; `--require-user` fails before loading weights. |
 
-The RTX 3090 itself works with bf16. At the last check, about 8.8 GB VRAM was
-free and the filesystem had about 11 GB free; the full bf16 7B checkpoint is
-not cached. The full-model gates must wait for enough free VRAM/storage and
-the upstream/WS1 inputs. Keep sample and full-model results separate.
+The pinned Qwen checkpoint is fully cached at
+`/media/gaurav/Data21/eshaan/models/huggingface`; the uv environment/cache and
+large result bundles are also on that hard disk. The latest full-model attempt
+failed at checkpoint loading: `harsha`'s Visual Grounding evaluation, PID
+1778350, was occupying about 22.2 GiB on the RTX 3090. No full-model extraction
+or scientific result was produced. The incomplete `full-qwen-gpu` output is
+preserved; use a new output name for the next attempt.
+The completed tiny-model integration report is at
+`results/ws1-verification/tiny-real-tokenizer-gpu/verification.json`.
+
+The full verification command is:
+
+```bash
+bash scripts/uv_hdd.sh run python -m scripts.verify_ws2_on_ws1 \
+  --model full --device cuda:0 --out results/ws1-verification/full-qwen-gpu-retry
+```
+
+After WS1 ships user variants, rerun `prepare-data --user-variants ...` and
+`run --require-user ...` from `INTERFACES.md`. Regenerate incomplete QC cells
+or explicitly choose a balanced slice; neither pairing nor QC is bypassed.

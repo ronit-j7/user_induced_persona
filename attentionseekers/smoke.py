@@ -43,7 +43,8 @@ def run_smoke(out, *, device="cpu"):
     config = ModelConfig(model_name="tiny-random-Qwen2-smoke", revision="untrained",
                          num_layers=2, num_heads=4, num_kv_heads=2, head_dim=8,
                          hidden_size=32, smh_layer=1, smh_heads=(0, 1, 2), dtype="float32",
-                         device=device, attention_implementation="sdpa", max_length=512, seed=0)
+                         device=device, attention_implementation="sdpa", max_length=512,
+                         is_synthetic=True, seed=0)
     torch.manual_seed(0)
     model = Qwen2ForCausalLM(Qwen2Config(vocab_size=256, hidden_size=32, intermediate_size=64,
                                           num_hidden_layers=2, num_attention_heads=4,
