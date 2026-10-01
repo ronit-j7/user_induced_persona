@@ -50,23 +50,48 @@ def _cache_path(cache_dir, payload):
 
 
 def call_logprobs(client, model, prompt, *, top_logprobs):
-    completion = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=1,
-        temperature=0,
-        logprobs=True,
-        top_logprobs=top_logprobs,
-        seed=0,
-    )
+    import math
+    last_error = None
+    completion = None
+    for attempt in range(6):
+        succeeded = False
+        retry_later = False
+        for token_arg in ({"max_tokens": 1}, {"max_completion_tokens": 1}):
+            try:
+                completion = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0,
+                    logprobs=True,
+                    top_logprobs=top_logprobs,
+                    seed=0,
+                    **token_arg,
+                )
+                succeeded = True
+                break
+            except Exception as exc:
+                last_error = exc
+                message = str(exc).lower()
+                if "max_tokens" in message or "max_completion_tokens" in message:
+                    continue
+                if "429" in message or "rate limit" in message or "timeout" in message or "500" in message:
+                    time.sleep(min(30, 2 ** attempt))
+                    retry_later = True
+                    break
+                raise
+        if succeeded:
+            break
+        if not retry_later:
+            break
+    if completion is None:
+        raise last_error
     choice = completion.choices[0]
     content = getattr(choice, "logprobs", None)
     items = []
     if content and getattr(content, "content", None):
         items = content.content[0].top_logprobs or []
-    probs = {item.token: float(item.logprob) for item in items}
-    import math
-    probs = {token: math.exp(value) for token, value in probs.items()}
+    probs = {token: math.exp(value) for token, value in
+             ((item.token, float(item.logprob)) for item in items)}
     usage = getattr(completion, "usage", None)
     tokens = {
         "input": getattr(usage, "prompt_tokens", 0) if usage else 0,
@@ -121,19 +146,11 @@ def judge_file(records, out, *, model, cache_dir, min_mass=0.25, top_logprobs=20
 
     def work(item):
         record, metric = item
-        chosen = model
-        try:
-            score, tokens, hit = judge_one(
-                client, chosen, metric, record["intent"], record["text"],
-                cache_dir=cache_dir, min_mass=min_mass, top_logprobs=top_logprobs)
-        except Exception:
-            if not fallback_model or fallback_model == model:
-                raise
-            chosen = fallback_model
-            score, tokens, hit = judge_one(
-                client, chosen, metric, record["intent"], record["text"],
-                cache_dir=cache_dir, min_mass=min_mass, top_logprobs=top_logprobs)
-        return record["id"], metric, score, tokens, hit, chosen
+        # Stay on one judge model. call_logprobs retries parameter and rate-limit errors.
+        score, tokens, hit = judge_one(
+            client, model, metric, record["intent"], record["text"],
+            cache_dir=cache_dir, min_mass=min_mass, top_logprobs=top_logprobs)
+        return record["id"], metric, score, tokens, hit, model
 
     results = {}
     finished = 0
