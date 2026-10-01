@@ -1,0 +1,162 @@
+{
+  "readout": "resp",
+  "contrasts": [
+    {
+      "trait": "E",
+      "pole": "+",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 19999,
+      "fdr_significant": 693,
+      "n_heads": 784,
+      "max_abs_score": 5.807297229766846
+    },
+    {
+      "trait": "E",
+      "pole": "-",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 19999,
+      "fdr_significant": 707,
+      "n_heads": 784,
+      "max_abs_score": 15.532279014587402
+    },
+    {
+      "trait": "A",
+      "pole": "+",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 19999,
+      "fdr_significant": 691,
+      "n_heads": 784,
+      "max_abs_score": 3.491124391555786
+    },
+    {
+      "trait": "A",
+      "pole": "-",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 19999,
+      "fdr_significant": 694,
+      "n_heads": 784,
+      "max_abs_score": 12.25840950012207
+    }
+  ],
+  "references": [
+    {
+      "path": "results/ws2-refresh/A-system-prompts-2026-10-01-retry/A-assigned-resp/metrics.json",
+      "trait": "A",
+      "source": "assigned",
+      "readout": "resp",
+      "fdr_significant": 703
+    },
+    {
+      "path": "results/ws1-verification/full-qwen-gpu-retry/pipeline/E-assigned-resp/metrics.json",
+      "trait": "E",
+      "source": "assigned",
+      "readout": "resp",
+      "fdr_significant": 685
+    }
+  ],
+  "conclusion": "Same-pole paraphrases also mark a large share of heads significant, so the test is sensitive to wording changes and not only to the trait contrast. Prefer ranks and effect sizes over the significant-head count."
+}

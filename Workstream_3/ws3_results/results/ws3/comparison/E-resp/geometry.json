@@ -1,0 +1,30 @@
+{
+  "trait": "E",
+  "readout": "resp",
+  "smh_cosine": 0.2340767497173446,
+  "top_norm_heads": [
+    0,
+    2,
+    17
+  ],
+  "top_norm_cosine": 0.16190961749119667,
+  "random_percentile": {
+    "draws": 1000,
+    "observed": 0.2340767497173446,
+    "percentile_signed": 57.4,
+    "percentile_abs": 57.4,
+    "random_mean_abs": 0.24187094799758715
+  },
+  "smh_ranks_user": {
+    "2": 1,
+    "4": 2,
+    "27": 4
+  },
+  "smh_ranks_assigned": {
+    "2": 1,
+    "4": 3,
+    "27": 2
+  },
+  "fdr_assigned": 685,
+  "fdr_user": 676
+}

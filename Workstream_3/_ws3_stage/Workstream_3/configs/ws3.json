@@ -1,0 +1,19 @@
+{
+  "judge_model": "gpt-4.1-mini",
+  "judge_fallback_model": "gpt-6-luna",
+  "judge_base_url": null,
+  "min_integer_mass": 0.25,
+  "top_logprobs": 20,
+  "gen": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "max_new_tokens": 300,
+    "samples_per_variant": 2,
+    "neutral_samples": 3,
+    "batch_size": 4,
+    "seed": 0
+  },
+  "smh_layer": 19,
+  "smh_heads": [2, 4, 27],
+  "neutral_system": "You are a helpful assistant."
+}

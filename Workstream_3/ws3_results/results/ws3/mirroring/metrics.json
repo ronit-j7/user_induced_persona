@@ -1,0 +1,350 @@
+{
+  "status": "COMPLETE",
+  "traits": {
+    "E": {
+      "mirroring": {
+        "n": 20,
+        "mean": 13.047176194626573,
+        "dz": 1.3865272718533754,
+        "wilcoxon_p": 1.9073486328125e-05,
+        "ci95": {
+          "low": 8.984110081823106,
+          "high": 17.052731430412347,
+          "resamples": 5000
+        },
+        "scenarios": [
+          "brainstorm_01",
+          "brainstorm_02",
+          "brainstorm_03",
+          "brainstorm_04",
+          "brainstorm_05",
+          "code_01",
+          "code_02",
+          "code_03",
+          "code_04",
+          "code_05",
+          "emo_01",
+          "emo_02",
+          "emo_03",
+          "emo_04",
+          "emo_05",
+          "explain_01",
+          "explain_02",
+          "explain_03",
+          "explain_04",
+          "explain_05"
+        ]
+      },
+      "per_domain": {
+        "brainstorming": {
+          "n": 5,
+          "mean": 14.015113322693276,
+          "dz": 1.2677451786858775,
+          "wilcoxon_p": 0.0625,
+          "scenarios": [
+            "brainstorm_01",
+            "brainstorm_02",
+            "brainstorm_03",
+            "brainstorm_04",
+            "brainstorm_05"
+          ],
+          "flag": false
+        },
+        "coding": {
+          "n": 5,
+          "mean": 16.21677138801299,
+          "dz": 2.8332441079495374,
+          "wilcoxon_p": 0.0625,
+          "scenarios": [
+            "code_01",
+            "code_02",
+            "code_03",
+            "code_04",
+            "code_05"
+          ],
+          "flag": false
+        },
+        "emotional_advice": {
+          "n": 5,
+          "mean": 2.554388035810797,
+          "dz": 0.5240726206681243,
+          "wilcoxon_p": 0.3125,
+          "scenarios": [
+            "emo_01",
+            "emo_02",
+            "emo_03",
+            "emo_04",
+            "emo_05"
+          ],
+          "flag": false
+        },
+        "explaining": {
+          "n": 5,
+          "mean": 19.402432031989235,
+          "dz": 3.0667561893304467,
+          "wilcoxon_p": 0.0625,
+          "scenarios": [
+            "explain_01",
+            "explain_02",
+            "explain_03",
+            "explain_04",
+            "explain_05"
+          ],
+          "flag": false
+        }
+      },
+      "per_facet_k": {
+        "0": {
+          "n": 20,
+          "mean": 18.46384343485615,
+          "dz": 1.0804464114601169,
+          "wilcoxon_p": 0.000209808349609375
+        },
+        "1": {
+          "n": 20,
+          "mean": -1.7901128163396112,
+          "dz": -0.12390041223427065,
+          "wilcoxon_p": 0.6742229461669922
+        },
+        "2": {
+          "n": 20,
+          "mean": 22.467797965363182,
+          "dz": 1.4964320909149085,
+          "wilcoxon_p": 1.9073486328125e-06
+        }
+      },
+      "cross_trait_mean_diff": {
+        "n": 20,
+        "mean": 0.13030975213672918,
+        "dz": 0.0775283447487122,
+        "wilcoxon_p": 0.4304332733154297
+      },
+      "poles": {
+        "+": {
+          "n": 120,
+          "mean_score": 48.99910093691756,
+          "mean_tokens": 291.7083333333333,
+          "refusal_rate": 0.0
+        },
+        "-": {
+          "n": 120,
+          "mean_score": 35.951924742290984,
+          "mean_tokens": 294.7583333333333,
+          "refusal_rate": 0.0
+        },
+        "0": {
+          "n": 0,
+          "mean_score": null,
+          "mean_tokens": null,
+          "refusal_rate": null
+        }
+      },
+      "neutral_mean": 33.677292936073464,
+      "missing_scores": 0
+    },
+    "A": {
+      "mirroring": {
+        "n": 20,
+        "mean": 0.478013886511998,
+        "dz": 0.31172292201037405,
+        "wilcoxon_p": 0.09730720520019531,
+        "ci95": {
+          "low": -0.16300727862563177,
+          "high": 1.160570098365671,
+          "resamples": 5000
+        },
+        "scenarios": [
+          "brainstorm_01",
+          "brainstorm_02",
+          "brainstorm_03",
+          "brainstorm_04",
+          "brainstorm_05",
+          "code_01",
+          "code_02",
+          "code_03",
+          "code_04",
+          "code_05",
+          "emo_01",
+          "emo_02",
+          "emo_03",
+          "emo_04",
+          "emo_05",
+          "explain_01",
+          "explain_02",
+          "explain_03",
+          "explain_04",
+          "explain_05"
+        ]
+      },
+      "per_domain": {
+        "brainstorming": {
+          "n": 5,
+          "mean": 1.1481287775164275,
+          "dz": 0.5831241407450777,
+          "wilcoxon_p": 0.1875,
+          "scenarios": [
+            "brainstorm_01",
+            "brainstorm_02",
+            "brainstorm_03",
+            "brainstorm_04",
+            "brainstorm_05"
+          ],
+          "flag": false
+        },
+        "coding": {
+          "n": 5,
+          "mean": 0.7449822360311316,
+          "dz": 1.204480686510984,
+          "wilcoxon_p": 0.0625,
+          "scenarios": [
+            "code_01",
+            "code_02",
+            "code_03",
+            "code_04",
+            "code_05"
+          ],
+          "flag": false
+        },
+        "emotional_advice": {
+          "n": 5,
+          "mean": 0.1918806870951272,
+          "dz": 0.10797689810872095,
+          "wilcoxon_p": 0.625,
+          "scenarios": [
+            "emo_01",
+            "emo_02",
+            "emo_03",
+            "emo_04",
+            "emo_05"
+          ],
+          "flag": true
+        },
+        "explaining": {
+          "n": 5,
+          "mean": -0.17293615459469436,
+          "dz": -0.11003606060858838,
+          "wilcoxon_p": 0.8125,
+          "scenarios": [
+            "explain_01",
+            "explain_02",
+            "explain_03",
+            "explain_04",
+            "explain_05"
+          ],
+          "flag": false
+        }
+      },
+      "per_facet_k": {
+        "0": {
+          "n": 20,
+          "mean": 0.7200775436141775,
+          "dz": 0.2215389729193641,
+          "wilcoxon_p": 0.36827659606933594
+        },
+        "1": {
+          "n": 20,
+          "mean": -0.21935482491449748,
+          "dz": -0.1513237001110012,
+          "wilcoxon_p": 0.4304332733154297
+        },
+        "2": {
+          "n": 20,
+          "mean": 0.9333189408363133,
+          "dz": 0.4048105289286458,
+          "wilcoxon_p": 0.029575347900390625
+        }
+      },
+      "cross_trait_mean_diff": {
+        "n": 20,
+        "mean": 2.0646260446846534,
+        "dz": 0.2270013674194829,
+        "wilcoxon_p": 0.4523754119873047
+      },
+      "poles": {
+        "+": {
+          "n": 120,
+          "mean_score": 91.35884809931939,
+          "mean_tokens": 287.575,
+          "refusal_rate": 0.0
+        },
+        "-": {
+          "n": 120,
+          "mean_score": 90.8808342128074,
+          "mean_tokens": 289.025,
+          "refusal_rate": 0.0
+        },
+        "0": {
+          "n": 0,
+          "mean_score": null,
+          "mean_tokens": null,
+          "refusal_rate": null
+        }
+      },
+      "neutral_mean": 90.79180635540298,
+      "missing_scores": 0
+    }
+  },
+  "length_by_pole": {
+    "E": {
+      "+": {
+        "n": 120,
+        "mean_score": null,
+        "mean_tokens": 291.7083333333333,
+        "refusal_rate": 0.0
+      },
+      "-": {
+        "n": 120,
+        "mean_score": null,
+        "mean_tokens": 294.7583333333333,
+        "refusal_rate": 0.0
+      },
+      "0": {
+        "n": 0,
+        "mean_score": null,
+        "mean_tokens": null,
+        "refusal_rate": null
+      }
+    },
+    "A": {
+      "+": {
+        "n": 120,
+        "mean_score": null,
+        "mean_tokens": 287.575,
+        "refusal_rate": 0.0
+      },
+      "-": {
+        "n": 120,
+        "mean_score": null,
+        "mean_tokens": 289.025,
+        "refusal_rate": 0.0
+      },
+      "0": {
+        "n": 0,
+        "mean_score": null,
+        "mean_tokens": null,
+        "refusal_rate": null
+      }
+    },
+    "none": {
+      "+": {
+        "n": 0,
+        "mean_score": null,
+        "mean_tokens": null,
+        "refusal_rate": null
+      },
+      "-": {
+        "n": 0,
+        "mean_score": null,
+        "mean_tokens": null,
+        "refusal_rate": null
+      },
+      "0": {
+        "n": 60,
+        "mean_score": null,
+        "mean_tokens": 295.45,
+        "refusal_rate": 0.0
+      }
+    }
+  },
+  "note": "A- on emotional_advice is a known asymmetry (DECISIONS D9): low agreeableness toward someone asking for support is close to being unhelpful."
+}
