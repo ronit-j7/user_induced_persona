@@ -26,8 +26,10 @@ def qc_protocol(row):
         if row["set"] not in {"user_variant", "factorial"}:
             raise ValueError(f"{name}: forced-choice QC applies to user rewrites")
         fc = qc["forced_choice"]
-        if not isinstance(fc, dict) or fc.get("rewrite_as_B") != "B" or fc.get("rewrite_as_A") != "A":
-            raise ValueError(f"{name}: forced-choice QC must select the rewrite in both orders")
+        # D4: a high pole passes when the rewrite wins both orders, a low pole when the original does.
+        expected = {"+": ("B", "A"), "-": ("A", "B")}.get(row.get("user_pole"))
+        if expected is None or not isinstance(fc, dict) or (fc.get("rewrite_as_B"), fc.get("rewrite_as_A")) != expected:
+            raise ValueError(f"{name}: forced-choice QC must match the pole in both orders")
         if "checklist" in qc:
             checklist = qc["checklist"]
             checks = ("C1", "C2", "C3", "C4", "L1", "L2", "R1", "R2", "R3")
@@ -36,6 +38,8 @@ def qc_protocol(row):
             ):
                 raise ValueError(f"{name}: checklist QC requires all nine checks to pass")
         return "ws1_checklist_forced_choice"
+    if row["set"] == "factorial" and isinstance(qc.get("user_variant_id"), str) and qc["user_variant_id"].strip():
+        return "factorial_user_variant_link"
     for key in ("content", "trait"):
         score = qc.get(key)
         if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 70 <= score <= 100:

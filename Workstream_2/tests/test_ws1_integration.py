@@ -70,9 +70,14 @@ def test_ws1_make_row_qc_without_invented_numeric_scores(ws1, monkeypatch):
                 "eval": {"forced_choice": {"rewrite_as_B": "B", "rewrite_as_A": "A"}}}
     row = generator.make_row(scn, "E", "+", 0, accepted, lambda text: None)
     assert validate_rows([row])["qc_protocol_counts"] == {"ws1_checklist_forced_choice": 1}
+    low = {"text": accepted["text"], "attempts": 1,
+           "eval": {"forced_choice": {"rewrite_as_B": "A", "rewrite_as_A": "B"}}}
+    low_row = generator.make_row(scn, "E", "-", 0, low, lambda text: None)
+    low_row["id"] = low_row["id"] + "-low"
+    assert validate_rows([low_row])["qc_protocol_counts"] == {"ws1_checklist_forced_choice": 1}
     assert "content" not in row["qc"] and "trait" not in row["qc"]
     row["qc"]["forced_choice"]["rewrite_as_A"] = "B"
-    with pytest.raises(ValueError, match="both orders"):
+    with pytest.raises(ValueError, match="match the pole"):
         validate_rows([row])
     row["qc"]["forced_choice"]["rewrite_as_A"] = "A"
     row["qc"]["checklist"] = {k: {"answer": "yes"} for k in ("C1", "C2", "C3", "C4", "L1", "L2", "R1", "R2", "R3")}
