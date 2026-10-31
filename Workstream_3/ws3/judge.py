@@ -187,6 +187,7 @@ def judge_file(records, out, *, model, cache_dir, min_mass=0.25, top_logprobs=20
                 "domain": source["domain"],
                 "trait": source["trait"],
                 "pole": source["pole"],
+                "sys_pole": source.get("sys_pole"),
                 "k": source["k"],
                 "sample": source["sample"],
                 "kind": source["kind"],

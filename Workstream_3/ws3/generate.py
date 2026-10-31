@@ -61,6 +61,47 @@ def zero_head_hook(model, layer, heads, head_dim=128):
         handle.remove()
 
 
+@contextmanager
+def projection_hook(model, groups, lam, head_dim=128):
+    """Remove lam times the component along u from selected o_proj input head slices.
+
+    groups maps layer -> (heads, u, mu0); u and mu0 have len(heads) * head_dim entries
+    in head order. At every position: z <- z - lam * u u^T (z - mu0).
+    """
+    import torch
+    handles = []
+    try:
+        for layer, (heads, u, mu0) in sorted(groups.items()):
+            heads = [int(h) for h in heads]
+            cols = torch.cat([torch.arange(h * head_dim, (h + 1) * head_dim) for h in heads])
+            u = torch.as_tensor(u, dtype=torch.float32).reshape(-1)
+            mu0 = torch.as_tensor(mu0, dtype=torch.float32).reshape(-1)
+            if u.numel() != cols.numel() or mu0.numel() != cols.numel():
+                raise ValueError(f"Layer {layer}: direction size does not match {len(heads)} heads")
+            if abs(float(u.norm()) - 1) > 1e-3:
+                raise ValueError(f"Layer {layer}: direction must be unit norm")
+            # Sharded models keep layers on different GPUs; cache per device.
+            placed = {}
+
+            def pre_hook(_module, args, cols=cols, u=u, mu0=mu0, placed=placed):
+                hidden = args[0]
+                if hidden.device not in placed:
+                    placed[hidden.device] = tuple(t.to(hidden.device) for t in (cols, u, mu0))
+                c, uu, mm = placed[hidden.device]
+                z = hidden[..., c].float()
+                coef = (z - mm) @ uu
+                edited = hidden.clone()
+                edited[..., c] = (z - lam * coef.unsqueeze(-1) * uu).to(hidden.dtype)
+                return (edited,) + tuple(args[1:])
+
+            module = model.model.layers[layer].self_attn.o_proj
+            handles.append(module.register_forward_pre_hook(pre_hook))
+        yield
+    finally:
+        for handle in handles:
+            handle.remove()
+
+
 def generate_batch(model, tokenizer, jobs, *, max_new_tokens, temperature, top_p):
     import torch
     tokenizer.padding_side = "left"
@@ -75,16 +116,18 @@ def generate_batch(model, tokenizer, jobs, *, max_new_tokens, temperature, top_p
         prompts.append(tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True))
     encoded = tokenizer(prompts, return_tensors="pt", padding=True)
-    encoded = {key: value.to(model.device) for key, value in encoded.items()}
+    device = model.get_input_embeddings().weight.device
+    encoded = {key: value.to(device) for key, value in encoded.items()}
     prompt_len = encoded["input_ids"].shape[1]
+    # temperature 0 means greedy decoding (deterministic, so arms differ only by the hook).
+    sampling = {"do_sample": True, "temperature": temperature, "top_p": top_p} if temperature > 0 else \
+        {"do_sample": False, "temperature": None, "top_p": None, "top_k": None}
     with torch.inference_mode():
         output = model.generate(
             **encoded,
             max_new_tokens=max_new_tokens,
-            do_sample=True,
-            temperature=temperature,
-            top_p=top_p,
             pad_token_id=tokenizer.pad_token_id,
+            **sampling,
         )
     records = []
     for row, job in enumerate(jobs):
@@ -98,7 +141,7 @@ def generate_batch(model, tokenizer, jobs, *, max_new_tokens, temperature, top_p
 
 
 def run_generation(jobs, out, config_path, *, batch_size=4, seed=0, max_new_tokens=300,
-                   temperature=1.0, top_p=1.0, hook=None):
+                   temperature=1.0, top_p=1.0, hook=None, model=None, tokenizer=None):
     import torch
     from attentionseekers.config import load_config
     from attentionseekers.extract import load_model
@@ -122,8 +165,8 @@ def run_generation(jobs, out, config_path, *, batch_size=4, seed=0, max_new_toke
     if not pending:
         print(f"[progress] {len(jobs)}/{len(jobs)} already complete", flush=True)
         return path
-    config = load_config(config_path)
-    model, tokenizer = load_model(config)
+    if model is None:
+        model, tokenizer = load_model(load_config(config_path))
     started = time.time()
     finished = len(jobs) - sum(len(batch) for _, batch in pending)
     context = hook(model) if hook is not None else _null()

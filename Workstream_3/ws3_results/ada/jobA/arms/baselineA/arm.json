@@ -1,0 +1,13 @@
+{
+  "arm": "baselineA",
+  "kind": "none",
+  "trait": "A",
+  "seed": 0,
+  "batch_size": 4,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "max_new_tokens": 150,
+  "complete": true,
+  "n": 120,
+  "seconds_this_session": 1399.7
+}

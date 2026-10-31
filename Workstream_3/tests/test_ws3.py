@@ -110,8 +110,7 @@ def test_same_pole_pairing():
     assert np.allclose(diffs, -2)
 
 
-def test_zero_hook_clears_head_slice():
-    import torch
+def _tiny_model(layers=1):
     from torch import nn
 
     class Attention(nn.Module):
@@ -128,9 +127,14 @@ def test_zero_hook_clears_head_slice():
         def __init__(self):
             super().__init__()
             self.model = nn.Module()
-            self.model.layers = nn.ModuleList([Layer()])
+            self.model.layers = nn.ModuleList([Layer() for _ in range(layers)])
 
-    model = Model()
+    return Model()
+
+
+def test_zero_hook_clears_head_slice():
+    import torch
+    model = _tiny_model()
     seen = {}
 
     def grab(_module, inputs, _output):

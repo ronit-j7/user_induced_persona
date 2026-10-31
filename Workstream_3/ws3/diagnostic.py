@@ -27,14 +27,18 @@ def same_pole_differences(acts, rows, trait, pole, *, k_a=0, k_b=1):
     return np.stack(diffs), names
 
 
-def null_localization(acts, rows, weights, trait, pole, *, permutations=19999, seed=0, k_a=0, k_b=1):
-    from attentionseekers.heads import bh_qvalues, head_contributions, sign_flip_pvalues
+def null_localization(acts, rows, weights, trait, pole, *, permutations=19999, seed=0, k_a=0, k_b=1,
+                      smh_layer=19, smh_heads=(2, 4, 27)):
+    from attentionseekers.heads import bh_qvalues, head_contributions, ranks_descending, sign_flip_pvalues
     diffs, names = same_pole_differences(acts, rows, trait, pole, k_a=k_a, k_b=k_b)
     delta = diffs.mean(axis=0)
     raw = np.stack([head_contributions(delta[layer], weights[layer])[0] for layer in range(len(weights))])
     pvalues = sign_flip_pvalues(diffs, weights, raw, permutations=permutations, seed=seed)
     qvalues = bh_qvalues(pvalues)
+    layer_ranks = ranks_descending(raw[smh_layer])
     return {
+        "smh_ranks_in_layer": {str(h): int(layer_ranks[h]) for h in smh_heads},
+        "layer_top3": [int(h) for h in np.argsort(-raw[smh_layer], kind="stable")[:3]],
         "trait": trait,
         "pole": pole,
         "k_pair": [k_a, k_b],
@@ -70,7 +74,8 @@ def main(argv=None):
         for pole in args.poles:
             print(f"[progress] {trait} pole={pole}", flush=True)
             contrasts.append(null_localization(
-                acts, rows, weights, trait, pole, permutations=args.permutations))
+                acts, rows, weights, trait, pole, permutations=args.permutations,
+                smh_layer=config["smh_layer"], smh_heads=tuple(config["smh_heads"])))
             print(json.dumps(contrasts[-1]), flush=True)
     references = []
     for path in args.reference_metrics:
@@ -81,6 +86,7 @@ def main(argv=None):
             "source": metrics.get("source"),
             "readout": metrics.get("readout"),
             "fdr_significant": metrics.get("fdr_significant"),
+            "smh_ranks_in_layer": metrics.get("smh_ranks_in_layer"),
         })
     real = [item["fdr_significant"] for item in references if item["fdr_significant"] is not None]
     nulls = [item["fdr_significant"] for item in contrasts]

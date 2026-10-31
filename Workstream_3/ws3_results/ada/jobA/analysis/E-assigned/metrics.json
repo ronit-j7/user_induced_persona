@@ -1,0 +1,49 @@
+{
+  "trait": "E",
+  "source": "assigned",
+  "readout": "resp",
+  "n_pairs": 100,
+  "n_scenarios": 20,
+  "scenarios": [
+    "brainstorm_01",
+    "brainstorm_02",
+    "brainstorm_03",
+    "brainstorm_04",
+    "brainstorm_05",
+    "code_01",
+    "code_02",
+    "code_03",
+    "code_04",
+    "code_05",
+    "emo_01",
+    "emo_02",
+    "emo_03",
+    "emo_04",
+    "emo_05",
+    "explain_01",
+    "explain_02",
+    "explain_03",
+    "explain_04",
+    "explain_05"
+  ],
+  "permutations": 999,
+  "seed": 0,
+  "fdr_significant": 683,
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "is_sample": false,
+  "is_synthetic": false,
+  "response_tokens": 150,
+  "input_bundle": "/home2/yajat.lakhanpal/ap_store/results/jobA/acts",
+  "input_manifest_sha256": "a8253c3209ae23e11af05c33fcfe9d94d8ff0d8e848c7765943b4d41944fef2b",
+  "smh_layer": 19,
+  "smh_heads": [
+    2,
+    4,
+    27
+  ],
+  "smh_ranks_in_layer": {
+    "2": 1,
+    "4": 3,
+    "27": 2
+  }
+}

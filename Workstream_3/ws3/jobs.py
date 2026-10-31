@@ -66,7 +66,9 @@ def build_jobs(variants, scenarios, *, samples_per_variant=2, neutral_samples=3)
 
 def public_record(job, text, n_tokens):
     """Drop the user message so downstream judge code cannot see it."""
+    extra = {"sys_pole": job["sys_pole"]} if "sys_pole" in job else {}
     return {
+        **extra,
         "id": job["id"],
         "source_id": job["source_id"],
         "scenario": job["scenario"],

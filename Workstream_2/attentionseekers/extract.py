@@ -34,16 +34,23 @@ def load_model(config):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
     torch.manual_seed(config.seed)
-    if config.device.startswith("cuda"):
+    sharded = config.device == "auto"
+    if sharded or config.device.startswith("cuda"):
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA unavailable; check driver/sandbox access before running Qwen")
         if config.dtype == "bfloat16" and not torch.cuda.is_bf16_supported():
             raise RuntimeError("Configured GPU does not support bf16")
+    placement = {"device_map": {"": config.device}}
+    if sharded:
+        # Splits layers across every visible GPU (e.g. two 11 GB cards for 7B in fp16).
+        placement = {"device_map": "auto"}
+        if config.max_memory_per_gpu:
+            placement["max_memory"] = {i: config.max_memory_per_gpu
+                                       for i in range(torch.cuda.device_count())}
     tokenizer = AutoTokenizer.from_pretrained(config.model_name, revision=config.revision, use_fast=True)
     model = AutoModelForCausalLM.from_pretrained(
         config.model_name, revision=config.revision, torch_dtype=getattr(torch, config.dtype),
-        device_map={"": config.device}, low_cpu_mem_usage=True,
-        attn_implementation=config.attention_implementation)
+        low_cpu_mem_usage=True, attn_implementation=config.attention_implementation, **placement)
     model.eval()
     projection_modules(model, config)
     return model, tokenizer

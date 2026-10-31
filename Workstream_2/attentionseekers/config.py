@@ -16,6 +16,7 @@ class ModelConfig:
     smh_heads: tuple = (2, 4, 27)
     dtype: str = "bfloat16"
     device: str = "cuda:0"
+    max_memory_per_gpu: str | None = None
     attention_implementation: str = "sdpa"
     max_length: int = 2048
     response_tokens: int | None = None

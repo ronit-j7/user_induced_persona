@@ -1,0 +1,268 @@
+[plan] worker 0/1 arms=['baseline', 'smh_l1', 'smh_l2', 'rand3_l1', 'baselineA'] jobs E=200 A=120
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:35<01:45, 35.11s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:09<01:09, 34.94s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [01:44<00:34, 34.78s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:16<00:00, 33.56s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:16<00:00, 34.05s/it]
+[progress] arm=baseline fold=0 jobs=50
+[progress] 4/50 eta_s=537
+[progress] 8/50 eta_s=476
+[progress] 12/50 eta_s=428
+[progress] 16/50 eta_s=382
+[progress] 20/50 eta_s=335
+[progress] 24/50 eta_s=291
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=157
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=1 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=474
+[progress] 12/50 eta_s=426
+[progress] 16/50 eta_s=380
+[progress] 20/50 eta_s=334
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=2 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=473
+[progress] 12/50 eta_s=428
+[progress] 16/50 eta_s=383
+[progress] 20/50 eta_s=337
+[progress] 24/50 eta_s=293
+[progress] 28/50 eta_s=247
+[progress] 32/50 eta_s=203
+[progress] 36/50 eta_s=158
+[progress] 40/50 eta_s=113
+[progress] 44/50 eta_s=68
+[progress] 48/50 eta_s=23
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=3 jobs=50
+[progress] 4/50 eta_s=515
+[progress] 8/50 eta_s=465
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=378
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=baseline complete=True seconds=2304.7
+[progress] arm=smh_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=467
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=244
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=smh_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=474
+[progress] 12/50 eta_s=426
+[progress] 16/50 eta_s=380
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=smh_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=473
+[progress] 12/50 eta_s=428
+[progress] 16/50 eta_s=383
+[progress] 20/50 eta_s=337
+[progress] 24/50 eta_s=292
+[progress] 28/50 eta_s=247
+[progress] 32/50 eta_s=203
+[progress] 36/50 eta_s=158
+[progress] 40/50 eta_s=113
+[progress] 44/50 eta_s=68
+[progress] 48/50 eta_s=23
+[progress] 50/50 eta_s=0
+[progress] arm=smh_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=515
+[progress] 8/50 eta_s=465
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=378
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=smh_l1 complete=True seconds=2303.2
+[progress] arm=smh_l2 fold=0 jobs=50
+[progress] 4/50 eta_s=516
+[progress] 8/50 eta_s=467
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=332
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=244
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=smh_l2 fold=1 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=474
+[progress] 12/50 eta_s=426
+[progress] 16/50 eta_s=380
+[progress] 20/50 eta_s=334
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=smh_l2 fold=2 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=474
+[progress] 12/50 eta_s=428
+[progress] 16/50 eta_s=383
+[progress] 20/50 eta_s=337
+[progress] 24/50 eta_s=293
+[progress] 28/50 eta_s=247
+[progress] 32/50 eta_s=203
+[progress] 36/50 eta_s=158
+[progress] 40/50 eta_s=113
+[progress] 44/50 eta_s=68
+[progress] 48/50 eta_s=23
+[progress] 50/50 eta_s=0
+[progress] arm=smh_l2 fold=3 jobs=50
+[progress] 4/50 eta_s=515
+[progress] 8/50 eta_s=465
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=378
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=smh_l2 complete=True seconds=2302.5
+[progress] arm=rand3_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=467
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=332
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=244
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=rand3_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=473
+[progress] 12/50 eta_s=426
+[progress] 16/50 eta_s=380
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=rand3_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=523
+[progress] 8/50 eta_s=473
+[progress] 12/50 eta_s=428
+[progress] 16/50 eta_s=383
+[progress] 20/50 eta_s=337
+[progress] 24/50 eta_s=292
+[progress] 28/50 eta_s=247
+[progress] 32/50 eta_s=203
+[progress] 36/50 eta_s=158
+[progress] 40/50 eta_s=113
+[progress] 44/50 eta_s=68
+[progress] 48/50 eta_s=23
+[progress] 50/50 eta_s=0
+[progress] arm=rand3_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=515
+[progress] 8/50 eta_s=465
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=378
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=rand3_l1 complete=True seconds=2302.2
+[progress] arm=baselineA fold=0 jobs=30
+[progress] 4/30 eta_s=285
+[progress] 8/30 eta_s=241
+[progress] 12/30 eta_s=198
+[progress] 16/30 eta_s=154
+[progress] 20/30 eta_s=111
+[progress] 24/30 eta_s=66
+[progress] 28/30 eta_s=22
+[progress] 30/30 eta_s=0
+[progress] arm=baselineA fold=1 jobs=30
+[progress] 4/30 eta_s=293
+[progress] 8/30 eta_s=245
+[progress] 12/30 eta_s=199
+[progress] 16/30 eta_s=155
+[progress] 20/30 eta_s=111
+[progress] 24/30 eta_s=67
+[progress] 28/30 eta_s=22
+[progress] 30/30 eta_s=0
+[progress] arm=baselineA fold=2 jobs=30
+[progress] 4/30 eta_s=293
+[progress] 8/30 eta_s=246
+[progress] 12/30 eta_s=201
+[progress] 16/30 eta_s=156
+[progress] 20/30 eta_s=112
+[progress] 24/30 eta_s=67
+[progress] 28/30 eta_s=22
+[progress] 30/30 eta_s=0
+[progress] arm=baselineA fold=3 jobs=30
+[progress] 4/30 eta_s=285
+[progress] 8/30 eta_s=242
+[progress] 12/30 eta_s=198
+[progress] 16/30 eta_s=155
+[progress] 20/30 eta_s=111
+[progress] 24/30 eta_s=66
+[progress] 28/30 eta_s=22
+[progress] 30/30 eta_s=0
+[done] arm=baselineA complete=True seconds=1399.7

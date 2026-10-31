@@ -1,0 +1,345 @@
+[plan] worker 0/1 arms=['baseline', 'l19_l1', 'top10_l1', 'randdir19_l1', 'resid19_l1', 'l19_l2'] jobs E=200 A=120
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.39s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.43s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.45s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.37s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.39s/it]
+[progress] arm=baseline fold=0 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=465
+[progress] 12/50 eta_s=421
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=377
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=2 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=424
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=baseline complete=True seconds=2281.8
+[progress] arm=l19_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=511
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=419
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=377
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=244
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=460
+[progress] 12/50 eta_s=417
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=l19_l1 complete=True seconds=2279.5
+[progress] arm=top10_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=511
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=241
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=top10_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=top10_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=top10_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=509
+[progress] 8/50 eta_s=460
+[progress] 12/50 eta_s=417
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=top10_l1 complete=True seconds=2278.1
+[progress] arm=randdir19_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=511
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=randdir19_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=randdir19_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=244
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=randdir19_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=509
+[progress] 8/50 eta_s=460
+[progress] 12/50 eta_s=417
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=randdir19_l1 complete=True seconds=2277.6
+[progress] arm=resid19_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=512
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=419
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=resid19_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=resid19_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=424
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=resid19_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=resid19_l1 complete=True seconds=2280.8
+[progress] arm=l19_l2 fold=0 jobs=50
+[progress] 4/50 eta_s=512
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=419
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l2 fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=377
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l2 fold=2 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=424
+[progress] 16/50 eta_s=380
+[progress] 20/50 eta_s=334
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l2 fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=l19_l2 complete=True seconds=2280.5

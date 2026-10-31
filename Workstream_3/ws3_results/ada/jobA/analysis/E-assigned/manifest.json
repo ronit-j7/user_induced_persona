@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "kind": "localization",
+  "is_sample": false,
+  "is_synthetic": false,
+  "response_tokens": 150,
+  "trait": "E",
+  "source": "assigned",
+  "readout": "resp",
+  "files": {
+    "delta.npy": "61eb77d19262027b3fe884c568354b6c683149f601ac1ac8ee0236eeef19b45c",
+    "layer_snr.png": "c43ac04f097c812f18930cc99f6dd80bf22c7ae376313b1e6dc108391bbfedc1",
+    "metrics.json": "b10b5166821f2a8ef9536a3477bee8fbd43279658938f9e6757e8453a6f0306e",
+    "p.npy": "dcc7c9273e82fc6093c46b1406da889170878dbd89c1d3fbb7a9b48155bea7dd",
+    "q.npy": "b7d8e10054a72ac484346fc6a6ffc2bc4b1a0e4f108edf9f2c7e97a177423984",
+    "raw.npy": "2dbe289744890f6b9d38b30742acad935ea0c96a775457e17165f757f855e561",
+    "raw_z.npy": "0885c59f909fe5c900c004c8eca6faffd204a7de7bee3191651ad21791f1d0ea",
+    "raw_z_heatmap.png": "aff0361e5823c85866d8ae0de055d9ea4c522c88ac8cfd4b587f52cb16c677ff",
+    "signed_log_z.npy": "7c34de5d153ed732d074b60b7fcbf398a17c3b386e6f94761acddc0f2925939f",
+    "signed_log_z_heatmap.png": "8798dcc7345b146c85acc13bc4a04d56d4d015384b960c88750130e0a161cdf7",
+    "snr.npy": "ecba12e3d764a92e749fc95015c29890c0348f3b277b46b1ae542d3d46bacb91"
+  }
+}
