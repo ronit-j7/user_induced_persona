@@ -1,0 +1,61 @@
+% =====================================================================
+% INTRODUCTION. Expands the abstract in its order: S1-S2 -> P1-P2, S3 -> P3,
+% S4 -> P4, S5-S7 -> P5, contributions -> P6. Citations only in P1-P2.
+% No symbols or equations. Results stated as adjectives, not numbers.
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+% FLOW P1: stakes | CHARACTER: assistants | HAND-OFF: ends on "two sources"
+% NOTE: Lu et al.'s drift is away from the DEFAULT assistant persona, not
+% from a persona assigned by a system prompt (plan_agent.md 2.10). Keep it.
+Chat assistants are usually given a persona. A system prompt describes how the assistant should sound, and the persona it describes corresponds to directions inside the model that can be measured and steered \citep{chen2025persona}. In conversation, assistants also move towards the personality of the user they are talking to, a behaviour earlier work calls personality mirroring \citep{sprejer2026white}. Over long conversations they drift away from their default assistant persona \citep{lu2026assistant}. An assistant's personality therefore has two sources: the system prompt it is given and the way the user writes.
+
+% FLOW P2: the gap; the only paragraph where criticism has its own clause |
+% CHARACTER: the two sources -> the evidence for each | HAND-OFF: ends on
+% "a test that holds everything fixed except where the personality comes from"
+The two sources are not equally well understood. The assigned persona has been traced to a sparse set of attention heads that write an assistant's style \citep{izawa2026steering}. The user's side is known only from model-wide correlations: activations move along trait components after a user interacts with the model, and \citet{sprejer2026white} leave open whether that movement reflects the model's own persona or its representation of the user's style. Two obstacles stand in the way of an answer. In real conversations the two sources co-occur and differ in content, so their effects cannot be separated, and a shift in activations cannot by itself distinguish perceiving the user's style from adopting it. The answer matters for control, because if both sources share machinery, suppressing mirroring would also damage the persona the assistant was given. Separating them requires a test that holds everything fixed except where the personality comes from.
+
+% FLOW P3: what we offer; the design choice explained in one sentence |
+% CHARACTER: we -> the inputs | HAND-OFF: ends on "these inputs"
+We build such a test. Within a request, our inputs differ only in personality: where it sits, in the system prompt or in the user's message, and which end of a trait it expresses (Figure~\ref{fig:design}). The request and the assistant's reply are identical across all inputs built from it. We study two Big Five traits, extraversion and agreeableness, at their high and low ends, across requests from four everyday domains, and we check every user rewrite to confirm that it asks for the same thing as the original. All experiments use single exchanges with one open-weight model.
+
+% FIGURE 1 does argumentative work here: one request, three placements of
+% the personality, one shared reply. Real rows from the dataset (code_01).
+% Full width (figure*): it floats to the top of the next page.
+\begin{figure*}[t]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Neutral} & \textit{System:} You are a helpful assistant.\\
+ & \textit{User:} How do I reverse a singly linked list in Python?\\
+\midrule
+\textbf{User rewrite (E+)} & \textit{System:} You are a helpful assistant.\\
+ & \textit{User:} Hey! I'm really curious about reversing a singly linked list in Python. How do I do that?\\
+\midrule
+\textbf{System twin (E+)} & \textit{System:} You are an extraverted assistant. Respond in an outgoing, energetic and enthusiastic way, and engage eagerly with the user.\\
+ & \textit{User:} How do I reverse a singly linked list in Python?\\
+\midrule
+\textbf{Shared reply} & Reversing a singly linked list in Python can be done using various methods. One common approach is to use a loop to iterate through the list and reverse the pointers.~\ldots\\
+\bottomrule
+\end{tabularx}
+\caption{One request in three forms. The high-extraversion personality sits either in the user's message or in the system prompt, while the request and the assistant's reply stay the same. Low-extraversion versions are built the same way.}
+\label{fig:design}
+\end{figure*}
+
+% FLOW P4: how we use the inputs + how we know it works | CHARACTER: these
+% inputs -> the measurements | HAND-OFF: ends on mirroring / the tests
+% No machinery names here (no "permutation", "lambda", "cross-fitting").
+These inputs let us compare which attention heads respond to each source, including the heads that earlier work found to write an assistant's style, which we call the style heads. They also let us measure mirroring directly: the model answers each user message freely, and a judge that never sees the user's message scores the personality of the reply. Finally, we test causally, by switching the style heads off and by removing only the user-style direction from their output, from their whole layer and from the residual stream. Our extraction code matches the original implementation on the inputs we tested. Each head-level edit is compared with random heads or a random direction, and each direction is applied only to requests it was not estimated on.
+
+% FLOW P5: findings as adjectives (one number: ~30%) | CHARACTER: the model
+% -> the style heads -> the removal | HAND-OFF: to the contributions
+% SETTLED: the wording-only control also puts the style heads on top, so
+% they are described as the heads most sensitive to the system prompt, with
+% head 2 alone responding to personality beyond rewording.
+The model mirrors a user's enthusiasm but not their reserve. Its replies become clearly more extraverted when the user writes in a sociable or energetic way, while replies to reserved users barely change, and neither absolute nor pairwise judging detects any mirroring of agreeableness. The style heads turn out to rank first in their layer whether the system prompt changes its personality or only its wording, and only one of them responds to personality well beyond a rewording. The user's style reaches the same heads, but weakly and in a different direction from the system prompt, and switching the heads off, or removing only the user's direction from them, leaves mirroring intact. Removing the user's direction from the residual stream of their layer reduces mirroring by roughly 30\%, with a wide interval, while the assigned persona keeps almost all of its effect.
+
+% FLOW P6: contributions, prose, ordinals, no numbers, no overlap; the
+% dataset first | CHARACTER: each contribution names its object
+We make three contributions. First, a dataset that isolates where a personality comes from, with a quality-check protocol that pairs a checklist judge with a blind comparison against the original message. Second, a comparison of the two sources on the same attention heads, with causal tests against random controls. Third, evidence that single-turn mirroring is selective: it follows a user's enthusiasm but not their reserve, and depends on which facet of the trait the user expresses.

@@ -1,0 +1,140 @@
+% =====================================================================
+% APPENDIX. Optional extra page. Tables A and B are GENERATED from
+% Data_Creation/prompts/sys_prompts.json and Data_Creation/prompts.py
+% (2026-10-31); regenerate rather than hand-edit if the prompts change.
+% Sections C-E are placeholders for material moved out of the main text.
+% =====================================================================
+\section{Dataset tables}
+\label{app:tables}
+% FLOW AppT: moved from Section 3 for space.
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\columnwidth}{@{}cllX@{}}
+\toprule
+$k$ & Extraversion & Agreeableness & Example (E, high pole) \\
+\midrule
+0 & Sociability & Compassion & ``Hey! I'm really curious about reversing\ldots'' \\
+1 & Assertiveness & Respectfulness & ``\ldots I'm ready to make it happen. Tell me how.'' \\
+2 & Energy & Trust & ``\ldots? That sounds awesome! How do I do it?!'' \\
+\bottomrule
+\end{tabularx}
+\caption{The facet each rewrite leads with. The low pole uses the low end of the same facet, for example minimal engagement for low sociability.}
+\label{tab:facets}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\columnwidth}{@{}lXr@{}}
+\toprule
+Set & Where the personality sits & Rows \\
+\midrule
+User rewrites & user message (system prompt neutral) & 240 \\
+System twins & system prompt (user message neutral) & 400 \\
+Neutral & nowhere & 20 \\
+Crossed & both, each system condition with each user pole & 720 \\
+\bottomrule
+\end{tabularx}
+\caption{The four sets. Within a request, every row shares the same fixed reply.}
+\label{tab:sets}
+\end{table}
+
+\section{System prompts}
+\label{app:sysprompts}
+% FLOW AppA: the 20 system prompts, high and low written in parallel pairs.
+Table~\ref{tab:sysprompts} lists the ten system prompts for each trait, written as high/low pairs. The agreeableness prompts end with ``Still help the user fully with their request.'' (Section~\ref{sec:dataset}).
+
+% Full width: the prompts are too long for one column.
+\begin{table*}[t]
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}clXX@{}}
+\toprule
+Trait & $k$ & High pole & Low pole \\
+\midrule
+E & 0 & You are an extraverted assistant. Respond in an outgoing, energetic and enthusiastic way, and engage eagerly with the user. & You are an introverted assistant. Respond in a reserved, quiet and low-key way, and engage minimally with the user. \\
+E & 1 & You are an outgoing assistant. Be talkative and expressive, and let your enthusiasm show clearly in every reply. & You are a reserved assistant. Be quiet and understated, and keep your restraint clear in every reply. \\
+E & 2 & You are an energetic assistant. Write with high energy, bold confidence and plenty of excitement about the topic. & You are a low-key assistant. Write with low energy, quiet hesitance and little visible excitement about the topic. \\
+E & 3 & You are a sociable assistant. Treat each conversation as a lively chat, speaking freely and showing plenty of personality. & You are a withdrawn assistant. Treat each conversation as a brief exchange, keeping to yourself and showing little personality. \\
+E & 4 & You are a lively, assertive assistant. Speak up confidently, share your views freely and bring energy to the conversation. & You are a quiet, unassertive assistant. Speak tentatively, keep your views to yourself and keep the conversation subdued. \\
+\midrule
+A & 0 & You are an agreeable assistant. Respond in a warm, kind and considerate way, and treat the user with respect. Still help the user fully with their request. & You are a disagreeable assistant. Respond in a cold, blunt and critical way, and treat the user with impatience. Still help the user fully with their request. \\
+A & 1 & You are a kind assistant. Be polite and gentle, and give the user the benefit of the doubt. Still help the user fully with their request. & You are a harsh assistant. Be curt and dismissive, and assume the worst about the user. Still help the user fully with their request. \\
+A & 2 & You are a cooperative assistant. Show appreciation for the user's question and offer your help tactfully and graciously. Still help the user fully with their request. & You are an uncooperative assistant. Show irritation at the user's question and offer your help bluntly and grudgingly. Still help the user fully with their request. \\
+A & 3 & You are a caring, sympathetic assistant. Show warmth and concern for the user's feelings, and gently point out anything they got wrong. Still help the user fully with their request. & You are a cold, unsympathetic assistant. Show no warmth or concern for the user's feelings, and bluntly point out anything they got wrong. Still help the user fully with their request. \\
+A & 4 & You are a warm, courteous assistant. Speak to the user gently, patiently and with genuine goodwill. Still help the user fully with their request. & You are a rude, impatient assistant. Speak to the user sharply, condescendingly and with open scepticism. Still help the user fully with their request. \\
+\bottomrule
+\end{tabularx}
+\caption{System prompts used for the twins and the crossed set.}
+\label{tab:sysprompts}
+\end{table*}
+
+\section{Checklist questions}
+\label{app:checklist}
+% FLOW AppB: the nine yes/no questions the quality-check judge answers.
+The judge answers each question with a one-sentence reason, then yes or no; ``yes'' always means the rule holds. A rewrite passes only if all nine answers are yes and it passes the blind comparison in both orders.
+
+{\small
+\begin{tabularx}{\columnwidth}{@{}lX@{}}
+\toprule
+ID & Question \\
+\midrule
+C1 & Does the rewrite ask for the same thing as the original? \\
+C2 & Does the rewrite keep every concrete detail of the original (e.g. programming language, numbers, timeframe, nationality, named things)? \\
+C3 & Does the rewrite avoid adding new facts that could change what a good answer looks like? (Feelings, attitudes and opinions are fine, e.g. ``I'm excited'' or ``most guides are useless''. So are attitudes towards the chatbot or the conversation, e.g. ``I'm not here to chat'' or ``I doubt you'll be any help''. New facts are not, e.g. how many recipients, the pet's gender, symptoms, what the user already tried.) \\
+C4 & Does the rewrite avoid adding new requirements on the answer? A requirement explicitly constrains the answer's length, format, level of detail, content or scope (e.g. ``just the code'', ``no explanation'', ``keep it under 50 words''). Impatience, criticism or doubts about the chatbot's quality (e.g. ``try not to be useless'', ``I doubt you'll get this right'') are attitudes, not requirements. \\
+L1 & (asked per item) Is the other trait unchanged? For extraversion rewrites: is the writer about as polite as in the original; for agreeableness rewrites: about as energetic and enthusiastic? \\
+L2 & Does the rewrite avoid adding worry, sadness or distress beyond what the original expresses? (Expressing the same feeling more energetically, e.g. with an exclamation mark, or more briefly does not count as added distress. Neither do polite, self-effacing phrases such as ``I hope this isn't too much trouble'' or ``this might be a lot to ask'': those are politeness, not worry.) \\
+R1 & Does it read like something a real person could type to a chatbot, rather than a caricature? \\
+R2 & Is it free of profanity, slurs, threats and insults about groups of people? \\
+R3 & Does the rewrite avoid answering its own request, and avoid explicitly naming or describing the writer's personality? \\
+\bottomrule
+\end{tabularx}
+}
+
+\section{System-prompt behavioural check}
+\label{app:syscheck}
+% FLOW AppC: moved from Section 3.4. | SOURCE: Data_Creation/data/
+% persona_check/v1_before_D8 and persona_check (second round, 256 tokens);
+% DECISIONS.md D8-D9.
+Before using the system prompts we checked that they change the model's behaviour as intended. On four requests, one per domain, a judge compared each persona reply with the neutral reply and checked whether it still helped. The low-agreeableness prompts made the model withhold help rather than only change its tone: only 13 of 20 low-agreeableness replies helped (12 of the 15 to task requests), for example ``Use a recursive approach. Google it.'' for the linked-list request. A low-agreeableness user still asks sincerely for help, so this would have confounded the comparison between the two sources, and we added ``Still help the user fully with their request.'' to all ten agreeableness prompts. Afterwards, 15 of 20 helped, including 14 of the 15 to task requests. On emotional-advice requests the low-agreeableness replies stay dismissive, since withholding sympathy from someone who asks for it is close to what low agreeableness means. The same sentence weakened the low-extraversion prompts (16 of 20 replies read as reserved, against 19 of 20 without it), so the extraversion prompts do not carry it.
+
+\section{Quality-check details}
+\label{app:qc}
+% FLOW AppD: moved from Section 3.3. | SOURCE: gen_user_variants.py
+% code_checks(), CONFIG; prompts.py; DECISIONS.md D4.
+The automatic checks required a rewrite to be between half and twice the length of the neutral message, or at most 25 words longer for very short messages, and rejected rewrites that contained the neutral message word for word or were near-duplicates of it or of another rewrite. The blind comparison is always asked from the high end of the trait: asking which writer sounds more reserved let the judge simply pick the shorter message, so a plain ten-word original won against every low-extraversion rewrite in a pilot. A rewrite that failed any check was regenerated on its own, with the judge's reasons for every failed check as feedback, for up to five attempts: 143 rewrites passed on the first attempt, 82 on the second, 10 on the third and 5 on the fourth. The generator and the judge are different models because model judges favour their own outputs \citep{panickssery2024llm}.
+
+\section{Crossed-set regression}
+\label{app:regression}
+% FLOW AppE: moved from Sections 4.4 and 5.3. | SOURCE: factorial.py;
+% ws3_results/results/ws3/factorial/E-{resp,first}/metrics.json.
+For a three-head group, $Z_G \in \mathbb{R}^{n \times 384}$ stacks its activations over the crossed rows of one trait. We code the system prompt's pole as $c_1 \in \{+1, -1, 0\}$ for high, low and none, its presence as $c_2 \in \{1, 1, -2\}$, and the user's pole as $c_U = \pm 1$, adding the interactions $c_1 c_U$ and $c_2 c_U$. After centering $Z_G$ and the codes within each request, we fit a multi-output least-squares regression. The cosine between the coefficient vectors of $c_1$ and $c_U$ has a 95\% interval from 1,000 request resamples. A shuffle of $c_U$ within each request and system-prompt cell (1,000 shuffles) tests whether the user coefficient is nonzero; we do not use it as a null for the cosine, because under shuffling the coefficient keeps pointing along the true user direction with a random sign. Table~\ref{tab:regression} gives every group.
+
+\begin{table}[h]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Readout & Group & $R^2_{\text{sys}}$ & $R^2_{\text{user}}$ & Cosine [95\% CI] \\
+\midrule
+response & style heads & 0.69 & 0.006 & 0.20 [0.16, 0.23] \\
+response & 0, 2, 17 (top norm) & 0.70 & 0.007 & 0.13 [0.08, 0.17] \\
+response & 0, 1, 2 & 0.71 & 0.007 & 0.14 [0.09, 0.19] \\
+response & 4 random triples & 0.22--0.28 & 0.020--0.029 & 0.00--0.29 \\
+first token & style heads & 0.72 & 0.003 & 0.27 [0.22, 0.31] \\
+first token & 0, 2, 17 (top norm) & 0.65 & 0.010 & 0.08 [0.03, 0.12] \\
+first token & 0, 1, 2 & 0.70 & 0.008 & 0.07 [0.01, 0.12] \\
+first token & 4 random triples & 0.10--0.40 & 0.024--0.125 & 0.24--0.56 \\
+\bottomrule
+\end{tabular}
+\caption{Crossed-set regression for extraversion (sampled-generation runs). Every group containing head 2 is listed separately.}
+\label{tab:regression}
+\end{table}
+
+\section{Run settings}
+\label{app:settings}
+% FLOW AppF: the two run regimes, so no reader pairs numbers across them.
+% SOURCE: configs/qwen.json, configs/qwen_ada.json, ws3.json, arm.json.
+The head localizations, the behavioural comparison, the regression and zeroing ran in bfloat16 on one GPU, with sampled generation (temperature 1.0, up to 300 tokens, two replies per rewrite). The removal experiments ran in half precision (float16) with the model split over two 11\,GB GPUs, with greedy decoding and up to 150 tokens, one reply per rewrite; their head analyses were recomputed in the same setting and reproduce the earlier ranks. Removal arms are compared only with the reference run of their own job. All behavioural scores come from GPT-4.1-mini at temperature 0.

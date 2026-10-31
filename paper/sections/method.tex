@@ -1,0 +1,144 @@
+% =====================================================================
+% METHOD. Five subsections in the order Results uses them. Machinery is
+% named here. Vocabulary: "reference run" (never "baseline"); lambda = 1
+% "removes", lambda = 2 "steers".
+%
+% TWO REGIMES; never put numbers from both in one sentence or table:
+%   Regime 1 (earlier runs): bf16, RTX 3090, sampled generation.
+%   Regime 2 (removal runs): fp16 sharded over two 11 GB GPUs (model not
+%            recorded in the run files; do not name it), greedy decoding,
+%            150 new tokens (arm.json: temperature 0.0, max_new_tokens 150).
+% VERIFIED against code at commit fc1dbd3: Workstream_2 chat.py, extract.py,
+% heads.py, configs/qwen.json, configs/qwen_ada.json (dtype float16);
+% Workstream_3 generate.py (projection_hook), residual.py
+% (layer_output_hook), directions.py, project.py, pairwise.py,
+% judge.py, rubrics.py, mirroring.py, factorial.py, ablate.py, compare.py,
+% diagnostic.py; and every ws3_results/ada/*/arms/*/arm.json.
+% =====================================================================
+\section{Method}
+\label{sec:method}
+
+\subsection{Model and activation readouts}
+\label{sec:readouts}
+% FLOW M1a: the model and the style heads | CHARACTER: the model -> the
+% style heads | HAND-OFF: ends on the heads' outputs, which M1b reads
+% SOURCE: configs/qwen.json
+We study Qwen2.5-7B-Instruct \citep{qwen2025technical} (revision \texttt{a09a354}), which has 28 layers of 28 query heads, each of dimension 128. \citet{izawa2026steering} report three style modulation heads for this model, heads 2, 4 and 27 of layer 19 in zero-indexed numbering; their paper numbers them heads 3, 5 and 28 of layer 20. We call them the style heads.
+
+% FLOW M1b: the three readouts and why the full reply is stored | CHARACTER:
+% each head's output -> the readouts | HAND-OFF: to the implementation check
+% SOURCE: chat.py encode(); extract.py capture_encoded() (prompt-only pass
+% for first/user); qwen.json response_tokens = 150
+For head $i$ of layer $\ell$ we record its slice $z_{\ell,i} \in \mathbb{R}^{128}$ of the input to the layer's attention output projection $W^O_\ell$. We read it at three positions. The \emph{first} readout is the last token of the prompt, which predicts the first reply token; we take it from a forward pass over the prompt alone, so the reply cannot affect it. The \emph{response} readout is the mean over the first 150 tokens of the fixed reply, fed to the model as if it had written it, which is the readout of \citet{izawa2026steering}. The \emph{user} readout is the mean over the tokens of the user's message. We tokenize the prompt and the reply separately and join their token IDs, so no token spans the boundary, and we average in 32-bit precision. Attention is causal, so averaging the first 150 tokens of the full reply gives exactly the activations a 150-token reply would give, which is why the dataset stores full replies.
+
+% FLOW M1c: the implementation check, scoped precisely | CHARACTER: our
+% code | HAND-OFF: to localization (M2)
+% SOURCE: full_qwen_verification_summary.json (rows brainstorm_01|S|E|+|k0
+% and brainstorm_01|S|E|-|k0; max score error 1.335e-5; Spearman 1.0)
+To check our implementation, we ran one request's high- and low-extraversion system twins through both our code and the original implementation of \citet{izawa2026steering}. The activations were identical and the head scores agreed to within $1.3 \times 10^{-5}$ (Spearman 1.0), which confirms that we compute the same quantities; it is not a reproduction of their experiments.
+
+\subsection{Locating heads that respond to a personality}
+\label{sec:localize}
+% FLOW M2a: the contrast | CHARACTER: a pair -> the contrast | HAND-OFF:
+% ends on delta, which the score in M2b uses
+% SOURCE: heads.py paired_scenario_differences(), matched_pairs()
+For one trait and one source of personality, a pair is two inputs that differ only in pole. Assigned contrasts pair system twins, 100 pairs per trait; user contrasts pair user rewrites, 60 pairs per trait. For each request $b$ we average the pair differences $z_+ - z_-$ over its paraphrases to obtain $d_b$, and average over requests to obtain the contrast $\delta = \frac{1}{B}\sum_b d_b$.
+
+% FLOW M2b: the head score and the test | CHARACTER: the score -> the test
+% | HAND-OFF: ends on "ranks and effect sizes", which M2c compares
+% SOURCE: heads.py head_contributions(), sign_flip_pvalues() (19,999 flips,
+% one-sided), bh_qvalues()
+The contribution score of head $i$ in layer $\ell$ follows \citet{izawa2026steering}:
+\begin{equation}
+s_{\ell,i} = \Big\langle W^O_{\ell,i}\,\delta_{\ell,i},\ \sum_{j} W^O_{\ell,j}\,\delta_{\ell,j} \Big\rangle ,
+\end{equation}
+the projection of the head's write onto the layer's total write. The scores of a layer sum to the squared norm of the layer's total write, so they decompose that layer, and we rank heads within their layer. For significance we flip the signs of whole requests' differences $d_b$ (19,999 flips in the main runs and 999 in the half-precision re-run, one-sided) and correct across all 784 heads with the Benjamini--Hochberg procedure \citep{benjamini1995controlling}. Requests, not paraphrases, are the unit of resampling, because paraphrases of one request are not independent. Because this test flags almost any consistent change in the input (Section~\ref{sec:results}), we interpret ranks and effect sizes rather than significance counts.
+
+% FLOW M2c: comparing the two sources + the wording-only control |
+% CHARACTER: the comparisons | HAND-OFF: to mirroring (M3)
+% SOURCE: cli.py cmd_compare (Spearman over 784 heads); ws3/compare.py
+% (1,000 random triples); ws3/diagnostic.py (same-pole k0 vs k1, saves
+% smh_ranks_in_layer; ada/jobA/analysis/same-pole/metrics.json, 999 flips).
+% The fp16 re-run (ada/jobA/analysis) reproduces the bf16 ranks exactly.
+We compare the two sources by the Spearman correlation of their head scores over all 784 heads and by the ranks of the style heads under each source. We also compute the cosine between the assigned and user contrasts restricted to the style heads, a 384-dimensional vector, and compare it with the same cosine for 1,000 random three-head groups in layer 19. As a control on the ranking itself, a wording-only contrast pairs two different system prompts of the same pole ($k=0$ against $k=1$). It changes how the system prompt is worded without changing the trait, so heads that rank highly under it respond to wording rather than to personality.
+
+\subsection{Measuring mirroring}
+\label{sec:mirroring}
+% FLOW M3a: generation, two regimes | CHARACTER: the model's free replies |
+% HAND-OFF: ends on the replies the judge scores
+% SOURCE: Workstream_3/configs/ws3.json (temperature 1.0, 300 tokens,
+% 2 samples per rewrite, 3 per neutral message = 540 replies); removal runs:
+% project.py + arm.json (greedy, 150 tokens, 120 mirroring + 80 2x2).
+The model answers each user rewrite under the neutral system prompt. For the behavioural comparison we sampled at temperature 1.0, with replies of up to 300 tokens, two replies per rewrite and three per neutral message, 540 replies in total. For the removal experiments (Section~\ref{sec:removal}) we decode greedily with replies of up to 150 tokens, one reply per rewrite, so that a run differs from its reference run only through the intervention.
+
+% FLOW M3b: the judge and the mirroring effect | CHARACTER: the judge -> the
+% effect | HAND-OFF: to the pairwise judge for agreeableness (M3c)
+% SOURCE: judge.py (GPT-4.1-mini, top-20 logprobs, min integer mass 0.25);
+% rubrics.py (no user text; refuses records containing the user message);
+% mirroring.py (Wilcoxon, d_z, 5,000 request resamples)
+Following \citet{izawa2026steering}, a judge, GPT-4.1-mini, scores each reply from 0 to 100 for extraversion, agreeableness, coherence and refusal, as the probability-weighted mean over its top 20 integer tokens. The judge sees the reply and the request's neutral intent but never the user's message, so it cannot score the user's style instead of the model's. For trait $t$, the mirroring effect is
+\begin{equation}
+M_t = \frac{1}{B}\sum_{b=1}^{B}\left(\bar y_{b,+} - \bar y_{b,-}\right),
+\end{equation}
+where $\bar y_{b,\pm}$ is the mean judged score of trait $t$ over request $b$'s replies to its high- or low-pole rewrites. We test $M_t$ with a Wilcoxon signed-rank test over the 20 requests and report Cohen's $d_z$ with a 95\% confidence interval from 5,000 request resamples.
+
+% FLOW M3c: pairwise judging for agreeableness | CHARACTER: the pairwise
+% judge | HAND-OFF: to the regression (M4)
+% SOURCE: ws3/pairwise.py (both orders, probability-weighted choice,
+% p_high averaged over orders; sees the intent and two replies only).
+Absolute agreeableness scores sit near the top of the scale for every pole (Section~\ref{sec:results}), which leaves no room to detect a shift. We therefore also judge agreeableness pairwise, and extraversion as a check, on the greedy replies of the reference run (Section~\ref{sec:removal}). The judge sees the replies to a request's high- and low-pole rewrites, again without either user message, and picks the one with more of the trait, once in each order. We report the probability that the reply to the high-pole user is chosen, averaged over both orders, so that 0.5 means no mirroring.
+
+\subsection{Separating the two sources in the activations}
+\label{sec:regression}
+% FLOW M4: the crossed-set regression (details moved to Appendix E) |
+% CHARACTER: a head group's activations | HAND-OFF: to the causal tests
+% SOURCE: factorial.py (CODES, BLOCKS, center_within, 1,000 bootstraps and
+% shuffles)
+On the crossed set, a regression splits a three-head group's activations into what the system prompt explains and what the user's style explains. We regress the group's 384-dimensional activations, centered within each request, on orthogonal codes for the system prompt's pole and presence, the user's pole and their interactions, and report the variance each block explains and the cosine between the system-prompt and user coefficients (Appendix~\ref{app:regression}). We fit it for the style heads, the three heads of layer 19 with the largest mean activation norm on neutral inputs (a control for head size) and five random triples, for extraversion only.
+
+\subsection{Causal tests}
+\label{sec:causal}
+% FLOW M5a: zeroing | CHARACTER: the style heads | HAND-OFF: ends on
+% "needed", which M5b narrows to "what they carry"
+% SOURCE: generate.py zero_head_hook (every position); ablate.py
+Zeroing tests whether the style heads are needed for mirroring. We set their slices of the output-projection input to zero at every position during generation, repeat the mirroring measurement, and compare with zeroing random three-head groups from the same layer.
+
+\label{sec:removal}
+% FLOW M5b: direction removal | CHARACTER: the user-style direction -> the
+% hook -> the arms | HAND-OFF: to Results
+% VERIFIED (code + arm.json): hooks act at every position (prompt and
+%   generated tokens; generate.py projection_hook, residual.py
+%   layer_output_hook); u = unit mean user contrast on the resp readout of
+%   the training requests; mu_0 = mean of neutral rows of the training
+%   requests; 4 folds by request, domains spread across folds (directions.py
+%   assign_folds); random triple = heads 14, 17, 21 (excludes 2, 4, 27);
+%   top-10 heads by raw user score per fold (fold 0: L19 h2, L26 h10/12,
+%   L27 h7-13); random direction = random unit vector in the 3,584-dim
+%   layer-19 head space; greedy, 150 tokens; 120 mirroring + 80 2x2 replies
+%   per arm. lambda = 0 identity is checked by ws3/ada_smoke.py (the smoke
+%   run log is not in the repository).
+Zeroing removes everything a head writes, so it cannot show what the head carries. Removing a direction is narrower: during generation, at every position, a hook replaces a group's output $z_G$ by
+\begin{equation}
+z_G \leftarrow z_G - \lambda\, u u^{\top} (z_G - \mu_0),
+\end{equation}
+where $u$ is the unit user contrast of group $G$ on the response readout and $\mu_0$ is the group's mean on neutral inputs, both computed on training requests only. With $\lambda = 1$ the hook removes the user-style component and leaves the rest of the output unchanged; with $\lambda = 2$ it reflects the component, which is intended to steer the output towards the opposite style. Each group uses its own direction, and we apply every direction only to requests it was not estimated on: the 20 requests are split into four folds, each held-out request is generated with a direction fit on the other 15, and the top user-style heads are chosen within each fold. Table~\ref{tab:arms} lists the groups. Each arm is compared with an unhooked reference run from the same job on the reduction in mirroring, $1 - M_{\text{arm}}/M_{\text{ref}}$, with a paired request-bootstrap interval. It is also compared on persona preservation: on the corner of the crossed set that pairs a high or low system prompt with a high or low rewrite ($k=0$), we measure the assigned persona's effect and the user's effect under a persona. We also track coherence and refusals. These runs use half precision (float16), with the model split over two GPUs.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabularx}{\columnwidth}{@{}lcX@{}}
+\toprule
+Group & $\lambda$ & What it tests \\
+\midrule
+Style heads & 1 & whether mirroring needs the user component at these heads \\
+Style heads & 2 & whether reflecting that component changes style \\
+Random triple, no style heads & 1 & control for removing at any three heads \\
+All 28 heads of layer 19 & 1, 2 & whether the component matters elsewhere in the layer \\
+Top 10 user-style heads, any layer & 1 & whether the most responsive heads carry it \\
+Random direction, layer 19 & 1 & control for a perturbation of this kind \\
+Residual stream after layer 19 & 1 & positive control: can one direction be removed at this depth \\
+\bottomrule
+\end{tabularx}
+\caption{Direction-removal arms. Every arm is compared with a reference run from the same job.}
+\label{tab:arms}
+\end{table}

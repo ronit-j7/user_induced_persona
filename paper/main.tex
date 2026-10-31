@@ -1,0 +1,63 @@
+% =====================================================================
+% AttentionSeekers: end-submission report.
+% Each file in sections/ carries a FLOW comment before every paragraph:
+%   STEP | CHARACTER (the paragraph's grammatical subject) | HAND-OFF
+% plus SOURCE notes for every number. Rewrite prose freely, but keep what
+% the FLOW says the paragraph must do.
+% Orange \pending{} text marks content that waits on the end-submission
+% runs. Search for "\pending" before submitting.
+%
+% Template: ACL (acl.sty and acl_natbib.bst from github.com/acl-org/
+% acl-style-files, downloaded 2026-10-31). Option "preprint" shows authors
+% and page numbers; use "review" for an anonymous submission or "final" for
+% camera-ready. acl.sty itself loads geometry, natbib, hyperref and the
+% bibliography style, so do not load them again here.
+% =====================================================================
+\documentclass[11pt]{article}
+\usepackage[preprint]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+% Pending content (remove every use before submitting).
+\newcommand{\pending}[1]{\textcolor{orange!85!black}{[PENDING: #1]}}
+% Notation used across sections.
+\newcommand{\smh}{style heads}
+
+% TITLE: the proposal title ("Causal Disentanglement of User-Induced and
+% Assigned Persona in Language Models") claims a disentanglement we have not
+% shown. Options: (a) "Do Language Models Mirror Users Through Their Persona
+% Heads?"; (b) "User Style and Assigned Persona in Language Models: Shared
+% Heads, Separate Paths?" (only if the removal results support it); (c) keep
+% the proposal title. Decide after the removal results.
+\title{Do Language Models Mirror Users Through the Heads That Carry Their Persona?}
+\author{Ronit Jalihal \And Bhavya Ahuja \AND Eshaan Sharma \And Krishak Aneja}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/dataset}
+\input{sections/method}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/limitations}
+\input{sections/future_work}
+\input{sections/conclusion}
+
+\bibliography{references}
+
+\appendix
+\input{sections/appendix}
+
+\end{document}

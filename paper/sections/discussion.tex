@@ -1,0 +1,36 @@
+% =====================================================================
+% DISCUSSION. One interpretation per paragraph, hedged to its evidence
+% ("suggests", "is consistent with"; never "shows" for an interpretation).
+% TRAP: the paper's thesis is that responding is not carrying. Never write
+% that the style heads "carry" the user's style.
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+% FLOW Dis1: responding is not needed for mirroring (branch b of the story
+% doc: only the residual removal and layer-wide reflection work) |
+% CHARACTER: the style heads | HAND-OFF: to what the behaviour suggests
+% SETTLED: the wording-only control ranks the style heads first too; the
+% second sentence below states it.
+% VERIFY mcgrath2023hydra before keeping the self-repair clause.
+In a single turn, the style heads register the user's style but are not needed for mirroring. They also rank first in their layer for a rewording of the system prompt, so their high ranks mark sensitivity to the system prompt in general, with only head 2 tracking personality beyond that. This bears on the question \citet{sprejer2026white} leave open, whether an internal shift reflects perceiving the user or adopting their style: a head can respond to a user's style because it represents what is in the context, not because it shapes the reply. Zeroing is a coarse test, since other components can compensate when a head is removed \citep{mcgrath2023hydra}. Removing only the user's direction from the style heads is narrower, and it also leaves mirroring unchanged, while removing the user's direction from the residual stream of their layer reduces it by roughly 30\%. The user's style is therefore present as a usable direction at that depth, yet removing it from the style heads or from any single head group we tested does not reduce mirroring. Compensation could hide an effect of these narrower edits too, so they show that the edits fail to reduce mirroring, not that the heads play no part. Of the head-level edits, only reversing the direction across all heads of layer 19 reduces mirroring. This pattern is consistent with the user's style being written by earlier layers or spread thinly across many heads.
+
+% FLOW Dis2: selective mirroring | CHARACTER: the model's mirroring |
+% HAND-OFF: to the scale of the two sources (Dis3)
+% SOURCE: ws3_summary.json per_facet_k (sociability +18.5, assertiveness
+% -1.8, energy +22.5) and per_domain (emotional advice +2.6). Numbers stay
+% in Results; adjectives here.
+The model takes on a user's enthusiasm, in particular sociability and energy, but not their reserve or their assertiveness, and it hardly mirrors at all when asked for emotional advice. One explanation, which our experiments do not test, is that preference training keeps the assistant persona warm and supportive, so it bends towards positive-affect styles and resists withdrawn or cold ones. The emotional-advice result fits an assistant that holds a calm, supportive register whatever the user's style. Pairwise judging finds no agreeableness mirroring either: the model stays polite with rude users, the same pattern of bending towards warmth and resisting coldness. Section~\ref{sec:future} describes how to test this explanation.
+
+% FLOW Dis3: the two sources differ in scale | CHARACTER: the system prompt
+% (the user's message in the predicate) | HAND-OFF: to implications for
+% control (Dis4)
+In a single turn, the system prompt moves the style heads far more than the user's message does, and most of that effect comes from one of the three heads. Once a persona is set, the user's own effect on the reply is small (Section~\ref{sec:res-removal}). If a user's style is to erode an assigned persona, it would likely have to accumulate over turns, which single-turn data cannot show. This makes multi-turn conversations the most direct next test of the drift that motivates this work.
+
+% FLOW Dis4: implications for suppressing mirroring while keeping the
+% assigned persona (RQ3, second half) | CHARACTER: suppressing mirroring
+Suppressing mirroring without touching the assigned persona is achievable only in part. Removing the user's direction from the residual stream lowers mirroring by roughly 30\% while the system prompt keeps about 94\% of its effect and coherence is unchanged. The same edit still dents the persona, most of the mirroring remains, and every edit along a user-style direction weakens the persona a little, including edits that leave mirroring unchanged. Because removal at no head group reduces mirroring, a narrow, head-level edit is not available in a single turn. A control method would have to act on the residual stream, or first locate where the user's style is written.
+
+% FLOW Dis5: ethics | CHARACTER: the low-agreeableness prompts -> methods
+% that suppress mirroring
+The low-agreeableness system prompts make the model dismissive, and sometimes insulting, towards users who ask for emotional support. We use them only to build controlled contrasts. Methods that suppress mirroring could also make an assistant less responsive to a distressed user's cues, and any deployment would need to weigh that cost.

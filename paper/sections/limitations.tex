@@ -1,0 +1,52 @@
+% =====================================================================
+% LIMITATIONS. Short titled paragraphs, one limitation each, each stating
+% its consequence. Ordered by how much they constrain the headline. The
+% "controlled inputs are unrealistic" concession appears once, here.
+% =====================================================================
+\section{Limitations}
+\label{sec:limitations}
+
+% FLOW L1: single turns | consequence: no claim about accumulation
+\paragraph{Single turns.}
+Every result comes from one user message and one reply, while earlier work finds persona drift building up over a conversation. We cannot say whether the user's effect grows, or whether the style heads become necessary, as a conversation goes on.
+
+% FLOW L2: one model | consequence: head locations are model-specific
+\paragraph{One model.}
+All results come from one instruction-tuned model. The location of the style heads is specific to it, and the behavioural pattern may be as well.
+
+% FLOW L3: two traits, one at the ceiling | consequence: the regression and
+% removal results cover extraversion only
+\paragraph{Two traits.}
+We test two of the five Big Five traits. Absolute agreeableness scores sit near the top of the judge's scale, and the pairwise judge, which needs no room on that scale, also finds no mirroring but often changes its choice with the order of the replies. The regression and removal experiments cover extraversion only.
+
+% FLOW L3b: the one positive removal is marginal | consequence: the 30%
+% figure is provisional
+% SOURCE: ada/report/metrics.json resid19_l1 p 0.048, reduction [0.05, 0.51]
+\paragraph{Removal statistics.}
+The residual-stream removal is the only removal whose interval excludes zero, with $p = 0.048$ among eight edits and no correction for multiple comparisons. Its random-direction control lies in the head space of layer 19 rather than in the residual stream, and zeroing was compared only with random heads. The reduction of roughly 30\% is therefore provisional.
+
+% FLOW L4: controlled inputs (the one identifiability concession) |
+% consequence: effects in natural conversations may differ
+\paragraph{Controlled inputs.}
+Holding the request and the reply fixed is what lets us isolate where a personality sits, and it is also unrealistic. The rewrites are written by a language model, the shared reply was written for the neutral message, and real users mix personality with changes in content.
+
+% FLOW L5: few requests; rewrite index = facet | consequence: splits are
+% descriptive; rewrites are not exchangeable replicates
+\paragraph{Requests and replicates.}
+Twenty requests, five per domain, make the domain and facet results descriptive. Each rewrite index carries a fixed facet, so the three rewrites of a request are not exchangeable replicates, and a facet effect can appear as a rewrite effect. The persona-preservation measurements use only the sociability-led rewrites.
+
+% FLOW L6: model judges | consequence: subtle meaning changes can pass
+% SOURCE: DECISIONS.md D7 (judge accepted "should have been mine" for
+% "I thought I deserved"). Human audit pending.
+\paragraph{Model judges.}
+Both the quality check and the behavioural scores rely on language-model judges. The checklist judge accepted a few rewrites that shifted what the user believes, such as ``a job offer that should have been mine'' for ``a job offer I thought I deserved''. \pending{human audit result, or a statement that no human audit was completed.}
+
+% FLOW L7: localization measures | consequence: ranks, not significance;
+% no reproduction claim
+\paragraph{Localization.}
+Heads are ranked within one layer, and because the significance test flags almost every head, we rely on ranks and effect sizes. Our implementation check covers two inputs and is not a reproduction of earlier experiments.
+
+% FLOW L8: different runs; extra sentence in the agreeableness prompts |
+% consequence: comparisons only within a run
+\paragraph{Runs and prompts.}
+The removal experiments ran in half precision (float16) with greedy decoding on different hardware from the earlier, sampled runs, so each arm is compared only with the reference run from its own job (Appendix~\ref{app:settings}). The agreeableness system prompts carry an extra instruction to keep helping, and the low-agreeableness prompts remain dismissive towards users asking for emotional support.

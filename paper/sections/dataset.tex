@@ -1,0 +1,54 @@
+% =====================================================================
+% DATASET. Opens on the one property the dataset is built around, then
+% follows the order of construction. Every number checked against
+% Data_Creation/data on 2026-10-31. Re-check if the data are regenerated.
+% =====================================================================
+\section{Dataset}
+\label{sec:dataset}
+
+% FLOW D0: the design property, in one sentence, not defended | CHARACTER:
+% the dataset | HAND-OFF: to the traits and requests that fix the content
+No dataset we know of holds a conversation's content fixed while moving its personality between the system prompt and the user. We therefore built one around a single property: within a request, any two inputs differ only in personality, never in what the user asks or in the assistant's reply.
+
+\subsection{Traits and requests}
+% FLOW D1: traits, then requests | CHARACTER: the traits -> the requests |
+% HAND-OFF: ends on the neutral message, whose reply D2 introduces
+% SOURCE: scenarios.jsonl (20 requests, 5 per domain); prompts.py
+We study extraversion and agreeableness, each with a high and a low pole. We define each pole through the three BFI-2 facets of its trait \citep{soto2017next}, together with marker adjectives \citep{saucier1994mini} and the linguistic cues of each trait \citep{pennebaker1999linguistic, mairesse2007using}. We use the BFI-2 rather than the NEO-PI-R because the NEO-PI-R places warmth under extraversion, which would blur the two traits we want to keep apart. The requests come from four everyday domains, coding, explanation, emotional advice and brainstorming, with five requests each. The emotional-advice requests are adapted from the request categories in \citet{li2025human}. Each request has a one-line intent and a neutral user message without personality markers, such as ``How do I reverse a singly linked list in Python?''. Concrete details in the neutral message, such as the programming language or the user's nationality, pin down what is asked, so that rewrites cannot drift in content.
+
+\subsection{Fixed replies}
+% FLOW D2: the fixed reply | CHARACTER: the reply | HAND-OFF: ends on the
+% reply being shared by every input of its request
+% SOURCE: qc/forced_responses/raw_long.jsonl (min 90, median 620, max 1024,
+% one unfinished). The causal-attention equivalence is in Method 4.1.
+Every input built from a request shares one assistant reply. The studied model wrote these replies itself, by greedy decoding from the neutral system prompt ``You are a helpful assistant.'' and the neutral message. We store each reply in full, capped at 1,024 tokens. The replies run from 90 to 1,024 tokens, with a median of 620, and the one reply that reached the cap was cut at its last complete sentence. Section~\ref{sec:readouts} explains why storing the full reply costs nothing when activations are read over a shorter window.
+
+\subsection{User rewrites}
+% FLOW D3: the rewrites and how they are generated | CHARACTER: the
+% rewrites | HAND-OFF: ends on the prompt's prohibitions -> the check (D4)
+% SOURCE: user_variants.jsonl (240 rows; qc.facet = 20 per k per trait);
+% prompts.py. Rewrite index = facet is flagged in Limitations.
+A rewrite restates the neutral message in one pole of one trait and asks for exactly the same thing. For each request, trait and pole we wrote three rewrites, giving $20 \times 2 \times 2 \times 3 = 240$. Each of the three leads with a different facet of the trait: sociability, assertiveness or energy for extraversion, and compassion, respectfulness or trust for agreeableness (Table~\ref{tab:facets} in Appendix~\ref{app:tables}). The low pole uses the low end of the same facet, so the $k$-th high and low rewrites of a request form a facet-matched pair. A generator model, DeepSeek-V4.1-Flash, wrote the three rewrites of each cell in one call, from the pole's definition and cues, the facet assigned to each rewrite and four out-of-domain examples. Its instructions forbid adding facts, adding constraints on the answer such as ``just give me the code'', and keeping the original wording with a styled sentence appended.
+
+
+% FLOW D4: the quality check and its outcome (details moved to Appendix D)
+% | CHARACTER: each rewrite -> the outcome | HAND-OFF: ends on length per
+% pole | SOURCE: run_config.json (generator deepseek-flash, judge
+% gpt-6-luna, max_attempts 5); qc.attempts = 143/82/10/5; Qwen token means
+% E 36.0 vs 24.6, A 39.7 vs 29.2. Human audit: 0 of 24 done.
+Each rewrite then had to pass three checks (Appendix~\ref{app:qc}). Automatic checks bounded its length and rejected copies of the neutral message. A judge model, GPT-6 Luna, answered nine yes/no questions on content, style boundaries and realism (Appendix~\ref{app:checklist}), since decomposed questions are more reliable for model judges than a single score \citep{cook2024ticking, qin2024infobench, lee2024checkeval}. Finally, the judge saw the neutral message and the rewrite side by side, in both orders to cancel position bias \citep{zheng2023judging}, and picked the writer who sounds more extraverted or more agreeable. A high-pole rewrite had to win both times, and a low-pole rewrite had to lose both times. Failed rewrites were regenerated with the judge's reasons as feedback. All 240 rewrites passed, 143 of them on the first attempt and none after the fourth. High-pole rewrites are longer than low-pole ones, at 36.0 against 24.6 tokens for extraversion and 39.7 against 29.2 for agreeableness, and we record each rewrite's length. \pending{human audit of a random 10\% sample (24 rewrites): report agreement with the judge, or delete this sentence.}
+
+\subsection{System-prompt twins}
+% FLOW D5: the twins (behavioural check moved to Appendix C) | CHARACTER:
+% the twins | HAND-OFF: to the crossed set
+% SOURCE: sys_prompts.json (20 prompts; clause on the 10 A prompts);
+% persona_check v1/v2; DECISIONS.md D8.
+A system twin keeps the neutral message and the fixed reply and moves the personality into the system prompt. We wrote five system prompts per trait and pole in the format of \citet{chen2025persona} and \citet{izawa2026steering}, ``You are a [X] assistant. [instruction]'', writing each high-pole prompt in parallel with its low-pole counterpart (Appendix~\ref{app:sysprompts}). This gives $20 \times 2 \times 2 \times 5 = 400$ twins, plus 20 neutral rows that pair the neutral message with the neutral system prompt. A behavioural check showed that the low-agreeableness prompts made the model withhold help, so the agreeableness prompts also ask it to keep helping (Appendix~\ref{app:syscheck}).
+
+\subsection{Crossed set}
+% FLOW D6: the crossed set + summary table | CHARACTER: the crossed set |
+% HAND-OFF: to Method (how activations are read on these inputs)
+% SOURCE: factorial.jsonl (720 rows; sys k paired with user k: verified)
+The crossed set pairs every system-prompt condition (high, low, none) with high and low user rewrites, matching system prompt $k$ with rewrite $k$. It has 360 rows per trait. Appendix~\ref{app:tables} summarises all four sets (Table~\ref{tab:sets}).
+
+

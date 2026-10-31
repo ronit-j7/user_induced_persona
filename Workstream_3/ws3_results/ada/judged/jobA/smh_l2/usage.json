@@ -1,0 +1,6 @@
+{
+  "calls": 512,
+  "cache_hits": 288,
+  "input_tokens": 162072,
+  "output_tokens": 512
+}

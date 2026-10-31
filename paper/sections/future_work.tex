@@ -1,0 +1,25 @@
+% =====================================================================
+% FUTURE WORK. Order set by the team: scaling, multi-turn, the asymmetry
+% test, locating the mechanism and intervening there (persona resistance is
+% folded into the last item). Complete statements, never "in progress".
+% Trimmed from six paragraphs to four for space (2026-10-31).
+% =====================================================================
+\section{Future Work}
+\label{sec:future}
+
+% FW1 (scaling to more traits, requests and models) cut for space
+% 2026-10-31; Limitations already name one model and two traits.
+
+% FLOW FW2: multi-turn | settles: whether single-turn conclusions hold for
+% drift (L1)
+\paragraph{Multi-turn conversations.}
+Conversations of five to ten turns in which the user keeps a consistent style, with and without an assigned persona, would show whether the user's effect accumulates, and repeating the zeroing and removal tests at each turn would show whether the style heads become necessary once a style has built up.
+
+% FLOW FW3: the asymmetry and alignment | settles: Dis2's explanation
+\paragraph{Why mirroring is selective.}
+Comparing the base and instruction-tuned versions of the same model on the same inputs would test whether preference training causes the asymmetry: if the base model mirrors both poles and the tuned model only enthusiasm, alignment training is the likely source.
+
+% FLOW FW4: locating the mechanism and intervening there | settles: RQ1
+% and RQ3's second half
+\paragraph{Locating and removing the user's influence.}
+Blocking attention from reply positions to user positions, one head or layer at a time, would show where the reply reads the user's style, and patching activations from runs with a high-pole user into runs with a low-pole user would show where that style changes the reply. Removing the user's component at the located site, scored on mirroring, on how well an assigned persona holds against an opposite user style, and on coherence, would answer whether mirroring can be suppressed without harming the assigned persona.

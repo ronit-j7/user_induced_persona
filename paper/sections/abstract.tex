@@ -1,0 +1,19 @@
+% =====================================================================
+% ABSTRACT. ~150-180 words. No model, dataset or metric names; at most
+% one number; no inferential terms. Each sentence's subject entered as an
+% object in the sentence before (characters: assistants -> the two
+% sources -> we -> these inputs -> the model -> the heads -> these heads).
+% =====================================================================
+\begin{abstract}
+% FLOW S1-S2: stakes, then why the question matters | CHARACTER: assistants,
+% then the two sources | HAND-OFF: matched inputs
+Chat assistants take on personality from two sources: the persona their system prompt assigns, and the style in which the user writes. Whether the two reach the model through the same internal machinery decides whether one can be controlled without disturbing the other.
+% FLOW S3-S4: what we built and measured | CHARACTER: we | HAND-OFF: the model
+We build matched inputs in which a personality moves between the system prompt and the user's message while the request and a fixed assistant reply stay the same. A judge that never sees the user's message scores the replies the model generates freely.
+% FLOW S5-S6: findings | CHARACTER: the model -> the style heads
+The model mirrors a user's enthusiasm but not their reserve. Attention heads previously shown to carry an assistant's persona rank first in their layer whether the system prompt changes its personality or only its wording. The user moves them only weakly and in a different direction, and switching them off leaves mirroring intact.
+% FLOW S7: the removal result | SOURCE: ada/report/metrics.json
+Removing the user's style direction from the residual stream at their layer reduces mirroring by roughly 30\%, with a wide interval. Removing the user's direction from these heads, or from any other head group we tested, leaves mirroring unchanged.
+% FLOW S8: what follows, scoped to a single turn
+In a single turn, these heads register the user's style but are not needed for mirroring.
+\end{abstract}

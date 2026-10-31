@@ -1,0 +1,35 @@
+% =====================================================================
+% RELATED WORK. Four paragraphs, from the phenomenon to the mechanism,
+% ending on the work we build on directly. Describe prior work in its own
+% terms; criticism only in subordinate clauses. TRAP: never say a component
+% "carries" or "drives" a behaviour unless the cited work intervened.
+% Citation fixes still open: Lu et al. (title/authors), Izawa et al.
+% (authors), Sprejer et al. (authors). See references.bib.
+% =====================================================================
+\section{Related Work}
+\label{sec:related}
+
+% FLOW RW1: viability, personality is measurable in text | CHARACTER:
+% personality -> language models | HAND-OFF: ends on models expressing
+% personas that prompts can set
+\paragraph{Personality in language.}
+The Big Five describes personality along five traits, each divided into facets \citep{soto2017next} and summarised by short lists of marker adjectives \citep{saucier1994mini}. Personality leaves measurable traces in writing, from word choice to the use of emotion words and exclamations \citep{pennebaker1999linguistic, mairesse2007using}. Because the taxonomy is defined independently of any model, it transfers across models, which makes it a natural basis for comparing personality in their inputs and outputs. Language models in turn express personas that a prompt can set and that correspond to directions in their activations \citep{chen2025persona}.
+
+% FLOW RW2: the phenomenon, mirroring and drift | CHARACTER: assistants ->
+% the open question | HAND-OFF: ends on "perceiving or adopting" being open
+\paragraph{Mirroring and drift.}
+Over long conversations, assistants depart from their default assistant persona, and clamping activations along a single assistant direction reduces the departure \citep{lu2026assistant}. Separately, assistants shift towards the personality of the user: their activations move along trait components after users interact with them \citep{sprejer2026white}. \citet{sprejer2026white} leave open whether such a shift reflects a change in the model's own persona or the model representing the user's style while that style remains in context. Inside the model, the boundary between user and assistant roles is weak, and style can dominate role markers in the representation \citep{ye2026prompt}. Probes trained across positions can therefore confuse whose style they detect, which is one reason we read activations at fixed positions and hold content fixed.
+
+% FLOW RW3: persona as directions; intervening on them | CHARACTER: persona
+% directions | HAND-OFF: ends on "where in the network a persona is written"
+% NOTE: Subramani et al. is cited ONLY for extracting steering vectors. Do
+% not attribute a coherence cost to it. Add a coherence-cost claim only with
+% a source that shows one (check Chen et al. 2025 first).
+\paragraph{Persona as directions.}
+Character traits such as sycophancy or a tendency to invent facts correspond to directions in a model's activations that can be used to monitor and steer its persona \citep{chen2025persona}. More generally, steering vectors extracted from a pretrained model's activations can shift what it generates \citep{subramani2022extracting}. These methods act on the residual stream as a whole, which leaves open where in the network a persona is written.
+
+% FLOW RW4: persona localized in components; the work we build on; the gap
+% stated as scope, not as a fault | CHARACTER: specific components -> the
+% style heads | HAND-OFF: ends on the untested user side -> Dataset
+\paragraph{Persona in specific components.}
+Activation patching has located persona-driven reasoning in specific components of a model \citep{poonia2025dissecting}. Most directly, \citet{izawa2026steering} find that a sparse set of attention heads, which they call style modulation heads, writes an assistant's style, and they validate these heads with system prompts and steering. Their analysis covers personas assigned through the system prompt and their own set of personas, such as a humorous one. It does not test Big Five traits, or a style that arrives through the user's message. Whether a user's style reaches the same heads is the question our dataset is built to answer.
