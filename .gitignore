@@ -10,3 +10,7 @@ __pycache__/
 *.log
 # GitHub rejects files over 100 MB. This activation dump is 132 MB.
 results/ada/yajat/jobA/acts/resp.npy
+
+# Local judge API cache (handoff: never commit) and macOS metadata
+results/judge_cache/
+.DS_Store

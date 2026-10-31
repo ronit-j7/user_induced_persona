@@ -133,6 +133,29 @@ first token & 4 random triples & 0.10--0.40 & 0.024--0.125 & 0.24--0.56 \\
 \label{tab:regression}
 \end{table}
 
+\section{Removal arms}
+\label{app:arms}
+% FLOW AppArms: moved from Section 4.5 for space.
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\columnwidth}{@{}lcX@{}}
+\toprule
+Group & $\lambda$ & What it tests \\
+\midrule
+Style heads & 1 & whether mirroring needs the user component at these heads \\
+Style heads & 2 & whether reflecting that component changes style \\
+Random triple, no style heads & 1 & control for removing at any three heads \\
+All 28 heads of layer 19 & 1, 2 & whether the component matters elsewhere in the layer \\
+Top 10 user-style heads, any layer & 1 & whether the most responsive heads carry it \\
+Random direction, layer 19 & 1 & control for a perturbation of this kind \\
+Residual stream after layer 19 & 1 & positive control: can one direction be removed at this depth \\
+\bottomrule
+\end{tabularx}
+\caption{Direction-removal arms. Every arm is compared with a reference run from the same job.}
+\label{tab:arms}
+\end{table}
+
 \section{Run settings}
 \label{app:settings}
 % FLOW AppF: the two run regimes, so no reader pairs numbers across them.

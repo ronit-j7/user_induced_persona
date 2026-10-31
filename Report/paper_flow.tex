@@ -1,0 +1,984 @@
+% =====================================================================
+% PAPER FLOW (end submission). Not prose: a plan of the argument.
+% Each paragraph has a comment block (STEP / CHARACTER / HAND-OFF / CONTENT /
+% SOURCE) and a one-line \flow{} gist that compiles, so the flow can be read
+% top to bottom in the PDF. Write the real prose under each \flow later.
+%
+% Conventions for the comment blocks:
+%   STEP       which step of the argument the paragraph is
+%   CHARACTER  the grammatical subject(s) the paragraph is about (max 3, no
+%              interleaving; a character enters as an object before it is a
+%              subject)
+%   HAND-OFF   what the paragraph ends on, which the next one starts from
+%   SOURCE     where each fact is checked (code / results file / plan)
+%   PENDING    content that depends on the end-submission runs
+% =====================================================================
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\newcommand{\flow}[1]{\par\noindent\textcolor{blue!60!black}{\small$\triangleright$\ #1}\par\medskip}
+\newcommand{\pending}[1]{\par\noindent\textcolor{orange!80!black}{\small[PENDING: #1]}\par\medskip}
+
+\begin{document}
+
+% =====================================================================
+% 0. QUESTION TABLE (PA s.1). Answer twice: a plain sentence (-> abstract)
+%    and a paragraph's worth (-> introduction). Update when the order moves.
+% ---------------------------------------------------------------------
+% Q1 What is the big issue?
+%    Short: Chat assistants take on personality from two sources, the
+%           system prompt they are given and the way the user writes.
+%    Long:  Deployed assistants are assigned a persona by a system prompt.
+%           In conversation they also drift towards the user's personality
+%           (mirroring), and over long conversations the assigned persona
+%           erodes (drift). Both are documented behaviourally.
+% Q2 Why is it hard / unknown?
+%    Short: Nobody knows whether the user's personality reaches the model
+%           through the same internal machinery as the assigned persona.
+%    Long:  Two reasons, one mundane and one deeper (PA s.5: say so, don't
+%           chain them). Mundane: in real conversations the two sources
+%           co-occur and differ in content, so their effects cannot be told
+%           apart. Deeper: existing evidence is correlational, a shift in
+%           activations cannot tell perceiving the user's style from adopting
+%           it. Assigned persona is localized to a few attention heads; the
+%           user's side has had no such test.
+% Q3 What do we offer?
+%    Short: Matched inputs that move a personality between the system prompt
+%           and the user's message while the request and the reply stay fixed.
+%    Long:  20 requests x 2 traits x 2 poles; 240 quality-checked user
+%           rewrites and 400 system-prompt twins sharing one fixed reply per
+%           request; plus a crossed set. With these we compare both sources
+%           on the same heads, measure mirroring with a judge that never sees
+%           the user, and test causally (zeroing heads, removing a direction).
+% Q4 How does it differ from prior work?
+%    Short: Prior work studied one source at a time; we put both on the same
+%           heads with everything else held fixed, and intervene.
+% Q5 How do we know it works?
+%    Short: Our extraction matches the reference implementation, every
+%           rewrite passes a checklist and a blind comparison, and every
+%           causal effect is compared with random heads and directions.
+% Q6 What did we find?
+%    Short: The model mirrors a user's enthusiasm but not their reserve; the
+%           heads that carry the assigned persona respond to the user too, but
+%           in a different direction, and removing them does not stop mirroring.
+%    PENDING: whether removing the user-style direction (at those heads,
+%           across layer 19, or in the residual stream) reduces mirroring;
+%           whether the head ranking survives a wording-only control;
+%           whether agreeableness mirroring appears under pairwise judging.
+% Q7 What follows?
+%    Short (provisional): In a single turn, the persona heads register the
+%           user's style without carrying the mirroring, so controlling
+%           mirroring needs its pathway located first, and multi-turn tests.
+%
+% ---------------------------------------------------------------------
+% VOCABULARY (PA s.8: one word per meaning; check every repeated noun)
+%   persona          the personality an assistant's replies express
+%   assigned persona the persona set by the system prompt
+%   user style       the personality expressed in the user's message
+%                    (never "user persona"; the user has a style, the
+%                    assistant has a persona)
+%   mirroring        the assistant's replies shifting towards the user style
+%   drift            multi-turn erosion of a persona; ONLY in intro motivation
+%                    and future work (we test single turns)
+%   trait / pole     Extraversion or Agreeableness / its high or low end
+%   request          one scenario's task ("scenario" stays in code only)
+%   rewrite          a user message restyled to one pole (= user variant)
+%   system twin      the neutral request with a persona system prompt
+%   fixed reply      the one assistant reply shared by every input of a request
+%   style heads      layer 19, heads 2, 4, 27 (Izawa et al.'s style modulation
+%                    heads); define once, then always "style heads"
+%   contrast         the paired high-minus-low difference in activations
+%   direction        a unit vector in a head group's or the residual's space
+%   remove (lambda=1) vs steer (lambda=2): never "project out" for lambda=2
+%   reference run    the same job's unhooked run (NOT "baseline": PA s.8
+%                    collision with the neutral system prompt and with
+%                    competing methods). "Control" = random heads/directions.
+%   judge            the LLM that scores text; always say which judge
+%
+% CHARACTERS (PA s.4), across the paper, in order of entry:
+%   assistants/the model -> the two sources (assigned persona, user style)
+%   -> we -> the dataset -> mirroring -> the style heads -> the direction.
+%   Criticism of prior work is a minor character: own main clause only in
+%   the gap paragraph, otherwise inside "unlike ..." phrases.
+% =====================================================================
+
+% ---------------------------------------------------------------------
+% TITLE. The proposal title "Causal Disentanglement of User-Induced and
+% Assigned Persona in Language Models" claims a disentanglement we have not
+% shown (PA s.3: a verb stronger than its evidence). Options, to decide
+% once the projection results are in:
+%   (a) "Do Language Models Mirror Users Through Their Persona Heads?"
+%   (b) "User Style and Assigned Persona in Language Models: Shared Heads,
+%        Separate Paths?"  (only if the removal results support it)
+%   (c) keep the proposal title and scope the abstract.
+% ---------------------------------------------------------------------
+\title{\textcolor{orange!80!black}{[Title: see options in source]}}
+\author{Ronit Jalihal \and Bhavya Ahuja \and Eshaan Sharma \and Krishak Aneja}
+\date{}
+\maketitle
+
+% ---------------------------------------------------------------------
+% ABSTRACT FLOW. Target ~180 words, 7-9 sentences, at most one number
+% (PA s.6-7: front matter spends numbers on the problem; name no models,
+% datasets or metrics; no inferential terms). Each sentence's subject
+% entered as an object in the sentence before (PA s.4).
+%   S1 subject: assistants     -> introduces "two sources"
+%   S2 subject: the two sources (whether they share machinery; why it
+%      matters: controlling one without the other)
+%   S3 subject: we             -> introduces "matched inputs"
+%   S4 subject: these inputs   (let us compare both sources on the same
+%      heads and measure mirroring blind to the user)
+%   S5 subject: the model      (mirrors enthusiasm, not reserve)
+%   S6 subject: the heads that carry the assigned persona (respond to both
+%      sources, in different directions; zeroing them leaves mirroring)
+%   S7 PENDING subject: removing the user-style direction (result)
+%   S8 subject: these results / mirroring (what follows, scoped to a
+%      single turn)
+% ---------------------------------------------------------------------
+\begin{abstract}
+\flow{S1--S2: Assistants take on personality from their system prompt and from the user's writing; whether the two share internal machinery decides whether one can be controlled without the other.}
+\flow{S3--S4: We build matched inputs that move a personality between the system prompt and the user's message with request and reply fixed, and use them to compare both sources on the same attention heads and to measure mirroring.}
+\flow{S5--S6: The model mirrors enthusiasm but not reserve; the heads that carry the assigned persona respond to both sources, in different directions, and zeroing them leaves mirroring intact.}
+\pending{S7: what removing the user-style direction does.}
+\flow{S8: In a single turn, the persona heads register the user's style without carrying the mirroring.}
+\end{abstract}
+
+% =====================================================================
+\section{Introduction}
+% Shape (PA s.5): expands the abstract in its order, S1-S2 -> P1-P2,
+% S3 -> P3, S4 -> P4, S5-S7 -> P5, contributions -> P6. Target 650-800
+% words, six paragraphs. Citations ONLY in P1-P2 (diagnostic: a later
+% paragraph needing one is doing earlier work). No symbols, no equations,
+% no inferential terms. Results reduced to adjectives (PA s.6).
+% =====================================================================
+
+% --- P1 ------------------------------------------------------------
+% STEP       stakes (abstract S1)
+% CHARACTER  assistants (one character; "personality" is what they take on)
+% CONTENT    Assistants are given a persona through a system prompt
+%            [Chen et al. 2025 for persona prompting/vectors]. In conversation
+%            they also shift towards the user's personality, which earlier
+%            work calls personality mirroring [Sprejer et al. 2026]. Over
+%            long conversations the persona they were given erodes [Lu et al.
+%            2026, drift]. NO numbers from these papers unless verified.
+% HAND-OFF   ends on "two sources of personality: the system prompt and the
+%            user's writing" (object) -> P2 takes "these two sources" as subject
+% SOURCE     proposal Sec.1; citation fixes from plan_end_submission (Lu title
+%            and authors are WRONG in the proposal bib; fix before LaTeX)
+\flow{Assistants take on personality from two sources: the persona their system prompt assigns, and the style of the user they talk to (mirroring; drift over long conversations).}
+
+% --- P2 ------------------------------------------------------------
+% STEP       the gap (abstract S2). The ONLY paragraph where criticism of
+%            prior work gets its own main clause (PA s.4).
+% CHARACTER  the two sources -> the evidence about each (two characters,
+%            in sequence: assigned side first, then the user side)
+% CONTENT    (a) Assigned persona is well localized: a small set of
+%            attention heads carries it [Izawa et al. 2026, ICML; introduce
+%            "style heads" here as an OBJECT, the work we build on] and it
+%            lies along directions in activation space [Chen et al. 2025].
+%            (b) The user side has only model-level, correlational evidence:
+%            activations shift along trait components after users interact
+%            [Sprejer et al. 2026], who leave open whether that shift is the
+%            model adopting a style or representing the user's [same cite].
+%            Role boundaries between user and assistant blur in the latent
+%            space [Ye et al. 2026], so user style could plausibly enter the
+%            assistant's representation.
+%            (c) Why it is hard, as TWO reasons not a chain (PA s.5):
+%            mundane = in real conversations the sources co-occur and differ
+%            in content; deeper = a correlational shift cannot separate
+%            perceiving the user's style from adopting it.
+%            (d) Why it matters, one sentence: if the sources share machinery,
+%            suppressing mirroring would also damage the assigned persona.
+%            Beckmann & Butlin 2026 only if the sentence is rewritten (plan:
+%            the proposal's sentence is ambiguous); otherwise drop it.
+% HAND-OFF   ends on "a test that holds everything fixed except where the
+%            personality comes from" -> P3 opens on "we"
+% SOURCE     proposal Sec.1-2; Izawa = ICML 2026, arXiv 2603.13249
+\flow{The assigned persona is localized to a few attention heads and directions, but the user's side has only model-level correlational evidence; telling the sources apart is hard for a mundane reason (they co-occur and differ in content) and a deeper one (a shift in activations cannot separate perceiving the user from adopting their style).}
+
+% --- P3 ------------------------------------------------------------
+% STEP       what we offer (abstract S3); the design choice explained in ONE
+%            sentence, not defended (PA s.5)
+% CHARACTER  we -> the inputs (enter as object "matched inputs", then subject)
+% CONTENT    Design sentence: within a request, two inputs differ only in
+%            where a personality sits (system prompt or user message); the
+%            request and the assistant's reply are identical. Two traits
+%            (extraversion, agreeableness), high and low ends. Every user
+%            rewrite is checked to ask for the same thing. Scope stated plainly
+%            once: single exchanges, one open-weight model. Sizes as an
+%            intensifier, not numbers (PA s.7 table, "sample sizes -> one
+%            intensifier"). Point to Figure 1.
+% FIGURE 1   (does argumentative work here, PA s.9): one request shown three
+%            ways (neutral; personality in the user message; personality in
+%            the system prompt) with the one shared reply. Reuse a real row,
+%            e.g. code_01 E+ rewrite + the "You are an extraverted assistant"
+%            twin.
+% HAND-OFF   ends on "these inputs" -> P4 subject
+% SOURCE     Data_Creation/README.md; Report/data_method_results.md Sec.3
+\flow{We build matched inputs in which, within a request, only the location of a personality changes (system prompt or user message) while the request and the assistant's reply stay identical (Figure 1).}
+
+% --- P4 ------------------------------------------------------------
+% STEP       how we use them (abstract S4) + how we know it works (Q5).
+%            Longest paragraph is allowed here (exemplar A's method paragraph).
+% CHARACTER  these inputs -> the three measurements (enter as objects)
+% CONTENT    Three uses, in the order the results come:
+%            (1) which heads respond to each source, compared on the same
+%                heads, including the style heads;
+%            (2) mirroring: the model's free replies scored by a judge that
+%                never sees the user's message (one clause on why: so it
+%                scores the reply, not the user);
+%            (3) causal tests: switching the style heads off, and removing
+%                only the user-style direction at those heads, across their
+%                layer, and in the residual stream [PENDING runs].
+%            Validation in one sentence (Q5): extraction matches the reference
+%            implementation; every causal effect is compared with random heads
+%            and directions; directions are estimated on held-out requests.
+%            NO "permutation", "BH", "cross-fitting", "lambda" here (PA s.2:
+%            machinery goes to Method).
+% HAND-OFF   ends on "mirroring" -> P5 opens on the model's mirroring
+% SOURCE     Workstream_2 reference_check.py; plan_end_submission.md
+\flow{With these inputs we compare which attention heads respond to each source, measure mirroring with a judge that never sees the user's message, and test causally by switching off the style heads and by removing only the user-style direction, always against random heads and directions.}
+
+% --- P5 ------------------------------------------------------------
+% STEP       what we found (abstract S5-S7). Adjectives, not numbers.
+% CHARACTER  the model -> the style heads -> [PENDING] direction removal
+%            (three, strictly in sequence, no return)
+% CONTENT    The model mirrors a user's enthusiasm but not their reserve,
+%            and mainly when the user is sociable or energetic.
+%            Agreeableness: [PENDING pairwise] -- write "no visible shift"
+%            only if pairwise judging also shows none; if pairwise finds an
+%            effect, this sentence changes.
+%            The style heads respond most to both sources, in different
+%            directions, and the system prompt moves them far more than the
+%            user does; switching them off leaves mirroring intact.
+%            [PENDING] wording-only control: if the head ranking does NOT
+%            survive it, the clause "respond most to both sources" must be
+%            rewritten as "respond to any change in the system prompt".
+%            [PENDING] what removing the direction does (three branches in
+%            plan_end_submission "How to read the results").
+% HAND-OFF   ends on the provisional conclusion (single turn) -> P6
+% SOURCE     Workstream_3/docs/ws3_summary.json; MIDSUB_RESULTS.md
+\flow{The model mirrors enthusiasm but not reserve; the style heads respond most to both sources but in different directions, are moved far more by the system prompt, and are not needed for mirroring.}
+\pending{direction-removal result; wording-only control; pairwise agreeableness.}
+
+% --- P6 ------------------------------------------------------------
+% STEP       contributions: prose, ordinals, three items, no numbers, no
+%            overlap (PA s.10). The dataset is the artefact with no
+%            precedent: state it as a THING, first.
+% CHARACTER  the contributions, each opening by naming its object
+% CONTENT    First, a dataset that isolates where a personality comes from,
+%            with its quality-check protocol (checklist + blind comparison).
+%            Second, a comparison of the two sources on the same attention
+%            heads, with causal tests against random controls.
+%            Third, evidence that single-turn mirroring is selective: it
+%            follows enthusiasm, not reserve, and depends on the facet of the
+%            user's style.
+%            Check against overlap: (2) is about heads, (3) about behaviour.
+% HAND-OFF   to Related Work
+\flow{Contributions: first, a dataset that isolates the source of a personality; second, a head-level comparison of the two sources with causal tests; third, evidence that single-turn mirroring is selective.}
+
+% =====================================================================
+\section{Related Work}
+% Shape: four paragraphs grouped by line of work, from the phenomenon to the
+% mechanism, ENDING on the work we build on directly (Izawa et al.). The
+% assignment asks for a "comprehensive" review that shows viability and
+% motivation, so this runs longer than a short-paper related-work paragraph
+% (~550-700 words). Describe prior work in its own terms; criticism rides in
+% subordinate clauses only (PA s.4). TRAP (PA s.13): our thesis is that a
+% component RESPONDING to a style is not evidence that it CARRIES a
+% behaviour; never describe prior findings with "carries/drives/causes"
+% unless the cited work intervened.
+%
+% CITATION FIXES to make in the .bib before writing (plan_end_submission):
+%   - Lu et al. 2026: the proposal's title and authors are WRONG. Look up
+%     arXiv 2601.10387 and use its real title/author list.
+%   - Izawa et al. 2026: cite the ICML 2026 version (arXiv 2603.13249);
+%     fix the broken author field ("et al. Izawa").
+%   - Subramani et al. 2022 extracts steering vectors from pretrained LMs;
+%     it does NOT show that residual steering hurts coherence. Remove that
+%     attribution.
+%   - Beckmann & Butlin 2026: the proposal's sentence is ambiguous about who
+%     ran which experiment. Cite only for what that paper itself argues
+%     (check the paper first), or drop it.
+%   - Ye, Cui & Hadfield-Menell 2026 (arXiv 2603.12277): the interim
+%     proposal listed it as "Anonymous"; use the real authors.
+% =====================================================================
+
+% --- RW1 -----------------------------------------------------------
+% STEP       viability: personality is measurable in text, and models
+%            express it
+% CHARACTER  personality (as expressed in language) -> language models
+% CONTENT    The Big Five describes personality along five traits, each with
+%            facets [Soto & John 2017, BFI-2], and adjective markers
+%            [Saucier 1994]. Personality leaves measurable traces in writing
+%            [Pennebaker & King 1999; Mairesse et al. 2007]. Language models
+%            express personas that can be set by prompts and steered [Chen et
+%            al. 2025]. Keep this short: it licenses using Big Five traits as
+%            a model-independent taxonomy (the proposal's reason for the
+%            choice: it transfers across models).
+% HAND-OFF   ends on "a model's persona is not fixed by its prompt alone"
+%            -> RW2 opens on assistants shifting in conversation
+\flow{Personality is measurable in text along Big Five traits and their facets, which gives a taxonomy defined independently of any model; language models express personas that prompts can set.}
+
+% --- RW2 -----------------------------------------------------------
+% STEP       the phenomenon: mirroring and drift (behaviour + model-level
+%            activations)
+% CHARACTER  assistants -> the studies' open question (enter as object)
+% CONTENT    Over long conversations, assistants depart from their default
+%            assistant persona, and clamping activations along an "assistant
+%            axis" reduces this [Lu et al. 2026; fixed citation]. Separately,
+%            assistants shift towards a user's personality: activations move
+%            along trait principal components after user interactions
+%            [Sprejer et al. 2026]. Sprejer et al. leave open whether that
+%            shift is the model's own persona changing or the model
+%            representing the user's style while it stays in context; state
+%            this as THEIR open question, in their terms.
+%            Ye et al. 2026: in latent space the user/assistant role boundary
+%            dissolves and style dominates role tags, so linear probes across
+%            positions confuse role with persona. One sentence; it explains
+%            why we read activations at fixed positions and hold content fixed.
+%            Beckmann & Butlin 2026: only if checked (see fixes above).
+% HAND-OFF   ends on "whether the shift reflects perception or adoption is
+%            open" -> RW3 turns to where persona lives in a model
+\flow{Assistants drift from their default persona over long conversations and shift towards a user's personality; evidence is behavioural or model-wide, and whether an internal shift reflects perceiving the user or adopting their style is open.}
+
+% --- RW3 -----------------------------------------------------------
+% STEP       persona as directions in activation space; what intervening on
+%            them does
+% CHARACTER  persona directions (one character)
+% CONTENT    Traits correspond to directions that can monitor and control a
+%            model's persona [Chen et al. 2025]. Steering vectors extracted
+%            from activations shift generation [Subramani et al. 2022; fixed
+%            attribution]. Residual-stream steering is a blunt tool, which
+%            motivates looking for a narrower site (keep this claim ONLY with
+%            a citation that actually shows a coherence cost; Chen et al. 2025
+%            report trade-offs, so verify there; otherwise drop the claim).
+% HAND-OFF   ends on "a narrower site than the residual stream" -> RW4
+\flow{Persona traits correspond to directions in activation space that can be monitored and steered, which raises the question of where in the network a persona is written.}
+
+% --- RW4 -----------------------------------------------------------
+% STEP       persona localized in components; the work we build on. Ends the
+%            section with the gap stated as what is UNTESTED, not as a fault.
+% CHARACTER  attention heads -> the style heads (enter as object first)
+% CONTENT    Activation patching locates persona-driven reasoning in specific
+%            components [Poonia & Jain 2025]. Izawa et al. 2026 find that an
+%            assistant's style is written by a sparse set of attention heads,
+%            style modulation heads, validated with system prompts and
+%            steering (layer 20, heads 3/5/28 in their 1-indexed numbering;
+%            give numbers once, in Method, 0-indexed). Their analysis covers
+%            personas set by system prompts and their own persona set (e.g.
+%            humorous); it does not test style that arrives through the
+%            user's message, nor Big Five traits. Phrase as scope ("covers",
+%            "does not test"), not as a flaw.
+% HAND-OFF   ends on "whether the user's style reaches the same heads is
+%            untested" -> Dataset section opens on the inputs that test it
+\flow{Persona-driven behaviour has been localized to specific components, most directly to a sparse set of style heads validated on system-prompt personas; whether a user's style reaches the same heads is untested.}
+
+% =====================================================================
+\section{Dataset}
+% Shape: opens with the ONE property the whole dataset is built around
+% (PA s.5: the design choice explained in one sentence, not defended), then
+% follows the order in which the pieces are built: traits and requests ->
+% fixed replies -> user rewrites -> their quality check -> system twins ->
+% crossed set. One table (T1, facets) and one summary table (T2, sets).
+% Every number below was checked against Data_Creation/data on 2026-10-31
+% (PA s.13: result files go stale; re-check if the data are regenerated).
+% Existing prose to start from: Report/data_method_results.md Sec.3 (fix the
+% numbers flagged below; that draft predates the top-up).
+% =====================================================================
+
+% --- D0 (section lead, 2 sentences) ---------------------------------
+% STEP       the design property
+% CHARACTER  the dataset
+% CONTENT    Within a request, any two inputs differ only in personality:
+%            where it sits (system prompt or user message) and which pole;
+%            never in what is asked or in the assistant's reply.
+% HAND-OFF   -> the traits and requests that fix "what is asked"
+\flow{Within a request, any two inputs differ only in personality, never in what the user asks or in the assistant's reply.}
+
+\subsection{Traits and requests}
+% --- D1 ------------------------------------------------------------
+% CHARACTER  the traits -> the requests (in sequence)
+% CONTENT    Extraversion and agreeableness, each with a high and a low
+%            pole, defined by the three BFI-2 facets of each trait (T1);
+%            markers from Saucier, text cues from Pennebaker & King and
+%            Mairesse et al. Choice of BFI-2 over NEO-PI-R in ONE clause
+%            (NEO puts warmth under extraversion, blurring the two traits).
+%            20 requests, 5 in each of 4 domains (coding, explanation,
+%            emotional advice, brainstorming); emotional-advice intents
+%            adapted from Li et al. 2025 (bib key li2025human). Each request
+%            has a one-line intent and a neutral message whose concrete
+%            details (language, nationality, numbers) pin its content.
+%            Example: "How do I reverse a singly linked list in Python?"
+% SOURCE     data/scenarios.jsonl (20 rows, 5 per domain: verified)
+\flow{Two traits at two poles, defined through BFI-2 facets; twenty requests across four domains, each with a neutral message whose concrete details fix what is asked.}
+
+\subsection{Fixed replies}
+% --- D2 ------------------------------------------------------------
+% CHARACTER  the fixed reply
+% CONTENT    One reply per request, written by the studied model itself
+%            (greedy, neutral system prompt "You are a helpful assistant.",
+%            neutral message). Stored in full, capped at 1,024 tokens:
+%            90 to 1,024 tokens, median 620 (NOT 630 as in the mid-sub
+%            draft); one reply reached the cap and was cut at its last
+%            sentence. The same reply is reused for every input of that
+%            request. WHY the full reply is stored (readout window chosen
+%            later, causal-attention equivalence) belongs to Method 4.1;
+%            here only point forward.
+% SOURCE     data/qc/forced_responses/raw_long.jsonl (verified)
+\flow{The studied model writes one reply per request to the neutral message; that reply, stored in full, is shared by every input built from the request.}
+
+\subsection{User rewrites}
+% --- D3 ------------------------------------------------------------
+% CHARACTER  the rewrites (enter as object "three rewrites per cell")
+% CONTENT    A rewrite restates the neutral message in one pole of one trait,
+%            asking for exactly the same thing. 3 per request x trait x pole
+%            = 240. Each of the three leads with a different facet; the low
+%            pole uses the low end of the same facet, so rewrite k of the two
+%            poles is facet-matched (T1). One generator call writes the three
+%            (DeepSeek-V4.1-Flash), from the pole's definition, its cues, the
+%            facet order and four out-of-domain examples written as full
+%            rewrites. The generator may not add facts, add constraints on the
+%            answer, or keep the original wording and append a styled sentence.
+% TABLE T1   k | extraversion facet | agreeableness facet
+%            0 | sociability | compassion; 1 | assertiveness | respectfulness;
+%            2 | energy | trust.
+% SOURCE     data/user_variants.jsonl qc.facet (verified 20 per k per trait);
+%            prompts.py; DECISIONS.md D3 (facet per rewrite, flagged REVIEW:
+%            mention in Limitations that rewrite index = facet, so the three
+%            rewrites are not exchangeable replicates)
+\flow{Three rewrites per request, trait and pole, each leading with a different facet so that high and low rewrites form facet-matched pairs (Table 1).}
+
+% --- D4 ------------------------------------------------------------
+% CHARACTER  the check (three stages, as a numbered list in prose)
+% CONTENT    (1) automatic: length 0.5-2x of the neutral message (or +25
+%                words), no verbatim copy, no near-duplicate;
+%            (2) checklist: a judge (GPT-6 Luna) answers nine yes/no
+%                questions with reasons (content x4, style boundaries x2,
+%                realism x3) [Cook et al. 2024; Qin et al. 2024; Lee et al.
+%                2024 for decomposed yes/no judging];
+%            (3) blind comparison: neutral message vs rewrite, "which writer
+%                is more extraverted / agreeable", both orders [Zheng et al.
+%                2023, position bias]; a high rewrite passes if chosen twice,
+%                a low rewrite if the neutral message is chosen twice. ONE
+%                sentence on why we always ask from the high end (asking "more
+%                reserved" let the judge pick the shorter message).
+%            Failures regenerated with the judge's reasons, up to 5 attempts.
+%            Generator != judge [Panickssery et al. 2024].
+%            RESULT: 240 of 240 pass; 143 on the first attempt, 82 on the
+%            second, 15 on the third or fourth (10 + 5; none needed a fifth).
+%            Length differs by pole (study-model tokens): extraversion 36.0
+%            vs 24.6 (NOT 35.9/24.7 as in the mid-sub draft), agreeableness
+%            39.7 vs 29.2; recorded per row for later control.
+%            HUMAN AUDIT: PENDING. 24 rows (10%) in manual_check.csv, 0 filled
+%            as of 2026-10-31. If it is not done, do NOT write "we audited";
+%            write that it is planned, or drop the sentence.
+% SOURCE     data/qc/run_config.json (generator deepseek-flash, judge
+%            gpt-6-luna, max_attempts 5); user_variants.jsonl qc.attempts
+\flow{Every rewrite passes automatic checks, a nine-question judge checklist and a blind two-order comparison with the neutral message; all 240 pass, most on the first attempt.}
+\pending{human audit of a 10\% sample (24 rows), not yet done.}
+
+\subsection{System-prompt twins}
+% --- D5 ------------------------------------------------------------
+% CHARACTER  the system twins
+% CONTENT    A twin keeps the neutral message and fixed reply and puts the
+%            personality in the system prompt: 5 prompts per trait and pole,
+%            "You are a [X] assistant. [instruction]" [Chen et al. 2025;
+%            Izawa et al. 2026], high and low written in parallel pairs.
+%            400 twins + 20 neutral rows.
+%            Behavioural check, 2 sentences in the main text (details ->
+%            appendix): low-agreeableness prompts made the model withhold help
+%            (13 of 20 replies helped), so the 10 agreeableness prompts end
+%            with "Still help the user fully with their request."; after it,
+%            14 of 15 replies to task requests helped. The extraversion
+%            prompts do not carry the sentence, because it weakened the
+%            low-extraversion style (16 vs 19 of 20 replies read as reserved).
+%            Denominators stay next to every count (PA s.6).
+% SOURCE     prompts/sys_prompts.json (20 prompts, clause on 10 A: verified);
+%            data/persona_check/ (v1 and v2); DECISIONS.md D8
+\flow{Twins move the personality into the system prompt (five parallel prompts per trait and pole); a behavioural check led us to ask the agreeableness prompts to keep helping.}
+
+\subsection{Crossed set}
+% --- D6 ------------------------------------------------------------
+% CHARACTER  the crossed set
+% CONTENT    System prompt {high, low, none} x user message {high, low};
+%            system prompt k paired with rewrite k; 360 rows per trait, 720 in
+%            total (verified). Used for the regression (Method 4.4) and, in its
+%            2x2 corner with rewrite k=0, for persona preservation in the
+%            removal experiments (Method 4.5).
+% TABLE T2   set | where personality sits | rows: user rewrites 240; system
+%            twins 400; neutral 20; crossed 720. (All verified.)
+% HAND-OFF   -> Method: how we read the model's activations on these inputs
+\flow{A crossed set pairs every system-prompt condition with high and low user rewrites (Table 2 summarises all sets).}
+
+% =====================================================================
+\section{Method}
+% Shape: five subsections in the order Results will use them:
+% readouts -> head localization -> measuring mirroring -> crossed-set
+% regression -> causal tests. Statistical machinery is named HERE (PA s.2,
+% s.7: the controls are part of our contribution, so name them plainly).
+% Each subsection opens on its object, then the one-sentence reason for the
+% design, then the details. Vocabulary from the top-of-file list: "reference
+% run" (never "baseline"), "remove" (lambda=1) vs "steer" (lambda=2).
+%
+% TWO EXPERIMENTAL REGIMES -- never pair numbers across them (PA s.6, s.13):
+%   Regime 1 (mid-submission): bf16, RTX 3090, sampled generation
+%            (temperature 1.0, 2 samples per rewrite, 300 tokens).
+%            -> head localization, behavioural map, crossed-set regression,
+%               zeroing.
+%   Regime 2 (end submission): fp16 sharded on two RTX 2080 Ti, greedy
+%            generation, 1 sample. -> direction removal, pairwise
+%            agreeableness, wording-only control, fp16 re-localization.
+%   Every arm in Regime 2 is compared only with its own job's reference run.
+%
+% VERIFIED against code (commit c4550d7): Workstream_2 chat.py, extract.py,
+% heads.py, configs/qwen.json; Workstream_3 generate.py, judge.py,
+% rubrics.py, mirroring.py, factorial.py, ablate.py, compare.py.
+% NOT verifiable: the end-submission code (directions.py, project.py,
+% residual.py, pairwise.py, intervention_report.py) is not in the repo as
+% of 2026-10-31. Every claim tagged [PLAN] below comes from
+% plan_end_submission.md only; check it against the code once pulled.
+% =====================================================================
+
+\subsection{Model and readouts}
+% --- M1 ------------------------------------------------------------
+% CHARACTER  the model -> its head outputs (enter as object) -> readouts
+% CONTENT    Qwen2.5-7B-Instruct, revision a09a354 (28 layers x 28 query
+%            heads, head dim 128). Style heads: layer 19, heads 2, 4, 27,
+%            zero-indexed (Izawa et al. number them layer 20, heads 3/5/28).
+%            We record each head's slice of the input to the attention output
+%            projection. Three readouts: first (last prompt token, from a
+%            prompt-only pass), resp (mean over the first 150 tokens of the
+%            teacher-forced fixed reply; Izawa et al.'s readout), user (mean
+%            over the user message's tokens). Prompt and reply tokenized
+%            separately, ids concatenated. fp32 averaging.
+%            Causal-attention equivalence (forcing the full reply and averaging
+%            its first 150 tokens = forcing 150 tokens) goes HERE, one sentence:
+%            it is why the dataset stores full replies (back-reference D2).
+%            Implementation check, scoped precisely: exactly two inputs (one
+%            request's high/low extraversion twins), our code run in the
+%            reference implementation's conventions (joint tokenization, full
+%            reply): identical activations, score Spearman 1.0, max difference
+%            1.3e-5. "Not a reproduction of their experiments."
+% SOURCE     chat.py encode(); extract.py capture_encoded() (prompt-only pass
+%            for first/user); qwen.json response_tokens=150;
+%            full_qwen_verification_summary.json (rows brainstorm_01 E+/- k0)
+\flow{We read every head's output at three positions (last prompt token, the first 150 tokens of the fixed reply, the user's message), with code that matches the reference implementation on the inputs we tested.}
+
+\subsection{Locating heads that respond to a personality}
+% --- M2 ------------------------------------------------------------
+% CHARACTER  the contrast -> the head score -> the two comparisons
+% CONTENT    Contrast = high minus low activations over pairs that differ
+%            only in pole; averaged over rewrites within a request, then over
+%            requests. Assigned contrasts pair system twins (100 pairs per
+%            trait); user contrasts pair rewrites (60 pairs per trait).
+%            Head score (display equation, Izawa et al.): projection of a
+%            head's write onto its layer's total write; scores of a layer sum
+%            to the layer's squared write, so heads are ranked WITHIN a layer.
+%            Significance: request-level sign flips (19,999) + Benjamini-
+%            Hochberg. State plainly that requests, not rewrites, are the unit.
+%            Comparing sources: Spearman over all 784 heads; style-head ranks
+%            under each source; cosine of the two contrasts inside the style
+%            heads vs 1,000 random three-head groups in layer 19.
+%            WORDING-ONLY CONTROL [PLAN, Job A]: contrast two different
+%            same-pole system prompts (k=0 vs k=1); report the style-head
+%            ranks under it (the mid-sub diagnostic saved only counts).
+%            NOTE for Results: Job A re-runs these localizations in fp16.
+%            Decide which regime the reported ranks come from, and label it.
+% SOURCE     heads.py localize(), sign_flip_pvalues(); cli.py compare;
+%            ws3/compare.py (draws=1000); ws3/diagnostic.py (same-pole, k0
+%            vs k1); plan_end_submission (fp16 re-localization + ranks)
+\flow{A head's score measures how much its output contributes to the layer's total high-minus-low change; we rank heads within a layer, compare the assigned and user rankings, and check the ranking against a contrast that changes only the wording of the system prompt.}
+
+\subsection{Measuring mirroring}
+% --- M3 ------------------------------------------------------------
+% CHARACTER  the model's free replies -> the judge -> the mirroring effect
+% CONTENT    The model answers each rewrite under the neutral system prompt.
+%            Regime 1: temperature 1.0, 2 samples per rewrite, 3 per neutral
+%            message, 300 tokens (540 replies). Regime 2 [PLAN]: greedy, one
+%            reply per rewrite (120 per arm for extraversion), so an arm differs
+%            from its reference run only through the intervention.
+%            Judge: GPT-4.1-mini scores 0-100 (probability-weighted over its
+%            top-20 integer tokens, Izawa et al.'s protocol) for extraversion,
+%            agreeableness, coherence, refusal. It sees the reply and the
+%            request's neutral intent, never the user's message (one clause:
+%            otherwise it could score the user's style).
+%            Pairwise judge for agreeableness [PLAN, ws3/pairwise.py]: the
+%            judge sees replies to the high and to the low rewrite of the same
+%            request and picks the more agreeable, in both orders. ONE sentence
+%            on why: absolute scores sit near the top of the scale.
+%            Effect M_t (display equation): mean over requests of (mean score
+%            for high rewrites - mean for low). Wilcoxon over requests, d_z,
+%            request-bootstrap CI (5,000).
+% SOURCE     ws3.json gen settings; judge.py (single model, logprobs,
+%            min mass 0.25); rubrics.py (no user text; refuses records with a
+%            "user" field); mirroring.py
+\flow{Mirroring is the difference in the judged trait of the model's replies to high and low rewrites, scored by a judge that never sees the user's message; agreeableness is also judged pairwise because absolute scores sit near the top of the scale.}
+
+\subsection{Separating the two sources in the activations}
+% --- M4 (candidate for the appendix if pages run short) -------------
+% CHARACTER  the crossed set's activations -> the regression
+% CONTENT    For a three-head group, activations over the crossed rows of one
+%            trait. Codes: system pole (+1/-1/0), system presence (1/1/-2),
+%            user pole (+/-1), interactions. Center within request; multi-
+%            output least squares. Report: variance explained per block;
+%            signed cosine of system-pole and user coefficients with request-
+%            bootstrap CI (1,000); shuffle test for a nonzero user coefficient
+%            (1,000 shuffles within request x system cell), NOT used as a null
+%            for the cosine (one clause why). Groups: style heads, highest-
+%            norm triple, random triples. Extraversion only.
+%            Flag for Results: the "assigned" block mixes pole and presence.
+% SOURCE     factorial.py (CODES, BLOCKS, center_within, shuffle_norms)
+\flow{On the crossed set, a regression splits each head group's activations into what the system prompt explains and what the user's style explains, and measures how far their directions agree.}
+
+\subsection{Causal tests}
+% --- M5a -----------------------------------------------------------
+% CHARACTER  the style heads (zeroing)
+% CONTENT    Regime 1: zero the style heads' slices at every position during
+%            generation, repeat the mirroring measurement; compare with random
+%            triples. One clause: zeroing removes a head entirely, so it tests
+%            whether the heads are NEEDED, not what they carry.
+% SOURCE     generate.py zero_head_hook; ablate.py
+\flow{Zeroing tests whether the style heads are needed for mirroring.}
+
+% --- M5b -----------------------------------------------------------
+% CHARACTER  the user-style direction -> the hook -> the arms
+% CONTENT    [PLAN] Removing a direction is narrower than zeroing: it deletes
+%            only the user-style component of a group's output and keeps the
+%            rest (this is the hand-off from M5a).
+%            Hook (display equation), applied during generation:
+%               z_G <- z_G - lambda u u^T (z_G - mu_0)
+%            u = unit user contrast of group G (resp readout); mu_0 = mean on
+%            neutral rows. lambda = 1 REMOVES the component; lambda = 2
+%            reflects it, i.e. STEERS towards the opposite style. Use these two
+%            verbs throughout (vocabulary list).
+%            Held-out estimation: 4 folds by request; each held-out request is
+%            generated with a direction fit on the other 15; the top-10 heads
+%            are also chosen per fold.
+%            Arms (list in a small table T3, group | lambda | what it tests):
+%              style heads, 1 (the removal test) / 2 (steering);
+%              random triple without style heads, 1 (control);
+%              all 28 heads of layer 19, 1 / 2;
+%              top-10 user heads across layers, 1;
+%              random direction in layer 19, 1 (perturbation-size control);
+%              residual stream after layer 19, 1 (positive control: can a
+%              single direction be removed at this depth at all?).
+%            Outcomes per arm vs its job's reference run: mirroring reduction
+%            1 - M_arm / M_ref with a paired request-bootstrap CI; on the 2x2
+%            corner of the crossed set (rewrite k=0, the sociability facet):
+%            the assigned-persona effect (is it preserved?), the user effect
+%            under a persona, and the conflict gap; coherence; refusal.
+%            Precision: fp16 on two GPUs; fp32 fallback on four.
+% VERIFY     once the code is pulled: (1) lambda=0 is an exact identity;
+%            (2) hook positions (every position vs generated positions only:
+%            the plan does not say; state whichever the code does);
+%            (3) mu_0 source; (4) random triples exclude 2, 4, 27;
+%            (5) folds split by request, direction fit only on training folds;
+%            (6) greedy decoding on.
+% SOURCE     plan_end_submission.md (Design decisions; Generations; Jobs)
+\flow{Removing a direction deletes only the user-style component of a group's output (lambda = 1), estimated on held-out requests; we apply it to the style heads, their whole layer, the top user-style heads and the residual stream, against random-head and random-direction controls, and also measure whether an assigned persona survives.}
+\pending{all of M5b; verify against the end-submission code before writing prose.}
+
+% =====================================================================
+\section{Results}
+% LEFT EMPTY ON PURPOSE (results pending). Skeleton only: the order, which
+% table/figure lands where, and the rules for writing it.
+% Rules (PA s.6): finding first, numbers second; every count with its
+% denominator; every number from ONE regime per sentence (see Method);
+% quantifiers ("all", "every", "none") checked against the final results
+% files, not against the mid-sub draft; the unflattering number stays in
+% (e.g. agreeableness at ceiling, random triples with larger cosines).
+% Order follows the RQs so that 5.6 can answer them in turn.
+% =====================================================================
+\subsection{The style heads respond to both sources}
+% Regime 1 ranks (Table: style-head ranks, assigned vs user, first/resp) +
+% Spearman; cosine vs random groups. [PENDING] wording-only control ranks
+% decide this subsection's title and first sentence.
+\pending{Table: style-head ranks; wording-only control.}
+\subsection{Mirroring is selective}
+% Regime 1 behavioural map (Table: neutral / low / high, M, CI) + facet and
+% domain splits. [PENDING] pairwise agreeableness (Regime 2).
+\pending{Table: mirroring; pairwise agreeableness.}
+\subsection{The system prompt dominates the style heads}
+% Regime 1 crossed-set regression (Table). Keep the head-2 observation and
+% the overlap of two comparison groups with head 2.
+\pending{Table: regression by head group.}
+\subsection{Zeroing the style heads}
+% Regime 1 zeroing (Table), with the caveat that one random triple
+% contained head 2 at mid-sub.
+\pending{Table: zeroing.}
+\subsection{Removing the user-style direction}
+% Regime 2 only. Main figure: mirroring reduction per arm with CI, steering
+% arms visually separated. Second table: preservation on the 2x2 (assigned
+% effect, user effect under a persona, conflict gap), coherence, refusal.
+% Read with the three branches in plan_end_submission ("How to read").
+\pending{Figure: reduction per arm; Table: preservation.}
+\subsection{Answers to the research questions}
+% Start from Report/data_method_results.md Sec.5.5 (single-turn scoping
+% sentence first, then RQ1-RQ3 in the proposal's wording); rewrite each
+% answer once the pending results are in.
+\pending{update RQ answers.}
+
+% =====================================================================
+\section{Discussion}
+% Shape: one interpretation per paragraph (PA papers guidance), each stating
+% what the results SUGGEST with the hedge the evidence supports. Verbs:
+% "suggests", "is consistent with"; never "shows" for an interpretation.
+% Every paragraph is scoped to single turns somewhere (once per paragraph,
+% not every sentence). Dis1 and Dis4 depend on pending results: their
+% replacement does not affect Dis2 or Dis3, which rest on Regime 1 only.
+% =====================================================================
+
+% --- Dis1 (PENDING-dependent) ----------------------------------------
+% STEP       interpretation of the head results: responding is not carrying
+% CHARACTER  the style heads
+% CONTENT    The style heads register the user's style (high ranks) yet are
+%            not needed for single-turn mirroring. This bears on the open
+%            question from Related Work (perceiving vs adopting): a head can
+%            respond to a user's style because it represents the context, not
+%            because it shapes the reply. Hedge: zeroing whole heads can be
+%            compensated by other components (self-repair; cite McGrath et
+%            al. 2023 "The Hydra Effect" ONLY after checking the reference),
+%            which is why the direction-removal test exists.
+%            TRAP (PA s.13): do not write "the heads carry user style"
+%            anywhere in this paragraph; the paper's thesis refutes it.
+% BRANCHES   rewrite after Regime 2:
+%            (a) style-head removal reduces mirroring -> the user-style
+%                component at these heads matters even though the heads as a
+%                whole are not needed (zeroing was too blunt);
+%            (b) only layer-wide / top-10 / residual removal works, and beats
+%                the random direction -> mirroring runs through a direction
+%                the style heads do not carry;
+%            (c) nothing works, residual included -> single-turn mirroring is
+%                not removable along one direction at this depth.
+%            If the wording-only control puts the style heads on top too,
+%            Dis1 must also say they respond to system-prompt changes in
+%            general, not to personality specifically.
+\flow{The style heads register the user's style without being needed for single-turn mirroring, which fits a head that perceives the context rather than one that shapes the reply.}
+\pending{rewrite with the direction-removal branch and the wording-only control.}
+
+% --- Dis2 ------------------------------------------------------------
+% STEP       interpretation of the behaviour: selective mirroring
+% CHARACTER  the model's mirroring
+% CONTENT    Mirroring follows enthusiasm (sociability, energy) but not
+%            reserve or assertiveness, and almost vanishes in emotional advice.
+%            One hypothesis, labelled as such: preference training keeps the
+%            assistant persona warm and supportive, so it moves towards
+%            positive-affect styles and resists withdrawn or cold ones; the
+%            emotional-advice result fits an assistant holding a calm,
+%            supportive register regardless of the user. Untested here; the
+%            test is in Future Work (base vs instruction-tuned).
+%            Agreeableness: [PENDING pairwise]; if pairwise also finds
+%            nothing, "agreeableness does not move" joins this paragraph as
+%            the same pattern (the model stays polite with rude users).
+% SOURCE     ws3_summary.json per_facet_k, per_domain
+\flow{Mirroring is selective: the model takes on a user's enthusiasm but not their reserve or assertiveness, and barely in emotional advice, which suggests an assistant persona that bends towards positive affect only.}
+
+% --- Dis3 ------------------------------------------------------------
+% STEP       interpretation of the regression: the two sources differ in scale
+% CHARACTER  the system prompt (vs the user's message, in the predicate)
+% CONTENT    Inside the style heads, the system prompt's effect dwarfs the
+%            user's in a single turn. Consequence for drift, hedged: if user
+%            style is to erode an assigned persona, it would have to
+%            accumulate over turns, which single-turn data cannot show. This
+%            paragraph is the bridge to multi-turn future work (the user's
+%            stated priority).
+%            Keep the head-2 caveat attached (one head drives the assigned
+%            variance) so the claim is not read as "all three heads".
+\flow{In a single turn the system prompt moves the style heads far more than the user does, so any erosion of an assigned persona by the user would have to build up over turns.}
+
+% --- Dis4 (PENDING-dependent) ----------------------------------------
+% STEP       what the results imply for control (RQ3's second half)
+% CHARACTER  suppressing mirroring
+% CONTENT    Depends on the preservation 2x2: whether a removal arm lowers
+%            mirroring while the assigned-persona effect stays intact, and
+%            what it costs in coherence. Write only after Regime 2. If no arm
+%            reduces mirroring, say what that rules out (single-direction
+%            removal at layer 19) and stop; do not speculate past it.
+\pending{implications for suppressing mirroring while keeping the assigned persona.}
+
+% --- Dis5 (short; ethics) -------------------------------------------
+% STEP       ethical note (PA s.5: justification in discussion is ethical)
+% CONTENT    The low-agreeableness system prompts make the model dismissive,
+%            and sometimes insulting, towards users who ask for emotional
+%            support; we use them only to build controlled contrasts. Methods
+%            that suppress mirroring could also make an assistant less
+%            responsive to a distressed user's cues; any deployment would need
+%            to weigh that.
+\flow{Ethics: the low-agreeableness prompts produce dismissive replies to users seeking support, used here only as contrasts; suppressing mirroring could also blunt responsiveness to distressed users.}
+
+% =====================================================================
+\section{Limitations}
+% Shape: short titled paragraphs (\paragraph{}), one limitation each, each
+% = the limitation + its consequence for our claims. Ordered by how much
+% they constrain the headline. The identifiability concession appears ONCE
+% (L4). No hedging of the same point elsewhere: other sections point here.
+% =====================================================================
+
+% L1 ---------------------------------------------------------------
+% Single turns. Every result is one user message and one reply; prior
+% work finds drift accumulating over turns. Consequence: we cannot say
+% whether the style heads become necessary, or the user's effect grows,
+% over a conversation. (Priority future work.)
+\paragraph{Single turns.}
+\flow{Every result is single-turn, so we cannot say how mirroring or the role of the style heads changes as a conversation accumulates.}
+
+% L2 ---------------------------------------------------------------
+% One model: Qwen2.5-7B-Instruct, one revision. Consequence: the style
+% heads are model-specific; the behavioural asymmetry may be too.
+\paragraph{One model.}
+\flow{All results come from one instruction-tuned model; the head locations are specific to it, and the behavioural pattern may be.}
+
+% L3 ---------------------------------------------------------------
+% Two traits, one at ceiling. Extraversion and agreeableness only;
+% absolute agreeableness scores sit near the top of the scale. [PENDING:
+% state what pairwise judging resolved.] Crossed-set regression and the
+% removal experiments cover extraversion only.
+\paragraph{Two traits.}
+\flow{We test two of five traits, and agreeableness scores sit near the top of the judge's scale; the regression and removal experiments cover extraversion only.}
+
+% L4 ---------------------------------------------------------------
+% Controlled, synthetic inputs (the ONE identifiability concession,
+% PA s.5). Rewrites are written by a language model, the fixed reply was
+% written for the neutral message, and real users mix traits and change
+% content together. Consequence: the design isolates where a personality
+% sits at the cost of realism; effects in natural conversations may differ.
+\paragraph{Controlled inputs.}
+\flow{Holding request and reply fixed isolates where a personality sits but is unrealistic: rewrites are model-written and real users mix traits with content.}
+
+% L5 ---------------------------------------------------------------
+% Few requests; rewrite index = facet. 20 requests make per-domain and
+% per-facet results descriptive (5 requests per domain). Each rewrite
+% index carries a fixed facet (DECISIONS D3), so the three rewrites are
+% not exchangeable replicates; facet effects can appear as rewrite effects.
+\paragraph{Sample and replicates.}
+\flow{Twenty requests make domain and facet splits descriptive, and because each rewrite index carries a fixed facet, rewrites are not exchangeable replicates.}
+
+% L6 ---------------------------------------------------------------
+% LLM judges. QC (GPT-6 Luna) and behaviour (GPT-4.1-mini) rely on model
+% judges; the checklist judge missed some shifts in the user's stance
+% ("I thought I deserved" -> "should have been mine", DECISIONS D7).
+% [PENDING human audit: report agreement if done; otherwise say no human
+% audit was completed.]
+\paragraph{Model judges.}
+\flow{Quality and behaviour are scored by language-model judges, which missed some subtle shifts in what a user believes; the human audit [pending] is the check on them.}
+
+% L7 ---------------------------------------------------------------
+% Localization measures. Heads are ranked within one layer; the
+% significance test flags almost every head, including for wording-only
+% contrasts, so we interpret ranks and effect sizes; the implementation
+% check covers two inputs and is not a reproduction of Izawa et al.
+\paragraph{Localization.}
+\flow{Ranks are within one layer, significance flags nearly every head, and our implementation check covers two inputs rather than a reproduction of earlier experiments.}
+
+% L8 ---------------------------------------------------------------
+% Two regimes. Removal experiments ran in fp16 with greedy decoding on
+% different hardware from the bf16, sampled mid-submission runs; arms are
+% compared only with their own reference run, and numbers are never mixed
+% across regimes. Agreeableness system prompts carry an extra "keep
+% helping" sentence (DECISIONS D8), and low-agreeableness prompts remain
+% dismissive in emotional advice (D9).
+\paragraph{Runs and prompts.}
+\flow{Removal experiments ran with different precision and decoding from the earlier runs and are compared only within their own run; the agreeableness prompts carry an extra instruction to keep helping.}
+
+% =====================================================================
+\section{Future Work}
+% Shape: ordered as the team decided (scaling first, then multi-turn, then
+% the asymmetry test, then persona resistance, then locating the mechanism,
+% then intervening there). Each item: what to do + which open question it
+% settles. Complete statements, no "in progress" (PA papers guidance).
+% Items cut from the end-submission plan land here (Llama, 3 traits,
+% multi-turn, adoption vs perception). One paragraph each, short.
+% =====================================================================
+
+% FW1 Scaling: all five traits (pole definitions from BFI-2 facets; the
+%     pipeline carries over), 40 requests so domain and facet effects can be
+%     tested, and Llama-3.1-8B-Instruct (reported style heads: layer 13,
+%     heads 23/29/31, zero-indexed). Settles: generality of both findings.
+\flow{Extending to all five traits, more requests and a second model would test whether the head and behaviour findings generalize.}
+
+% FW2 Multi-turn: conversations of 5-10 turns with a consistent user style,
+%     with and without an assigned persona; judged trait per turn; readouts
+%     per turn; the zeroing and removal tests repeated, since the style heads
+%     may become necessary only as the user's style accumulates. Settles:
+%     whether the single-turn conclusions hold for drift (L1).
+\flow{Multi-turn conversations would test whether the user's effect grows and whether the style heads become necessary as a style accumulates.}
+
+% FW3 Asymmetry and alignment: compare the base and instruction-tuned
+%     versions of the model on the same inputs. If the base model mirrors
+%     both poles and the tuned one only enthusiasm, preference training is
+%     the likely source of the asymmetry (Dis2's hypothesis).
+\flow{Comparing base and instruction-tuned models on the same inputs would test whether alignment training causes the selective mirroring.}
+
+% FW4 Persona resistance: extend the 2x2 preservation measure (system
+%     persona vs opposite user style) to all traits and to multi-turn.
+\flow{Measuring how well an assigned persona holds against an opposite user style, across traits and turns, gives the quantity any control method must preserve.}
+
+% FW5 Locating the mechanism: attention knockout from reply to user
+%     positions (head or layer at a time); activation patching from high-
+%     to low-user runs scored by a probe trained on judged replies;
+%     adoption vs perception (does the user direction's strength predict the
+%     reply's judged trait within a pole?). Settles RQ1, and the open
+%     question from Sprejer et al.
+\flow{Attention knockout, activation patching and an adoption-versus-perception test would locate where the user's style enters the reply.}
+
+% FW6 Intervening there: remove the user component at the located site;
+%     compare with residual steering and with an instruction not to adapt;
+%     score mirroring reduction, persona preservation, coherence. Settles
+%     RQ3's second half.
+\flow{Removing the user's component at the located site, scored on mirroring, persona preservation and coherence, would answer whether mirroring can be suppressed without harming the assigned persona.}
+
+% =====================================================================
+\section{Conclusion}
+% One paragraph, ~120 words. Restates the answers at the strength the
+% evidence supports, in the abstract's order; no new claims, no numbers
+% beyond one if needed. Scoped to single turns in its first sentence.
+% PENDING: the removal result and the wording-only control decide the
+% second and third sentences.
+% =====================================================================
+\flow{In single turns, a model mirrors a user's enthusiasm but not their reserve; the heads that carry an assigned persona register the user's style, are dominated by the system prompt, and are not needed for mirroring.}
+\pending{sentence on direction removal; final scoping sentence.}
+
+% =====================================================================
+% APPENDIX PLAN (optional extra page; PA s.1: every cut is a move, the main
+% text must still stand alone)
+%   A  Prompts: rewriter (with facet rule and examples), checklist judge
+%      (nine questions + three examples), blind-comparison judge.
+%   B  The 20 system prompts (+/- pairs).
+%   C  System-prompt behavioural check (both rounds, per prompt) -- moved
+%      from Dataset if pages run short.
+%   D  Quality-check statistics: failures per check, attempts.
+%   E  Mirroring judge rubrics (extraversion, agreeableness, coherence,
+%      refusal) and the pairwise rubric.
+%   F  Additional results: facet and domain splits; regression for every
+%      head group; zeroing per arm.
+%   G  Settings of the two regimes (precision, hardware, decoding, seeds).
+% =====================================================================
+
+% =====================================================================
+% OPEN ISSUES (PA s.14: live decisions only; delete an item when settled,
+% keep any obligation it creates)
+%   1. Title: options (a)-(c) at the top. Settle after the removal results.
+%   2. End-submission code not in the repo (2026-10-31). Every [PLAN] claim
+%      in Method M5b must be checked against it (six VERIFY items listed).
+%   3. Which regime's head ranks to report (bf16 mid-sub vs fp16 re-run).
+%      Option: report bf16 in the table, fp16 as a consistency check in the
+%      appendix. Settled by whether they agree.
+%   4. Wording-only control: if the style heads also top a wording-only
+%      contrast, rewrite Intro P5, Results 5.1 title, Dis1.
+%   5. Pairwise agreeableness: its outcome rewrites Intro P5, Dis2, L3.
+%   6. Human audit (24 rows, 0 filled): do it, or remove every sentence that
+%      implies it was done (D4, L6).
+%   7. Citations to fix or verify: Lu et al. 2026 (title/authors), Izawa et
+%      al. (ICML 2026 + author field), Subramani misattribution, Beckmann &
+%      Butlin (content), McGrath et al. 2023 Hydra effect (verify before
+%      using in Dis1), Chen et al. 2025 coherence trade-off (RW3).
+%   8. Page budget: check the end-submission length limit; the mid-sub limit
+%      was 7-8 pages + one optional appendix page.
+% =====================================================================
+
+\end{document}
+\end{document}

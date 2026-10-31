@@ -44,9 +44,9 @@ Both the quality check and the behavioural scores rely on language-model judges.
 % FLOW L7: localization measures | consequence: ranks, not significance;
 % no reproduction claim
 \paragraph{Localization.}
-Heads are ranked within one layer, and because the significance test flags almost every head, we rely on ranks and effect sizes. Our implementation check covers two inputs and is not a reproduction of earlier experiments.
+Heads are ranked within one layer, and because the significance test flags almost every head, we rely on ranks and effect sizes.
 
-% FLOW L8: different runs; extra sentence in the agreeableness prompts |
+% FLOW L8: different runs (prompt note moved to Appendix C, Dis5) |
 % consequence: comparisons only within a run
-\paragraph{Runs and prompts.}
-The removal experiments ran in half precision (float16) with greedy decoding on different hardware from the earlier, sampled runs, so each arm is compared only with the reference run from its own job (Appendix~\ref{app:settings}). The agreeableness system prompts carry an extra instruction to keep helping, and the low-agreeableness prompts remain dismissive towards users asking for emotional support.
+\paragraph{Two run settings.}
+The removal experiments ran in half precision (float16) with greedy decoding on different hardware from the earlier, sampled runs, so each arm is compared only with the reference run from its own job (Appendix~\ref{app:settings}).

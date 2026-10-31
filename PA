@@ -1,0 +1,508 @@
+# Writing a research paper
+
+Tips for drafting abstracts, introductions and the decisions that come before any prose.
+Distilled from one paper taken from blank page to submitted abstract, including everything
+that was rejected along the way, and from close measurement of two published papers used
+as models.
+
+**Useful when** drafting, rewriting, tightening or restructuring a paper or a section of
+one, and when an author has rejected a draft and the question is why.
+
+Throughout, **exemplar A** and **exemplar B** are the two measured papers. A is a vision
+paper at a top conference; B is an NLP-venue paper in the same subject area. They are cited
+only for their measurements.
+
+---
+
+## 0. None of this is a rule
+
+Every tip here comes from a small number of papers, and the two exemplars contradict each
+other constantly. One has a contributions list; the other has none. One has no numbers in
+its abstract; the other has five. One tapers its paragraph lengths; the other does not.
+Where exemplars disagree there is nothing to follow, only a choice to make deliberately.
+
+Three principles below were overturned while being written:
+
+- **"Keep sentences short"** produced prose an author called unprofessional. Exemplar A's
+  abstract has a median sentence of 28 words and reads easily.
+- **"Never name statistical machinery in an introduction"** is true of both exemplars and
+  was wrong for the paper in question, because the statistics were its contribution.
+- **"Paragraphs should taper"** was generalised from one paper. The other does not taper.
+
+If a tip makes a specific piece of writing worse, it is wrong for that piece.
+
+---
+
+## 1. Before drafting
+
+**Prose written before the argument is settled gets rewritten, not edited.** Most of the
+pain in a long drafting session came from writing sentences while the order of claims was
+still moving.
+
+**Writing the questions down first is what makes abstraction a decision.** List the
+questions the piece answers, in the order a reader needs them — the big issue, why it is
+hard, what we offer, how ours differs, how we know it works, what we found, what follows.
+Answer each twice: once in a plain sentence, once in a paragraph. The short answers become
+the abstract and the long ones the introduction. When you later ask whether the dataset
+size belongs in the abstract, you are choosing between two answers you already have rather
+than compressing on the fly.
+
+**Keep that question table where the work happens, and update it when the order changes.**
+Order changes are structural. Moving the criticism of prior work from before the method to
+after it reshaped four paragraphs in one draft, and the table was the only record of why.
+
+**The venue's page limit is not the budget.** Single-column pages hold roughly half what
+double-column pages do, so a 14-page single-column limit and an 8-page double-column limit
+are close to the same number of words. Worth also checking whether references count,
+whether an extra page exists for statements, which sections must be *removed* for
+anonymity, and whether any statement is mandatory on pain of desk rejection.
+
+**If appendices are unlimited, "we cannot fit this" is almost never true.** Every cut
+becomes a move, and the only real constraint is that the main text must stand alone.
+
+**Characters are chosen after the answers exist**, because you cannot pick a subject
+before you know what the sentences say. See §4.
+
+---
+
+## 2. Register
+
+**The target is a researcher in your broad field who does not work on your specific
+problem.** Not a layman, not a specialist. Keep general research vocabulary; drop only
+your own machinery.
+
+Words that stay: dataset, subgroup, attribute, counterfactual, synthetic, baseline, false
+positive, calibrate, disparity. Words that go to the method section: named estimators,
+correction procedures, resampling schemes, variance adjustments, internal scoring
+conventions. Both exemplars keep exactly one methodological word in their abstracts, used
+as plain English with no definition.
+
+**The failure mode is talking down, and it appears exactly when you are trying to
+simplify.** Real rejected lines:
+
+| rejected | replacement | why |
+|---|---|---|
+| a set of people to test on | a dataset | the audience knows the word |
+| we built data with nothing in it | synthetic data generated without the effect | the first says nothing about what was built |
+| and be right about it | a significance test for that difference | vague where a term exists |
+| the survivors lie in one place | they pair [A] with [B] | "one place" is not a finding |
+| harm that falls on someone | harm a model directs at people who… | conversational |
+
+An author's own correction, which is the clearest statement of the target:
+
+> Abstracting things away doesn't mean explaining to a small child. They still use words
+> like counterfactual, semantic.
+
+**Simplifying can quietly swap a precise claim for a vague one.** "Fares worse" instead of
+"deviates further from the population" reads better and means something different — one
+implies an outcome a person receives, the other names what was measured. When simpler
+language costs precision, the author should get to choose.
+
+---
+
+## 3. Sentences
+
+**Clarity comes from the subject chain, not from short sentences.** This was the single
+biggest correction in the project. Exemplar A's abstract runs 187 words in 7 sentences, a
+median of 28, and reads easily. What it never does is change who the sentence is about
+halfway through.
+
+**Over-correcting is its own failure.** From the author:
+
+> Having too many short sentences can feel unprofessional. It's a good rule, but it's just
+> a rule.
+
+**A rejected paragraph is usually badly distributed rather than too long.** Keeping the
+word count and doubling the sentence count often fixes it:
+
+> **Before** — 4 sentences, median 28 words, longest 50:
+> "Both failures can be measured rather than argued. We build synthetic datasets from the
+> real design and the models' own residuals, with no effect anywhere in them, so any
+> subgroup a method flags there is wrong by construction; and we plant effects of a size we
+> choose, so a miss is countable too. …"
+>
+> **After** — 9 sentences, median 12, longest 21, same content:
+> "We test both claims on data we build ourselves. It comes from the real design and the
+> models' own residuals, with no effect in it. Any subgroup a method flags there is wrong
+> by construction. We also plant effects of a size we choose, so a miss is countable too. …"
+
+**Signals that a sentence has gone wrong:**
+
+- **Announcement openers** — "Two consequences follow", "The test has three steps", "Both
+  failures can be measured rather than argued". Starting with the first thing is shorter
+  and does not make a promise before delivering.
+- **Long fronted clauses.** "Across every scenario we ran, varying how many effects are
+  planted, where they sit and how the noise is generated, ours is the only one…" — the
+  subject arrives after 22 words.
+- **A semicolon splicing two complete constructions**, which is usually two sentences
+  pretending to be one.
+- **Nominalisation** — `-ing` and `-tion` nouns doing a verb's work. Exemplar B opens two
+  consecutive abstract sentences with "Addressing…" and "Understanding…", so this is a
+  tendency rather than a law.
+- **Em-dash chains.** One is fine; three in a paragraph is a tell.
+- **A verb stronger than its evidence.** "Demonstrate" attached to a *hypothetical* example
+  claims a demonstration that did not happen; "illustrate" costs nothing and stays true.
+- **Two consecutive sentences opening on the same phrase.** Usually the first is setup for
+  the second and can go.
+- **An appositive with no antecedent.** "…compare it against each attribute alone, a
+  condition that X already satisfies" — comparing is an action, not a condition, so the
+  appositive renames nothing.
+
+**Some words cannot take the verb they were given.** A baseline is a reference, so it
+cannot *report* anything — a test or an audit does. A construction cannot *score* a method.
+A metric is not *measured*; its error rate is. These read as slips and are category errors
+that leave the reader unsure what kind of object each thing is.
+
+---
+
+## 4. Characters and hand-offs
+
+**A character is the grammatical subject a paragraph is about, and a paragraph should have
+one.** At most three in a paragraph, and they do not interleave — once the text moves on
+from one, it does not come back.
+
+**A character that cannot take a verb is not a character.** Abstract nouns like
+"combination" or "variation" fail this; a concrete plural usually replaces them.
+
+**Keep the count small.** Exemplar A's abstract has two characters across seven sentences.
+B's has four across nine, in strict sequence.
+
+**A character enters as an object before it becomes a subject.** B's abstract does this
+four times in nine sentences:
+
+| # | subject | introduces at the end |
+|---|---|---|
+| 4 | **we** | → *the tool* |
+| 5 | **the tool** | → *its estimates* |
+| 6 | **these estimates** | the correlation |
+| 7 | **we** | → *the algorithm* |
+| 8 | **the algorithm** | the numbers |
+
+Nothing is ever the subject of a sentence on its first appearance.
+
+**Each paragraph can start from what the last one ended on.** B opens ¶2 on "The concept of
+intersectionality" immediately after ¶1 ends on "the intersectional nature of these biases"
+— the same root word, adjective to noun. A manages this at only two of five junctions and
+uses connectives elsewhere, so it is a strong device rather than a requirement.
+
+**When the hand-off word and the character disagree, there are two moves.** Front the
+hand-off as a short subordinate clause and let the character take the main verb — *"Because
+attributes acting independently already satisfy that criterion, our metric flags only the
+subgroups where they do not"* — keeping the fronted clause to six or eight words. Or put
+the hand-off in the predicate so the sentence still opens on the character — *"Our metric
+is unmoved by attributes whose effects merely add."* Some authors dislike the first.
+
+**Criticism is a minor character.** Both exemplars give it its own main clause only in the
+gap paragraph. After their own method appears, every criticism rides inside an "Unlike X"
+phrase whose main clause belongs to them. A never names a rival in prose at all — only
+bracketed citations — and puts its sharpest charge inside parentheses.
+
+**A consequence worth exploiting:** mention a competitor once, in a subordinate clause, and
+you never need a name for it. If the argument needs two mentions, name it descriptively.
+"The former", "the older method" and "the standard X" all fail — the first makes readers
+count back, the others say nothing about what the thing does.
+
+---
+
+## 5. Paragraph architecture
+
+**An introduction that expands an abstract can keep the abstract's order.** One or two
+abstract sentences per paragraph, same characters, same sequence, more room.
+
+**Measured shapes:**
+
+| | exemplar A | exemplar B |
+|---|---|---|
+| abstract | 187 words, 7 sentences | 184 words, 9 sentences |
+| introduction | 817 words, 6 ¶ (14% of body) | 585 words, 5 ¶ (13.6%) |
+| ¶ lengths | 93 / 157 / 138 / 181 / 97 / 151 | 223 / 142 / 96 / 79 / 45 |
+| contributions list | prose, 3 items, ordinals, **no numbers** | **none** |
+| equations or symbols in the intro | **0** | **0** |
+| competitors named in prose | **0** | 1, the one they build on |
+| citations | all in ¶1–¶2 | all in ¶1–¶2, none after |
+
+B tapers monotonically; A's longest paragraph is its *method* paragraph, fourth of six.
+
+**Citations clustering in the first two paragraphs held for both**, which makes a useful
+diagnostic: a later paragraph that needs a citation may be doing work that belongs earlier.
+
+**Two independent claims are often presented as if one follows from the other.** One draft
+ran "these groups are hard to find → so a search is needed → a search must rank → ranking
+needs a reference". The first three links hold; the fourth does not, because the reference
+problem exists whether you search thousands of candidates or hand-pick three. Trying to
+state the implication aloud is how you catch it. The repair is to say so: "X is hard for a
+mundane reason and a deeper one" costs eight words, and the deeper one — usually the one
+your contribution answers — can then take the space it deserves.
+
+**Papers rarely defend what their field treats as standard.** A survey of seven comparable
+papers found six stated a methodological choice and moved on, none defended it in an
+abstract, and the one paper that defended it in an introduction was defending something
+stronger. Where justification appeared, it sat in a discussion or limitations section and
+was *ethical* rather than methodological.
+
+**But the design choice underneath it does get explained, in one sentence.** Nobody defends
+the standard practice; everybody says why their design holds things fixed or crosses them —
+"the only variables that change are the demographics of the subject", "systematically vary
+[A] and [B] while holding all other attributes constant".
+
+**A design chosen for identifiability is usually unrealistic as a description of the
+world.** Conceding that once, in limitations, costs a sentence and removes a reviewer's
+easiest point.
+
+---
+
+## 6. Numbers and claims
+
+**A quoted pair of numbers inherits the authority of a controlled comparison.** The most
+useful sentence produced in the project. Each number must still be true when the reader
+cannot see its denominator.
+
+Exemplar B fails its own test: it reports "fewer steps (2.38 vs 3.15)" where 3.15 is a
+*definitional ceiling* rather than a measurement, and "lower bias (0.33 vs 0.52)" where the
+comparison ran past its documented design limit. Both read as controlled comparisons.
+
+**The four ways a pair goes wrong:**
+
+| failure | shape | the check |
+|---|---|---|
+| different procedures | ours significance-tested, theirs an untested count of where a statistic is positive | are both the output of the same kind of operation? |
+| different denominators | "200 datasets" beside figures computed on 150 | do all numbers in the passage come from one run? |
+| missing denominator | "695 false cells" with no "out of 738" anywhere | can the reader size it? |
+| same name, different quantity | "false positive rate" used for a *family-wise* rate — the share of datasets with at least one false flag, not the share of cells wrongly flagged | does the word name what you computed? |
+
+**Scoping a universal costs two words.** "Every published alternative" claims the field;
+"every published alternative we tried" claims what you ran. In one session this over-claim
+was flagged, removed from a paragraph, and reappeared in the contributions list two turns
+later, so it is worth looking for more than once.
+
+**Claims of the form "in all N cases" are the first to break when an experiment is
+re-run.** In one re-run with different instruments, several 13-of-13 claims became 12 of 13
+and two were dropped. Quantifiers want checking against the current results file, not
+against the draft that quoted them.
+
+**Front matter spends its scarce numbers on the problem, not the method.** Both exemplars
+do this. B's only motivating figure is a result of its own, over-delivered in an appendix;
+its method's headline figures appear in the abstract but are reduced to *adjectives* in the
+introduction — "mitigating biases more effectively, producing higher-quality images".
+
+**The unflattering number is usually the one that disappears.** A reports a recall of 0.54
+and a correlation of +0.51 in its body; its abstract says "consistent with human
+judgements". Worth knowing both when writing and when reading someone else's abstract.
+
+**Conceding a weakness can strengthen a comparison.** "Ours raises a false alarm in 14% of
+datasets against a 5% target, where every alternative exceeds 87%" is more persuasive than
+quoting only the scenario where ours looks best, because the concession makes the second
+clause credible. Picking the scenario where your method looks worst and still wins, and
+scoping every figure in the passage to that one scenario, also lets a reader verify all of
+them from one table.
+
+---
+
+## 7. Abstraction
+
+**Measured against the full papers:**
+
+| | exemplar A | exemplar B |
+|---|---|---|
+| abstract as share of the paper | **1.4%** | 2.3% |
+| numbers in paper → abstract | 700+ → **0** | ~683 → 5 |
+| metrics defined → named | 5 → **0** | 16 → **0** |
+| models evaluated → named | 10 → **0** | 6 → **0** |
+| datasets → named | 3 → **0** | 2–3 → **0** |
+| baselines → named | 4+ → **0** | 1 → **0** |
+| limitations → mentioned | 4 → **0** | several → **0** |
+
+A's abstract contains no numeral, names none of the ten systems it is built from, cuts one
+of its three contributions entirely, and **does not contain the paper's own method name**.
+
+**The selection principle, which two independent measurements converged on:**
+
+> A claim reaches the abstract only if it can be checked against the paper's own
+> contributions **without importing any other name.**
+
+> A detail survives only if it marks the difference from prior work, or asserts that
+> validation exists at all. Everything contingent is replaceable, and is cut.
+
+Anything whose meaning depends on an outside identity — a model, a dataset, a competitor, a
+library — becomes a category or disappears. Anything whose meaning depends on a definition
+internal to the paper becomes an everyday near-synonym.
+
+**The moves, with what sits behind each:**
+
+| move | from | to |
+|---|---|---|
+| sample sizes → one intensifier | 48 images, 100 prompts, 11 conditions, 80 tasks, 5 raters | "**extensive** user studies" |
+| multi-stage pipeline → two verbs | five named steps using three systems | "**study and quantify** … using counterfactual reasoning" |
+| mechanism → one adverb | chain-of-thought prompting with three verbatim queries | "**automatically** identifies…" |
+| named competitor → bare category | four named systems | "unlike **other works** that…" |
+| named metric → bare noun | a defined, formula-bearing quantity | "these **estimates**" |
+| multi-metric result → one adjective | four quality measures plus a check | "**superior** image quality" |
+| hedged case study → capability | "*while this requires manual observation*…" | "**uniquely capable** of…" |
+| universal kept, scope dropped | "works for any model, **and we test two**" | "for **any** model" |
+
+**Neither exemplar contains a single inferential term anywhere** — no null, no p-value, no
+interval, no correction, not even an agreement coefficient — in abstract, introduction,
+method, experiments or appendices. Both validate with descriptive correlations and
+sensitivity analyses, and both introductions use a soft verb: "we conduct user studies to
+validate our approach with human judgement."
+
+**This is where following exemplars can mislead.** If the statistical framing *is* the
+contribution, hiding it hides the paper. Exemplars drawn from a literature that does no
+inference will give the wrong register for a venue that does. Structure travels between
+venues; register does not.
+
+---
+
+## 8. Vocabulary
+
+**When a word carries two senses in one paper, each sense wants its own word.** Two real
+collisions: *baseline*, meaning both the reference a metric scores against and the
+competing methods you measure against; and *benchmark*, meaning both a dataset you release
+and a ground-truth harness for scoring methods. Resolutions: keep "baseline" for the
+reference and call competitors "alternatives"; and follow whatever the codebase calls the
+two artefacts, so prose and repository agree.
+
+**Listing every noun used more than three times, and asking whether it means the same thing
+each time, catches these in one pass.**
+
+**Naming both sides of a contrast is usually better than naming one.** It makes the
+contrast do the work and removes every demonstrative at once.
+
+**A term can be defined by its role on first use, at no cost** — "a score of how far a
+subgroup departs from a chosen baseline" defines "baseline" in passing, in the sentence
+that first needs it.
+
+---
+
+## 9. Figures
+
+**A figure belongs where it does argumentative work, not where the method is described.**
+Exemplar A references its only introduction figure in the *gap* paragraph, to show that
+prior work's framing is wrong. Its pipeline figure is never referenced in the introduction.
+
+**What the figure shows can override that.** In one case the figure labelled both the
+criticised method's reading and the new method's reading in every panel, which meant
+introducing the new method *before* the worked example so that a single case carried both
+verdicts — the opposite of the exemplar's ordering, for a reason specific to the figure.
+
+**Prose can name quantities in words and leave notation to the picture**, which is part of
+how both exemplars keep zero symbols in their introductions.
+
+**Reusing the figure's own numbers in the prose example** means the sentence a reader has
+just parsed is the picture they are looking at.
+
+---
+
+## 10. Contributions
+
+**Both forms exist.** Exemplar A has a prose list of three with ordinals; B has no list,
+using one paragraph per contribution, each opening by naming its object.
+
+**No contribution carries a number as evidence** in either. Claims are cashed in the
+results.
+
+**Items should not overlap.** In one draft, "a metric with a measured error rate" and "a
+benchmark that measures any metric's error rate" were the same claim at two scales; merging
+them into the second, stronger form fixed it.
+
+**The artefact with no precedent is easy to bury.** In that same draft the most
+transferable contribution — a harness other groups could run their own methods through —
+sat in a subordinate clause of another item, because it had been treated as an internal
+check rather than as a thing.
+
+---
+
+## 11. Naming a method
+
+**Worth doing if the method will be cited as a method** rather than as "the test from that
+paper". Conventions nearby: short, pronounceable, often an acronym or portmanteau,
+sometimes a plain word with no expansion at all.
+
+**What mattered when choosing:** whether the name encodes the contribution — the reference
+it compares against, or the unit it operates on; whether the metaphor matches the headline
+result, since a name that recalls the finding is worth more than one describing the
+mechanism; whether it is searchable, because common English words are memorable and
+unfindable; and whether it over-claims, since a name can read as claiming a new framework
+where the honest positioning is an adaptation.
+
+**Forced backronyms read worse than plain words.** Several well-known methods are ordinary
+words with no expansion.
+
+---
+
+## 12. When a draft is rejected
+
+**Naming the faults is more useful than producing another draft.** It confirms the
+objection was understood and stops the same faults recurring. A diagnosis that worked:
+
+> - an announcement opener *and* a not-X-but-Y, in one sentence
+> - sentence 2 is 45 words carrying five ideas, spliced with a semicolon
+> - the last sentence is 50 words with a three-item list before the subject arrives
+> - median sentence length 28, against 14 for the rest of the draft
+> - the character moves five times in four sentences
+
+**Measuring the repair makes it checkable.** "Nine sentences instead of four, median 12
+instead of 28, same content" can be verified; "I made it clearer" cannot.
+
+**Prose drifts over a long session** toward stacked clauses, abstract subjects and hedging.
+Re-reading the principles periodically beats trusting that they are still being applied.
+
+---
+
+## 13. Traps
+
+**If the paper argues that a way of putting things is wrong, you will put it that way
+yourself.** In one draft, a paper arguing against a particular comparison used that exact
+comparison in its own definition of the phenomenon — three times in four sentences, and
+again later in a sentence whose logic the paper's own thesis refutes. When the thesis is
+that a mistake is easy to make, saying so in related work explains the error rather than
+merely naming it.
+
+**Restructuring drops the logic along with the words.** One move carried evidence into a
+new paragraph and silently left behind the clause that licensed it, so the passage asserted
+a comparison with no reason to believe it. Anything moved should bring the sentence that
+made it valid.
+
+**Local result files go stale.** In one case they were two weeks older than the documented
+headline and three of four aggregates fell outside the current ranges.
+
+**Numbers from two experiments, each correct, produce a false claim** when placed in one
+sentence that implies a common denominator.
+
+**Agent-written documents record a reading of the evidence at a moment.** A human decision
+supersedes them; noting the risk once and proceeding as decided is the useful response.
+
+---
+
+## 14. Keeping decisions
+
+**Flow comments in the source survive context loss.** A comment above each paragraph naming
+which step of the argument it is, what it hands off, and why anything unusual sits there,
+lets someone rewriting for language see what has to survive. Marking paragraphs that a
+pending result will replace, and saying what the replacement will not affect, keeps a later
+swap contained.
+
+**An open-issues list is useful only while it holds open issues.** For each: what is
+unresolved, the options, what evidence would settle it. Deleting items when resolved beats
+marking them resolved — a list of live decisions is useful, a changelog is not. Where a
+resolved decision creates an obligation elsewhere, the obligation stays on the list.
+
+---
+
+## 15. Failures common enough to be worth a second look
+
+Not a procedure — just the things that went wrong more than once.
+
+- A paragraph whose first and last sentences, read in sequence with its neighbours', no
+  longer carry the argument.
+- A character that changes in the middle of a paragraph.
+- A number that cannot be sized without a denominator stated nearby.
+- Two numbers in one passage that came from different runs.
+- A universal — "every", "all", "none", "first" — that was never scoped.
+- An "in all N" that predates the current results file.
+- A noun doing duty for two different things.
+- A verb stronger than its evidence.
+- A sentence over about 35 words, which usually contains two ideas.
+- A passage that moved without its justification.
+- A defence of something the field finds unremarkable.
+- A term first used in a paragraph earlier than the one that introduces it.
