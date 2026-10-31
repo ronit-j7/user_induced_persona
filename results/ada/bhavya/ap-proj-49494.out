@@ -1,0 +1,673 @@
+job=B seed=1 gpus=0 1 config=Workstream_2/configs/qwen_ada.json run=/home2/bhavya.ahuja/ap_store/results/jobB start=2026-10-31T01:46:09+05:30
+name, memory.total [MiB], driver_version
+NVIDIA GeForce GTX 1080 Ti, 11264 MiB, 580.178.04
+NVIDIA GeForce GTX 1080 Ti, 11264 MiB, 580.178.04
+{
+  "rows": 340,
+  "scenarios": 20,
+  "is_sample": false,
+  "qc_protocol_counts": {
+    "authored_system_prompt": 200,
+    "ws1_checklist_forced_choice": 120
+  },
+  "cells": [
+    {
+      "set": "neutral",
+      "trait": "none",
+      "sys_pole": "0",
+      "user_pole": "0",
+      "n": 20
+    },
+    {
+      "set": "sys_twin",
+      "trait": "E",
+      "sys_pole": "+",
+      "user_pole": "0",
+      "n": 100
+    },
+    {
+      "set": "sys_twin",
+      "trait": "E",
+      "sys_pole": "-",
+      "user_pole": "0",
+      "n": 100
+    },
+    {
+      "set": "user_variant",
+      "trait": "E",
+      "sys_pole": "0",
+      "user_pole": "+",
+      "n": 60
+    },
+    {
+      "set": "user_variant",
+      "trait": "E",
+      "sys_pole": "0",
+      "user_pole": "-",
+      "n": 60
+    }
+  ],
+  "traits": [
+    "E"
+  ],
+  "selected_scenarios": [
+    "brainstorm_01",
+    "brainstorm_02",
+    "brainstorm_03",
+    "brainstorm_04",
+    "brainstorm_05",
+    "code_01",
+    "code_02",
+    "code_03",
+    "code_04",
+    "code_05",
+    "emo_01",
+    "emo_02",
+    "emo_03",
+    "emo_04",
+    "emo_05",
+    "explain_01",
+    "explain_02",
+    "explain_03",
+    "explain_04",
+    "explain_05"
+  ],
+  "user_data_status": "AVAILABLE",
+  "pairs": {
+    "E:assigned": 100,
+    "E:user": 60
+  },
+  "rows_per_set": {
+    "neutral": 20,
+    "sys_twin": 200,
+    "user_variant": 120
+  },
+  "sources": {
+    "scenarios": {
+      "path": "/home2/yajat.lakhanpal/user_induced_persona/Data_Creation/data/scenarios.jsonl",
+      "sha256": "9765693a29b9ed23b7b43d2d0be6a614f61d28c749fa74e74326fd0ab632a273"
+    },
+    "system_prompts": {
+      "path": "/home2/yajat.lakhanpal/user_induced_persona/Data_Creation/prompts/sys_prompts.json",
+      "sha256": "8b39b86ec6383201ce3b1a749da1dc5954721add3146853688e44cbd6b26ecfe"
+    },
+    "user_variants": {
+      "path": "/home2/yajat.lakhanpal/user_induced_persona/Data_Creation/data/user_variants.jsonl",
+      "sha256": "75eb1befd1e589f73713724b7a7a7bce03185866d3b4524e6335e1a02e99fd5a"
+    }
+  }
+}
+
+extracted 1/340
+extracted 10/340
+extracted 20/340
+extracted 30/340
+extracted 40/340
+extracted 50/340
+extracted 60/340
+extracted 70/340
+extracted 80/340
+extracted 90/340
+extracted 100/340
+extracted 110/340
+extracted 120/340
+extracted 130/340
+extracted 140/340
+extracted 150/340
+extracted 160/340
+extracted 170/340
+extracted 180/340
+extracted 190/340
+extracted 200/340
+extracted 210/340
+extracted 220/340
+extracted 230/340
+extracted 240/340
+extracted 250/340
+extracted 260/340
+extracted 270/340
+extracted 280/340
+extracted 290/340
+extracted 300/340
+extracted 310/340
+extracted 320/340
+extracted 330/340
+extracted 340/340
+/home2/bhavya.ahuja/ap_store/results/jobB/acts
+residual 20/140
+residual 40/140
+residual 60/140
+residual 80/140
+residual 100/140
+residual 120/140
+residual 140/140
+{
+  "rand3_heads": [
+    14,
+    17,
+    21
+  ],
+  "per_fold": {
+    "0": {
+      "train_scenarios": [
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "top10": {
+        "19": [
+          2
+        ],
+        "26": [
+          10,
+          12
+        ],
+        "27": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 2,
+        "27": 4
+      },
+      "smh_delta_norm": 0.8303003907203674
+    },
+    "1": {
+      "train_scenarios": [
+        "brainstorm_01",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_02",
+        "code_03",
+        "code_04",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_04",
+        "explain_05"
+      ],
+      "top10": {
+        "19": [
+          2
+        ],
+        "26": [
+          10,
+          12
+        ],
+        "27": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 2,
+        "27": 4
+      },
+      "smh_delta_norm": 0.840530276298523
+    },
+    "2": {
+      "train_scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_05"
+      ],
+      "top10": {
+        "19": [
+          2
+        ],
+        "26": [
+          10,
+          12
+        ],
+        "27": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 2,
+        "27": 4
+      },
+      "smh_delta_norm": 0.9074223041534424
+    },
+    "3": {
+      "train_scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_02",
+        "explain_03",
+        "explain_04"
+      ],
+      "top10": {
+        "19": [
+          2
+        ],
+        "26": [
+          10,
+          12
+        ],
+        "27": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 2,
+        "27": 4
+      },
+      "smh_delta_norm": 0.8286595940589905
+    }
+  },
+  "smh_direction_cross_fold_cosine_min": 0.969709575176239,
+  "resid19_cross_fold_cosine_min": 0.9590445756912231
+}
+inputs ready at 2026-10-31T02:00:37+05:30
+[plan] worker 0/1 arms=['baseline', 'l19_l1', 'top10_l1', 'randdir19_l1', 'resid19_l1', 'l19_l2'] jobs E=200 A=120
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.39s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.43s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.45s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.37s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.39s/it]
+[progress] arm=baseline fold=0 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=465
+[progress] 12/50 eta_s=421
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=377
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=2 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=424
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=baseline fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=baseline complete=True seconds=2281.8
+[progress] arm=l19_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=511
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=419
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=377
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=244
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=460
+[progress] 12/50 eta_s=417
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=l19_l1 complete=True seconds=2279.5
+[progress] arm=top10_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=511
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=241
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=top10_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=top10_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=top10_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=509
+[progress] 8/50 eta_s=460
+[progress] 12/50 eta_s=417
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=top10_l1 complete=True seconds=2278.1
+[progress] arm=randdir19_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=511
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=randdir19_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=randdir19_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=423
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=289
+[progress] 28/50 eta_s=244
+[progress] 32/50 eta_s=200
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=111
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=randdir19_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=509
+[progress] 8/50 eta_s=460
+[progress] 12/50 eta_s=417
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=randdir19_l1 complete=True seconds=2277.6
+[progress] arm=resid19_l1 fold=0 jobs=50
+[progress] 4/50 eta_s=512
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=419
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=resid19_l1 fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=376
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=resid19_l1 fold=2 jobs=50
+[progress] 4/50 eta_s=517
+[progress] 8/50 eta_s=468
+[progress] 12/50 eta_s=424
+[progress] 16/50 eta_s=379
+[progress] 20/50 eta_s=333
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=resid19_l1 fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=resid19_l1 complete=True seconds=2280.8
+[progress] arm=l19_l2 fold=0 jobs=50
+[progress] 4/50 eta_s=512
+[progress] 8/50 eta_s=462
+[progress] 12/50 eta_s=419
+[progress] 16/50 eta_s=375
+[progress] 20/50 eta_s=329
+[progress] 24/50 eta_s=286
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=154
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l2 fold=1 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=422
+[progress] 16/50 eta_s=377
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=243
+[progress] 32/50 eta_s=199
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l2 fold=2 jobs=50
+[progress] 4/50 eta_s=518
+[progress] 8/50 eta_s=469
+[progress] 12/50 eta_s=424
+[progress] 16/50 eta_s=380
+[progress] 20/50 eta_s=334
+[progress] 24/50 eta_s=290
+[progress] 28/50 eta_s=245
+[progress] 32/50 eta_s=201
+[progress] 36/50 eta_s=156
+[progress] 40/50 eta_s=112
+[progress] 44/50 eta_s=67
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[progress] arm=l19_l2 fold=3 jobs=50
+[progress] 4/50 eta_s=510
+[progress] 8/50 eta_s=461
+[progress] 12/50 eta_s=418
+[progress] 16/50 eta_s=374
+[progress] 20/50 eta_s=330
+[progress] 24/50 eta_s=287
+[progress] 28/50 eta_s=242
+[progress] 32/50 eta_s=198
+[progress] 36/50 eta_s=155
+[progress] 40/50 eta_s=110
+[progress] 44/50 eta_s=66
+[progress] 48/50 eta_s=22
+[progress] 50/50 eta_s=0
+[done] arm=l19_l2 complete=True seconds=2280.5
+status=0 end=2026-10-31T05:48:48+05:30 export=/home2/bhavya.ahuja/ap_store/results/jobB/export_jobB.tar.gz

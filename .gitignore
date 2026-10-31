@@ -6,6 +6,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 *.egg-info/
-/results
 /acts
 *.log
+# GitHub rejects files over 100 MB. This activation dump is 132 MB.
+results/ada/yajat/jobA/acts/resp.npy

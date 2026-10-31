@@ -1,0 +1,212 @@
+{
+  "readout": "resp",
+  "contrasts": [
+    {
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      },
+      "layer_top3": [
+        2,
+        27,
+        4
+      ],
+      "trait": "E",
+      "pole": "+",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 999,
+      "fdr_significant": 692,
+      "n_heads": 784,
+      "max_abs_score": 5.9638471603393555
+    },
+    {
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 2,
+        "27": 3
+      },
+      "layer_top3": [
+        2,
+        4,
+        27
+      ],
+      "trait": "E",
+      "pole": "-",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 999,
+      "fdr_significant": 707,
+      "n_heads": 784,
+      "max_abs_score": 15.690969467163086
+    },
+    {
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 2,
+        "27": 3
+      },
+      "layer_top3": [
+        2,
+        4,
+        27
+      ],
+      "trait": "A",
+      "pole": "+",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 999,
+      "fdr_significant": 688,
+      "n_heads": 784,
+      "max_abs_score": 3.585334539413452
+    },
+    {
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 2,
+        "27": 3
+      },
+      "layer_top3": [
+        2,
+        4,
+        27
+      ],
+      "trait": "A",
+      "pole": "-",
+      "k_pair": [
+        0,
+        1
+      ],
+      "n_scenarios": 20,
+      "scenarios": [
+        "brainstorm_01",
+        "brainstorm_02",
+        "brainstorm_03",
+        "brainstorm_04",
+        "brainstorm_05",
+        "code_01",
+        "code_02",
+        "code_03",
+        "code_04",
+        "code_05",
+        "emo_01",
+        "emo_02",
+        "emo_03",
+        "emo_04",
+        "emo_05",
+        "explain_01",
+        "explain_02",
+        "explain_03",
+        "explain_04",
+        "explain_05"
+      ],
+      "permutations": 999,
+      "fdr_significant": 695,
+      "n_heads": 784,
+      "max_abs_score": 12.156906127929688
+    }
+  ],
+  "references": [
+    {
+      "path": "/home2/yajat.lakhanpal/ap_store/results/jobA/analysis/E-assigned/metrics.json",
+      "trait": "E",
+      "source": "assigned",
+      "readout": "resp",
+      "fdr_significant": 683,
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      }
+    },
+    {
+      "path": "/home2/yajat.lakhanpal/ap_store/results/jobA/analysis/A-assigned/metrics.json",
+      "trait": "A",
+      "source": "assigned",
+      "readout": "resp",
+      "fdr_significant": 704,
+      "smh_ranks_in_layer": {
+        "2": 1,
+        "4": 3,
+        "27": 2
+      }
+    }
+  ],
+  "conclusion": "Same-pole paraphrases also mark a large share of heads significant, so the test is sensitive to wording changes and not only to the trait contrast. Prefer ranks and effect sizes over the significant-head count."
+}

@@ -1,0 +1,126 @@
+{
+  "rows": 660,
+  "scenarios": 20,
+  "is_sample": false,
+  "qc_protocol_counts": {
+    "authored_system_prompt": 400,
+    "ws1_checklist_forced_choice": 240
+  },
+  "cells": [
+    {
+      "set": "neutral",
+      "trait": "none",
+      "sys_pole": "0",
+      "user_pole": "0",
+      "n": 20
+    },
+    {
+      "set": "sys_twin",
+      "trait": "A",
+      "sys_pole": "+",
+      "user_pole": "0",
+      "n": 100
+    },
+    {
+      "set": "sys_twin",
+      "trait": "A",
+      "sys_pole": "-",
+      "user_pole": "0",
+      "n": 100
+    },
+    {
+      "set": "sys_twin",
+      "trait": "E",
+      "sys_pole": "+",
+      "user_pole": "0",
+      "n": 100
+    },
+    {
+      "set": "sys_twin",
+      "trait": "E",
+      "sys_pole": "-",
+      "user_pole": "0",
+      "n": 100
+    },
+    {
+      "set": "user_variant",
+      "trait": "A",
+      "sys_pole": "0",
+      "user_pole": "+",
+      "n": 60
+    },
+    {
+      "set": "user_variant",
+      "trait": "A",
+      "sys_pole": "0",
+      "user_pole": "-",
+      "n": 60
+    },
+    {
+      "set": "user_variant",
+      "trait": "E",
+      "sys_pole": "0",
+      "user_pole": "+",
+      "n": 60
+    },
+    {
+      "set": "user_variant",
+      "trait": "E",
+      "sys_pole": "0",
+      "user_pole": "-",
+      "n": 60
+    }
+  ],
+  "traits": [
+    "E",
+    "A"
+  ],
+  "selected_scenarios": [
+    "brainstorm_01",
+    "brainstorm_02",
+    "brainstorm_03",
+    "brainstorm_04",
+    "brainstorm_05",
+    "code_01",
+    "code_02",
+    "code_03",
+    "code_04",
+    "code_05",
+    "emo_01",
+    "emo_02",
+    "emo_03",
+    "emo_04",
+    "emo_05",
+    "explain_01",
+    "explain_02",
+    "explain_03",
+    "explain_04",
+    "explain_05"
+  ],
+  "user_data_status": "AVAILABLE",
+  "pairs": {
+    "E:assigned": 100,
+    "E:user": 60,
+    "A:assigned": 100,
+    "A:user": 60
+  },
+  "rows_per_set": {
+    "neutral": 20,
+    "sys_twin": 400,
+    "user_variant": 240
+  },
+  "sources": {
+    "scenarios": {
+      "path": "/home2/yajat.lakhanpal/user_induced_persona/Data_Creation/data/scenarios.jsonl",
+      "sha256": "9765693a29b9ed23b7b43d2d0be6a614f61d28c749fa74e74326fd0ab632a273"
+    },
+    "system_prompts": {
+      "path": "/home2/yajat.lakhanpal/user_induced_persona/Data_Creation/prompts/sys_prompts.json",
+      "sha256": "8b39b86ec6383201ce3b1a749da1dc5954721add3146853688e44cbd6b26ecfe"
+    },
+    "user_variants": {
+      "path": "/home2/yajat.lakhanpal/user_induced_persona/Data_Creation/data/user_variants.jsonl",
+      "sha256": "75eb1befd1e589f73713724b7a7a7bce03185866d3b4524e6335e1a02e99fd5a"
+    }
+  }
+}

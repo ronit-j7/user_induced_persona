@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "model": {
+    "model_name": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "num_layers": 28,
+    "num_heads": 28,
+    "num_kv_heads": 4,
+    "head_dim": 128,
+    "hidden_size": 3584,
+    "smh_layer": 19,
+    "smh_heads": [
+      2,
+      4,
+      27
+    ],
+    "dtype": "float16",
+    "device": "auto",
+    "max_memory_per_gpu": "10GiB",
+    "attention_implementation": "sdpa",
+    "max_length": 2048,
+    "response_tokens": 150,
+    "is_synthetic": false,
+    "seed": 0
+  },
+  "readouts": [
+    "resp"
+  ],
+  "mode": "project",
+  "is_sample": false,
+  "provenance": {
+    "utc": "2026-10-30T18:48:29.645279+00:00",
+    "git_commit": null,
+    "git_dirty": false,
+    "packages": {
+      "numpy": "2.1.2",
+      "torch": "2.4.1",
+      "transformers": "4.56.1",
+      "accelerate": "1.10.1",
+      "matplotlib": "3.11.2"
+    },
+    "source_hashes": {
+      "Workstream_2/attentionseekers/__init__.py": "15db8c3109f6c9aabb31226ee1de2a6790f68acba026a0927d603ed0456898a9",
+      "Workstream_2/attentionseekers/__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279",
+      "Workstream_2/attentionseekers/chat.py": "23e9d419f7520c9635ecc30fab0f2b9fbb39bb4d27e001e17f8e66c006c33d99",
+      "Workstream_2/attentionseekers/cli.py": "b9dca52ce668f10fb2462bbbd95a8ce5b05dad5e1420d41db1a8e8380dd52975",
+      "Workstream_2/attentionseekers/config.py": "84f4d697c3168a194d7041604b90c28c1df9854a8e1a6872df0e2152154ceb46",
+      "Workstream_2/attentionseekers/data.py": "1ce9ded4be38a50994ed6397d544fbb61af44d1a5d8d5d4f9320322b5acb7762",
+      "Workstream_2/attentionseekers/extract.py": "fed0241dc00788cda4f9931fafb58719cd55a7264fc9a6c77802e37d2df649f5",
+      "Workstream_2/attentionseekers/heads.py": "73ff2d2af1a085b6ba45b013af4f0d01d7501b5895a7742190ed6263956c5752",
+      "Workstream_2/attentionseekers/io.py": "0cb045cb2e384780ce5a960a79508f9fdefe4e5413b746806254931eb0f3ce8c",
+      "Workstream_2/attentionseekers/paths.py": "860b44f0e7729092c9d309e6a864e26f2d86e47686f0fdda95bd96174a33da68",
+      "Workstream_2/attentionseekers/pipeline.py": "f6bcf38fca48c8a25698d9221d690339977cf83b3d2a788be724ad1f6ce90384",
+      "Workstream_2/attentionseekers/plots.py": "17519e02410c76960890a20a93071767f29a4dfb01f204855c898607cc9661eb",
+      "Workstream_2/attentionseekers/preflight.py": "65a2adf991a8e002951cbaef97543eaa1d2161f9ce0c15673a0fbc9894eed632",
+      "Workstream_2/attentionseekers/prepare.py": "3295a642dfe4447098f2a824be307ce0a33ed63cce48e6c2fa00d24c299255b9",
+      "Workstream_2/attentionseekers/reference_check.py": "6c6bd6caf87edd6adcd166d9575ae6fe131b46606651874eb1a92cfbb3defe02",
+      "Workstream_2/attentionseekers/repro.py": "928ac2f545b7b4d5e6b3811342f249f508213b26a5c545a459a795fd08d8c9ab",
+      "Workstream_2/attentionseekers/smoke.py": "e20e94c879001ca63b5e4f3e4a5e0f345702df3e3c5b69a81a0a9fbf3d25c9ef"
+    }
+  },
+  "metadata": {},
+  "is_synthetic": false,
+  "response_tokens": 150,
+  "data_sha256": "3fb10c2fd81b82cd2e4ee268dd38cd1faccd9dd3743f4f19ef4c81c180a6f04a",
+  "resolved_model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "tokenizer_class": "Qwen2TokenizerFast",
+  "resolved_tokenizer_revision": null,
+  "chat_template_sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f"
+}

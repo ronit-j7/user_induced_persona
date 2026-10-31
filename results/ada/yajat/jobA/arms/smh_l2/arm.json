@@ -1,0 +1,45 @@
+{
+  "arm": "smh_l2",
+  "kind": "proj",
+  "group": "smh",
+  "lam": 2.0,
+  "trait": "E",
+  "seed": 0,
+  "batch_size": 4,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "max_new_tokens": 150,
+  "complete": true,
+  "n": 200,
+  "seconds_this_session": 2302.5,
+  "heads_by_fold": {
+    "0": {
+      "19": [
+        2,
+        4,
+        27
+      ]
+    },
+    "1": {
+      "19": [
+        2,
+        4,
+        27
+      ]
+    },
+    "2": {
+      "19": [
+        2,
+        4,
+        27
+      ]
+    },
+    "3": {
+      "19": [
+        2,
+        4,
+        27
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "kind": "prepared_data",
+  "is_sample": false,
+  "files": {
+    "rows.jsonl": "1be0b5f03eea195c2f99ff3d565fb4edb984681965fc84cb896ca9e9df4c64e3",
+    "summary.json": "90f71afbfc6ac3fde197b7980c0ea613fa512027e138f16578c6e358a6899383"
+  }
+}
