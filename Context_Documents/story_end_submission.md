@@ -19,8 +19,8 @@ Each beat is a question, the answer, and the evidence. Keep the report in this o
 - **Setup.** Izawa et al. (ICML 2026) found three heads (layer 19, heads 2, 4, 27) that switch an assistant's persona, using personas like "humorous". Ours are Big Five traits.
 - **Answer.** Yes. With the personality in the system prompt, the three heads are the top 3 of layer 19 for both Extraversion and Agreeableness. This held at mid-sub (bf16) and again overnight (fp16).
 - **New check (overnight, Job A).** The "wording-only" control: keep the personality the same and only change the wording of the system prompt. The same three heads are still the top 3 of layer 19. So they react to *any* system-prompt change, not only to personality.
-- **But the size differs.** The personality contrast moves head 2 by about 30 (E) and 27 (A) on the head-score scale. The largest wording-only change on *any* head is 4–16. Personality moves these heads roughly 2–8 times more than rewording does.
-- **How to say it.** "The style heads are the system prompt's most sensitive heads in layer 19. Personality moves them several times more than rewording does." Do not say they are personality-specific.
+- **But the size differs, mostly for head 2.** The personality contrast moves head 2 by about 30 (E) and 27 (A) on the head-score scale. The largest wording-only change on *any* head is 4–16, so head 2 moves 2–8 times more for personality than for rewording. Heads 4 and 27 (about 9–16) are no larger than the biggest rewording change.
+- **How to say it.** "The style heads are the system prompt's most sensitive heads in layer 19. Head 2 responds to personality well beyond rewording; heads 4 and 27 respond about as much to rewording as to personality." Do not say the three heads are personality-specific.
 - **Next question.** If they react to the system prompt, do they react to the *user*?
 
 Evidence: `MIDSUB_RESULTS.md` (WS2), `Workstream_3/ws3_results/ada/jobA/analysis/E-assigned`, `A-assigned`, `same-pole/metrics.json`.
@@ -102,7 +102,7 @@ Also report, whatever the ending:
 | # | What | Source | Status |
 |---|---|---|---|
 | 1 | Head heatmaps, system E and A, style heads marked | `ws3_results/ada/jobA/analysis/*/raw_z_heatmap.png` | Exists |
-| 2 | Trait vs wording-only effect on the style heads (bar chart) | `analysis/*/raw.npy`, `same-pole/metrics.json` | To plot |
+| 2 | Trait vs wording-only effect on the style heads (bar chart) | `ws3_results/ada/figures/wording_control.png` | Exists |
 | 3 | Mirroring by facet and domain | `ws3_summary.md` | Exists as table |
 | 4 | System vs user share of style-head variation (69% vs 0.6%) | mid-sub factorial | Exists as numbers |
 | 5 | Main result: copying per arm, with confidence intervals | `ws3.intervention_report` | **[judge]** |
@@ -135,6 +135,5 @@ Figure 5 is the paper's main figure. Put it in the abstract and on the first res
 - [ ] Judge every arm in both jobs (needs `OPENAI_API_KEY`; about an hour).
 - [ ] Pairwise agreeableness on `jobA/arms/baselineA`.
 - [ ] `ws3.intervention_report` → Figures 5 and 6.
-- [ ] Plot Figure 2 (trait vs wording-only).
 - [ ] Human 10% audit.
 - [ ] Pick the ending, rewrite the one-sentence version if needed, then write.
